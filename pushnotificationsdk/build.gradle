@@ -21,21 +21,19 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.1'
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.2'
 
+    implementation 'com.squareup.moshi:moshi:1.7.0'
+    implementation 'com.squareup.moshi:moshi-kotlin:1.7.0'
     implementation 'com.google.firebase:firebase-core:16.0.5'
     implementation 'com.google.firebase:firebase-messaging:17.3.4'
-    implementation "com.squareup.okhttp3:okhttp:3.12.0"
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.5.0'
 
-
-    testImplementation 'org.mockito:mockito-android:2.23.4'
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
-//    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.0.0"
-//    testImplementation 'org.powermock:powermock-module-junit4:1.7.1'
-//    testImplementation 'org.powermock:powermock-api-mockito2:1.7.1'
-//    testImplementation 'org.amshove.kluent:kluent:1.43'
     testImplementation "io.mockk:mockk:1.8.13.kotlin13"
 
 

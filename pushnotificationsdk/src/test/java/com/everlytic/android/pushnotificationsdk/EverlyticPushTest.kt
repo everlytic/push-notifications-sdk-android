@@ -11,9 +11,8 @@ import io.mockk.spyk
 import io.mockk.verify
 import org.junit.Test
 import kotlin.test.assertFailsWith
-import kotlin.test.assertNull
 
-class MokkIoEverlyticPushTest {
+class EverlyticPushTest {
 
     @Test
     fun testInit_WithInvalidManifestSettings_ReturnsError() {
@@ -25,6 +24,7 @@ class MokkIoEverlyticPushTest {
                 val applicationInfo = mockk<ApplicationInfo> {
 
                     metaData = mockk {
+                        every { getString(eq("com.everlytic.api.API_INSTALL_URL")) } returns null
                         every { getString(eq("com.everlytic.api.API_USERNAME")) } returns null
                         every { getString(eq("com.everlytic.api.API_KEY")) } returns null
                         every { getString(eq("com.everlytic.api.PUSH_NOTIFICATIONS_PROJECT_ID")) } returns null
@@ -67,8 +67,8 @@ class MokkIoEverlyticPushTest {
     @Test
     fun testSubscribe_EverlyticPushNotInitialised_ReturnsError() {
 
-        val everlyticPush = spyk<EverlyticPush.Companion> {
-            this.instance = null
+        val everlyticPush = spyk<EverlyticPush> {
+            instance = null
         }
 
         assertFailsWith<EverlyticPushNotInitialisedException> {
@@ -90,7 +90,7 @@ class MokkIoEverlyticPushTest {
 
     @Test
     fun testResubscribe_EverlyticPushNotInitialised_ReturnsError() {
-        val everlyticPush = spyk<EverlyticPush.Companion> {
+        val everlyticPush = spyk<EverlyticPush> {
             this.instance = null
         }
 
@@ -101,6 +101,7 @@ class MokkIoEverlyticPushTest {
 
     private fun mockApplicationInfo() = mockk<ApplicationInfo> {
         metaData = mockk {
+            every { getString(eq("com.everlytic.api.API_INSTALL_URL")) } returns "install_id"
             every { getString(eq("com.everlytic.api.API_USERNAME")) } returns "api_username"
             every { getString(eq("com.everlytic.api.API_KEY")) } returns "api_key"
             every { getString(eq("com.everlytic.api.PUSH_NOTIFICATIONS_PROJECT_ID")) } returns "push_project_id"
