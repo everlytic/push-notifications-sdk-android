@@ -4,10 +4,6 @@ import android.app.Application
 import android.content.pm.PackageManager
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushInvalidSDKConfigurationException
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushNotInitialisedException
-import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
-import toothpick.Scope
-import toothpick.Toothpick
-import toothpick.configuration.Configuration
 
 /**
  * Everlytic Push Notifications SDK

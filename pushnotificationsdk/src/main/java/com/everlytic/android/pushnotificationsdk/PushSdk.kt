@@ -1,10 +1,9 @@
 package com.everlytic.android.pushnotificationsdk
 
+import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
 import com.everlytic.android.pushnotificationsdk.models.ContactData
 import com.everlytic.android.pushnotificationsdk.models.SubscriptionEvent
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
-import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
-import com.google.firebase.iid.InstanceIdResult
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
