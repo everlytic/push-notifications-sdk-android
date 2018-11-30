@@ -5,14 +5,22 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushInvalidSDKConfigurationException
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushNotInitialisedException
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.spyk
-import io.mockk.verify
+import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
+import io.mockk.*
+import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertFailsWith
 
 class EverlyticPushTest {
+
+    @Before
+    fun setUp() {
+        mockkObject(FirebaseInstanceIdFacade)
+        val mockFirebaseFacade = mockk<FirebaseInstanceIdFacade>()
+
+        coEvery { mockFirebaseFacade.getInstanceId() } returns "test token"
+        every { FirebaseInstanceIdFacade.getDefaultInstance() } returns mockFirebaseFacade
+    }
 
     @Test
     fun testInit_WithInvalidManifestSettings_ReturnsError() {
@@ -49,7 +57,6 @@ class EverlyticPushTest {
             EverlyticPush.init(app)
             verify { app.packageManager }
         }
-
     }
 
     @Test

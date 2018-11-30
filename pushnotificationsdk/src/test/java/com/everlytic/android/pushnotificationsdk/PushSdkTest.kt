@@ -1,18 +1,27 @@
 package com.everlytic.android.pushnotificationsdk
 
-import android.os.Build
+import com.everlytic.android.pushnotificationsdk.facades.BuildFacade
+import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
 import com.everlytic.android.pushnotificationsdk.network.EverlyticApi
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
-import com.google.firebase.iid.FirebaseInstanceId
-import com.google.firebase.iid.InstanceIdResult
 import io.mockk.*
+import io.mockk.impl.annotations.MockK
+import org.junit.Before
 import org.junit.Test
 
 class PushSdkTest {
 
+    @Before
+    fun setUp() {
+        mockkObject(BuildFacade)
+
+        every { BuildFacade.getPlatformVersion() } returns "testing"
+        every { BuildFacade.getDeviceManufacturer() } returns "[test] manufacturer"
+        every { BuildFacade.getDeviceModel() } returns "[test] model"
+    }
+
     @Test
+    @MockK(relaxed = true)
     fun testSubscribe_WithValidEmail_ReturnsSuccess() {
 
         val apiInstall = "install"
@@ -24,34 +33,16 @@ class PushSdkTest {
         val mockEverlyticApi = mockk<EverlyticApi>()
         val mockHttp = mockk<EverlyticHttp>()
 
-        val mockFirebaseIdInstance = getMockFirebaseInstanceId()
+        val mockFirebaseIdFacade = mockk<FirebaseInstanceIdFacade>()
 
-        mockkStatic("android.os.Build")
-
-        every { Build.VERSION.RELEASE } returns "test"
+        coEvery { mockFirebaseIdFacade.getInstanceId() } returns "test_instance_id"
 
         every { mockHttp.buildEverlyticApi(apiInstall, apiUsername, apiKey) } returns mockEverlyticApi
-        val sdk = PushSdk(apiInstall, apiUsername, apiKey, projectId, mockHttp, mockFirebaseIdInstance)
+
+        val sdk = PushSdk(apiInstall, apiUsername, apiKey, projectId, mockHttp, mockFirebaseIdFacade)
 
         sdk.subscribeUser(userEmail)
 
         verify(exactly = 1) { mockEverlyticApi.subscribe(any()) }
     }
-
-    private fun getMockFirebaseInstanceId(): FirebaseInstanceId {
-        val mockFirebaseIdInstance = mockk<FirebaseInstanceId>()
-        val mockInstanceId = spyk<Task<InstanceIdResult>>()
-
-        every { mockFirebaseIdInstance.instanceId } returns mockInstanceId
-        every { mockInstanceId.addOnSuccessListener(any()) } returns mockInstanceId
-        val slot = slot<OnSuccessListener<InstanceIdResult>>()
-        every { mockInstanceId.addOnSuccessListener(capture(slot)) } answers {
-            val instanceId = mockk<InstanceIdResult>()
-            every { instanceId.token } returns "token"
-            slot.captured.onSuccess(instanceId)
-            mockInstanceId
-        }
-        return mockFirebaseIdInstance
-    }
-
 }

@@ -1,7 +1,7 @@
 package com.everlytic.android.pushnotificationsdk.models
 
-import android.os.Build
 import android.os.Bundle
+import com.everlytic.android.pushnotificationsdk.facades.BuildFacade
 import java.util.*
 
 data class ContactData(
@@ -11,13 +11,13 @@ data class ContactData(
 
 data class PlatformData(
     val type: String = "android",
-    val version: String = Build.VERSION.RELEASE
+    val version: String = BuildFacade.getPlatformVersion()
 )
 
 data class DeviceData(
     val id: String = UUID.randomUUID().toString(),
-    val manufacturer: String = Build.MANUFACTURER,
-    val model: String = Build.MODEL
+    val manufacturer: String = BuildFacade.getDeviceManufacturer(),
+    val model: String = BuildFacade.getDeviceModel()
 )
 
 data class SubscriptionEvent (

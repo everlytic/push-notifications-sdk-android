@@ -5,12 +5,14 @@ import android.content.pm.PackageManager
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushInvalidSDKConfigurationException
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushNotInitialisedException
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
+import toothpick.Scope
+import toothpick.Toothpick
+import toothpick.configuration.Configuration
 
 /**
  * Everlytic Push Notifications SDK
  * */
 object EverlyticPush {
-
     private const val TAG = "EverlyticPush"
     private const val META_API_USERNAME_PATH = "com.everlytic.api.API_USERNAME"
     private const val META_API_KEY_PATH = "com.everlytic.api.API_KEY"
