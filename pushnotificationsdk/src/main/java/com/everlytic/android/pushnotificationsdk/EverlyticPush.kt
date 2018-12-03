@@ -36,7 +36,7 @@ object EverlyticPush {
         val apiInstallUrl = appInfo.metaData.getString(META_API_INSTALL_URL)
         val apiUsername = appInfo.metaData.getString(META_API_USERNAME_PATH)
         val apiKey = appInfo.metaData.getString(META_API_KEY_PATH)
-        val pushProjectId = appInfo.metaData.getString(META_PUSH_PROJECT_ID)
+        val pushProjectId = appInfo.metaData.getInt(META_PUSH_PROJECT_ID, -1)
 
         if (apiInstallUrl.isNullOrBlank()) {
             throw EverlyticPushInvalidSDKConfigurationException(
@@ -65,7 +65,7 @@ object EverlyticPush {
             )
         }
 
-        if (pushProjectId.isNullOrBlank()) {
+        if (pushProjectId < 0) {
             throw EverlyticPushInvalidSDKConfigurationException(
                 """
                     Missing or empty <meta-data android:name="$META_PUSH_PROJECT_ID"></meta-data> value in your AndroidManifest.xml file.
@@ -74,7 +74,7 @@ object EverlyticPush {
             )
         }
 
-        instance = PushSdk(application.applicationContext, apiInstallUrl, apiUsername, apiKey, pushProjectId)
+        instance = PushSdk(application.applicationContext, apiInstallUrl, apiUsername, apiKey, "$pushProjectId")
     }
 
     /**
@@ -90,6 +90,7 @@ object EverlyticPush {
                     onComplete?.invoke(EvResult(true))
                 } catch (exception: Exception) {
                     onComplete?.invoke(EvResult(false, exception))
+                    exception.printStackTrace()
                 }
             }
         } ?: throw EverlyticPushNotInitialisedException(

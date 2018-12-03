@@ -9,6 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/pushnotificationsdk" />
+            <option value="$PROJECT_DIR$/sandboxapp" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

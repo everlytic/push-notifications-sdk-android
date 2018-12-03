@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "221269273040",
+    "firebase_url": "https://sdk-sandbox-app.firebaseio.com",
+    "project_id": "sdk-sandbox-app",
+    "storage_bucket": "sdk-sandbox-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:221269273040:android:9a88f5bd6095d190",
+        "android_client_info": {
+          "package_name": "com.everlytic.android.sandboxapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "221269273040-g5nceu6qmmkrhbnbtv81b9469mtg9l6o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlW1VAH9QL0uwMIQ2aBIuWuEV6W4qY9sI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,1 +1,1 @@
-include ':pushnotificationsdk'
+include ':pushnotificationsdk', ':sandboxapp'

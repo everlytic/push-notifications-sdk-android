@@ -1,8 +1,11 @@
 package com.everlytic.android.pushnotificationsdk.network
 
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.util.*
 
 internal class EverlyticHttp {
 
@@ -22,10 +25,14 @@ internal class EverlyticHttp {
             .addInterceptor(EverlyticApiExtraHeadersInterceptor())
             .build()
 
+        val moshi = Moshi.Builder()
+            .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
+            .build()
+
         return builder
             .client(okhttp)
-            .baseUrl("https://$installUrl")
-            .addConverterFactory(MoshiConverterFactory.create())
+            .baseUrl("https://$installUrl/api/3.0/")
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
     }
 }

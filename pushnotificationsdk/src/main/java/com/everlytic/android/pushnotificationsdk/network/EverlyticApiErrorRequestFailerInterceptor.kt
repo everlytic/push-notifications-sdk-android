@@ -1,5 +1,6 @@
 package com.everlytic.android.pushnotificationsdk.network
 
+import android.util.Log
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticApiException
 import com.everlytic.android.pushnotificationsdk.models.Status
 import com.squareup.moshi.Moshi
@@ -12,6 +13,7 @@ class EverlyticApiErrorRequestFailerInterceptor : Interceptor {
 
         if (response.isSuccessful) {
             response.body()?.let {
+                Log.d("ApiRequestFailer", it.string())
                 Moshi.Builder().build().adapter(Status::class.java).fromJson(it.string())?.let { status ->
                     if (status.status != null && status.status == "error"){
                         throw EverlyticApiException("An API Exception occurred")
