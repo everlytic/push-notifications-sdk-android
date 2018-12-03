@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.pm.PackageManager
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushInvalidSDKConfigurationException
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushNotInitialisedException
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 /**
  * Everlytic Push Notifications SDK
@@ -22,7 +24,8 @@ object EverlyticPush {
      * Initialises the Everlytic Push Notification SDK
      * */
     @JvmStatic
-    public fun init(application: Application) {
+    @Throws(EverlyticPushInvalidSDKConfigurationException::class)
+    fun init(application: Application) {
 
         this.application = application
 
@@ -71,35 +74,44 @@ object EverlyticPush {
             )
         }
 
-        instance = PushSdk(apiInstallUrl, apiUsername, apiKey, pushProjectId)
+        instance = PushSdk(application.applicationContext, apiInstallUrl, apiUsername, apiKey, pushProjectId)
     }
 
     /**
      * Subscribes a contact email to Everlytic Push Notifications
      * */
     @JvmStatic
-    public fun subscribe(email: String) {
-        if (instance == null) {
-            throw EverlyticPushNotInitialisedException(
-                """
-                    EverlyticPush has not been initialised.
-                    Please call EverlyticPush.init(Application) before calling EverlyticPush.subscribe().
-                """.trimIndent()
-            )
-        }
-
-
+    @Throws(EverlyticPushNotInitialisedException::class)
+    fun subscribe(email: String, onComplete: ((EvResult) -> Unit)? = null) {
+        instance?.let { sdk ->
+            GlobalScope.launch {
+                try {
+                    sdk.subscribeUser(email)
+                    onComplete?.invoke(EvResult(true))
+                } catch (exception: Exception) {
+                    onComplete?.invoke(EvResult(false, exception))
+                }
+            }
+        } ?: throw EverlyticPushNotInitialisedException(
+            """
+                EverlyticPush has not been initialised.
+                Please call EverlyticPush.init(Application) before calling EverlyticPush.subscribe().
+            """.trimIndent()
+        )
     }
 
     @JvmStatic
-    public fun resubscribe(email: String) {
-        if (instance == null) {
-            throw EverlyticPushNotInitialisedException(
-                """
-                    EverlyticPush has not been initialised.
-                    Please call EverlyticPush.init(Application) before calling EverlyticPush.resubscribe().
-                """.trimIndent()
-            )
-        }
+    @Throws(EverlyticPushNotInitialisedException::class)
+    fun resubscribe(email: String, onComplete: (() -> Unit)? = null) {
+        instance?.let { sdk ->
+            GlobalScope.launch {
+                sdk.resubscribeUser(email)
+            }
+        } ?: throw EverlyticPushNotInitialisedException(
+            """
+                EverlyticPush has not been initialised.
+                Please call EverlyticPush.init(Application) before calling EverlyticPush.subscribe().
+            """.trimIndent()
+        )
     }
 }

@@ -1,6 +1,5 @@
 package com.everlytic.android.pushnotificationsdk.network
 
-import com.everlytic.android.pushnotificationsdk.BuildConfig
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -20,6 +19,7 @@ internal class EverlyticHttp {
             .authenticator(EverlyticApiAuthenticator(username, key))
             .addInterceptor(EverlyticApiAuthenticationHeaderInterceptor(username, key))
             .addInterceptor(EverlyticApiErrorRequestFailerInterceptor())
+            .addInterceptor(EverlyticApiExtraHeadersInterceptor())
             .build()
 
         return builder
