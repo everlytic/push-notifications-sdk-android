@@ -22,10 +22,10 @@ jobs:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "pushnotificationsdk/build.gradle" }}
       - run:
           name: Run Tests
-          command: ./gradlew lint test
+          command: ./gradlew :pushnotificationsdk:lint :pushnotificationsdk:test
       - run:
           name: Run Build
-          command: ./gradlew build
+          command: ./gradlew :pushnotificationsdk:build
       - store_artifacts:
           path: pushnotificationsdk/build/reports
           destination: reports
