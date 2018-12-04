@@ -1,5 +1,6 @@
 package com.everlytic.android.pushnotificationsdk
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.pm.PackageManager
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushInvalidSDKConfigurationException
@@ -17,6 +18,7 @@ object EverlyticPush {
     private const val META_PUSH_PROJECT_ID = "com.everlytic.api.PUSH_NOTIFICATIONS_PROJECT_ID"
     private const val META_API_INSTALL_URL = "com.everlytic.api.API_INSTALL_URL"
 
+    @SuppressLint("StaticFieldLeak")
     internal var instance: PushSdk? = null
     internal var application: Application? = null
 
