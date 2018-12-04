@@ -34,7 +34,7 @@ class EverlyticPushTest {
                         every { getString(eq("com.everlytic.api.API_INSTALL_URL")) } returns null
                         every { getString(eq("com.everlytic.api.API_USERNAME")) } returns null
                         every { getString(eq("com.everlytic.api.API_KEY")) } returns null
-                        every { getString(eq("com.everlytic.api.PUSH_NOTIFICATIONS_PROJECT_ID")) } returns null
+                        every { getInt(eq("com.everlytic.api.PUSH_NOTIFICATIONS_PROJECT_ID"), any()) } returns -1
                     }
                 }
 
@@ -121,7 +121,7 @@ class EverlyticPushTest {
             every { getString(eq("com.everlytic.api.API_INSTALL_URL")) } returns "install_id"
             every { getString(eq("com.everlytic.api.API_USERNAME")) } returns "api_username"
             every { getString(eq("com.everlytic.api.API_KEY")) } returns "api_key"
-            every { getString(eq("com.everlytic.api.PUSH_NOTIFICATIONS_PROJECT_ID")) } returns "push_project_id"
+            every { getInt(eq("com.everlytic.api.PUSH_NOTIFICATIONS_PROJECT_ID"), any()) } returns 0
         }
     }
 
