@@ -4,6 +4,7 @@ import android.content.Context
 import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
 import com.everlytic.android.pushnotificationsdk.models.ApiSubscription
 import com.everlytic.android.pushnotificationsdk.models.ContactData
+import com.everlytic.android.pushnotificationsdk.models.DeviceData
 import com.everlytic.android.pushnotificationsdk.models.SubscriptionEvent
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
@@ -39,11 +40,12 @@ internal class PushSdk constructor(
     suspend fun subscribeUser(email: String) {
         return suspendCoroutine { continuation ->
             runBlocking {
-                val deviceId = sdkRepository.getDeviceId()!!
+                val deviceType = if (context.resources.getBoolean(R.bool.isTablet)) "tablet" else "handset"
+                val device = DeviceData(sdkRepository.getDeviceId()!!, type = deviceType)
                 val firebaseToken = firebaseInstanceId.getInstanceId()
 
                 val contactData = ContactData(email, firebaseToken)
-                val subscription = SubscriptionEvent(deviceId, pushProjectId, contactData)
+                val subscription = SubscriptionEvent(pushProjectId, contactData, device = device)
 
                 try {
                     val response = api.subscribe(subscription).execute()

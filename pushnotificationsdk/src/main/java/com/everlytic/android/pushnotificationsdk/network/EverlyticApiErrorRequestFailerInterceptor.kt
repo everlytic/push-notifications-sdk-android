@@ -12,12 +12,11 @@ class EverlyticApiErrorRequestFailerInterceptor : Interceptor {
         val response = chain.proceed(chain.request())
 
         if (response.isSuccessful) {
-            response.body()?.let {
-                Log.d("ApiRequestFailer", it.string())
-                Moshi.Builder().build().adapter(Status::class.java).fromJson(it.string())?.let { status ->
-                    if (status.status != null && status.status == "error"){
-                        throw EverlyticApiException("An API Exception occurred")
-                    }
+            val bodyString = response.peekBody(10240).string();
+            Log.d("ApiRequestFailer", bodyString)
+            Moshi.Builder().build().adapter(Status::class.java).fromJson(bodyString)?.let { status ->
+                if (status.status != null && status.status == "error") {
+                    throw EverlyticApiException("An API Exception occurred")
                 }
             }
         }
