@@ -1,5 +1,7 @@
 package com.everlytic.android.pushnotificationsdk
 
+import android.content.Context
+import android.content.res.Resources
 import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
 import com.everlytic.android.pushnotificationsdk.network.EverlyticApi
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
@@ -46,9 +48,16 @@ class PushSdkTest {
             coEvery { getInstanceId() } returns "test_instance_id"
         }
 
+        val mockContext = mockk<Context>().apply {
+            val mockResources = mockk<Resources>().apply {
+                every { getBoolean(R.bool.isTablet) } returns false
+            }
+            every { resources } returns mockResources
+        }
+
         val sdk = spyk(
             PushSdk(
-                mockk(),
+                mockContext,
                 apiInstall,
                 apiUsername,
                 apiKey,
