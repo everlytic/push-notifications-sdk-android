@@ -41,46 +41,26 @@ object EverlyticPush {
         val pushProjectId = appInfo.metaData.getInt(META_PUSH_PROJECT_ID, -1)
 
         if (apiInstallUrl.isNullOrBlank()) {
-            throw EverlyticPushInvalidSDKConfigurationException(
-                """
-                    Missing or empty <meta-data android:name="$META_API_INSTALL_URL"></meta-data> value in your AndroidManifest.xml file.
-                    Please follow the SDK setup to configure this correctly
-                """.trimIndent()
-            )
+            throw newInvalidSdkConfigurationException(META_API_INSTALL_URL)
         }
 
         if (apiUsername.isNullOrBlank()) {
-            throw EverlyticPushInvalidSDKConfigurationException(
-                """
-                    Missing or empty <meta-data android:name="$META_API_USERNAME_PATH"></meta-data> value in your AndroidManifest.xml file.
-                    Please follow the SDK setup to configure this correctly
-                """.trimIndent()
-            )
+            throw newInvalidSdkConfigurationException(META_API_USERNAME_PATH)
         }
 
         if (apiKey.isNullOrBlank()) {
-            throw EverlyticPushInvalidSDKConfigurationException(
-                """
-                    Missing or empty <meta-data android:name="$META_API_KEY_PATH"></meta-data> value in your AndroidManifest.xml file.
-                    Please follow the SDK setup to configure this correctly
-                """.trimIndent()
-            )
+            throw newInvalidSdkConfigurationException(META_API_KEY_PATH)
         }
 
         if (pushProjectId < 0) {
-            throw EverlyticPushInvalidSDKConfigurationException(
-                """
-                    Missing or empty <meta-data android:name="$META_PUSH_PROJECT_ID"></meta-data> value in your AndroidManifest.xml file.
-                    Please follow the SDK setup to configure this correctly
-                """.trimIndent()
-            )
+            throw newInvalidSdkConfigurationException(META_PUSH_PROJECT_ID)
         }
 
         instance = PushSdk(application.applicationContext, apiInstallUrl, apiUsername, apiKey, "$pushProjectId")
     }
 
     /**
-     * Subscribes a contact email to Everlytic Push Notifications
+     * Subscribes a contact email to Everlytic Push Notifications for the current device
      * */
     @JvmStatic
     @Throws(EverlyticPushNotInitialisedException::class)
@@ -88,33 +68,50 @@ object EverlyticPush {
         instance?.let { sdk ->
             GlobalScope.launch {
                 try {
-                    sdk.subscribeUser(email)
+                    sdk.subscribeContact(email)
                     onComplete?.invoke(EvResult(true))
                 } catch (exception: Exception) {
                     onComplete?.invoke(EvResult(false, exception))
                     exception.printStackTrace()
                 }
             }
-        } ?: throw EverlyticPushNotInitialisedException(
-            """
-                EverlyticPush has not been initialised.
-                Please call EverlyticPush.init(Application) before calling EverlyticPush.subscribe().
-            """.trimIndent()
-        )
+        } ?: throw newNotInitialisedException()
     }
 
+    /**
+     * Unsubscribes the current contact device from Everlytic Push Notifications
+     * */
     @JvmStatic
     @Throws(EverlyticPushNotInitialisedException::class)
-    fun resubscribe(email: String, onComplete: (() -> Unit)? = null) {
+    fun unsubscribe(onComplete: ((EvResult) -> Unit)? = null) {
         instance?.let { sdk ->
+
             GlobalScope.launch {
-                sdk.resubscribeUser(email)
+                try {
+                    sdk.unsubscribeCurrentContact()
+                    onComplete?.invoke(EvResult(true))
+                } catch (exception: Exception) {
+                    onComplete?.invoke(EvResult(false, exception))
+                    exception.printStackTrace()
+                }
             }
-        } ?: throw EverlyticPushNotInitialisedException(
+
+        } ?: throw newNotInitialisedException()
+    }
+
+    private fun newNotInitialisedException() =
+        EverlyticPushNotInitialisedException(
             """
                 EverlyticPush has not been initialised.
                 Please call EverlyticPush.init(Application) before calling EverlyticPush.subscribe().
             """.trimIndent()
         )
-    }
+
+    private fun newInvalidSdkConfigurationException(metadataName: String) =
+        EverlyticPushInvalidSDKConfigurationException(
+            """
+                Missing or empty <meta-data android:name="$metadataName"></meta-data> value in your AndroidManifest.xml file.
+                Please follow the SDK setup to configure this correctly
+            """.trimIndent()
+        )
 }

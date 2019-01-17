@@ -19,7 +19,7 @@ internal class SdkRepository(val context: Context) {
         return getPreferences().getString(Keys.DeviceId.key, null)
     }
 
-    fun setDeviceId(id: String = UUID.randomUUID().toString()) : String {
+    fun setDeviceId(id: String) : String {
         edit {
             putString(Keys.DeviceId.key, id)
         }
@@ -27,10 +27,23 @@ internal class SdkRepository(val context: Context) {
         return id
     }
 
+    fun getSubscriptionId() : Int? {
+        return getPreferences()
+            .getInt(Keys.SubscriptionId.key, -1)
+            .let { if (it > 0) it else null }
+    }
+
     fun setContactSubscription(apiSubscription: ApiSubscription) {
         edit {
             putInt(Keys.SubscriptionId.key, apiSubscription.pns_id)
             putInt(Keys.ContactId.key, apiSubscription.pns_contact_id)
+        }
+    }
+
+    fun removeContactSubscription() {
+        edit {
+            remove(Keys.SubscriptionId.key)
+            remove(Keys.ContactId.key)
         }
     }
 

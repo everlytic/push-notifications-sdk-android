@@ -1,19 +1,19 @@
 package com.everlytic.android.pushnotificationsdk
 
 import android.content.Context
+import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticNotSubscribedException
 import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
-import com.everlytic.android.pushnotificationsdk.models.ApiSubscription
-import com.everlytic.android.pushnotificationsdk.models.ContactData
-import com.everlytic.android.pushnotificationsdk.models.DeviceData
-import com.everlytic.android.pushnotificationsdk.models.SubscriptionEvent
+import com.everlytic.android.pushnotificationsdk.models.*
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
+import retrofit2.Call
 import retrofit2.HttpException
 import retrofit2.Response
+import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -33,11 +33,11 @@ internal class PushSdk constructor(
 
     init {
         if (sdkRepository.getDeviceId().isNullOrEmpty()) {
-            sdkRepository.setDeviceId()
+            sdkRepository.setDeviceId(UUID.randomUUID().toString())
         }
     }
 
-    suspend fun subscribeUser(email: String) {
+    suspend fun subscribeContact(email: String) {
         return suspendCoroutine { continuation ->
             runBlocking {
                 val deviceType = if (context.resources.getBoolean(R.bool.isTablet)) "tablet" else "handset"
@@ -61,7 +61,33 @@ internal class PushSdk constructor(
     }
 
     suspend fun resubscribeUser(email: String) {
-        return subscribeUser(email)
+        return subscribeContact(email)
+    }
+
+    @Suppress("NAME_SHADOWING")
+    suspend fun unsubscribeCurrentContact() {
+        return suspendCoroutine { continuation ->
+            runBlocking {
+                val deviceId = sdkRepository.getDeviceId()
+                val subscriptionId = sdkRepository.getSubscriptionId()
+
+                deviceId?.let { deviceId ->
+                    subscriptionId?.let { subscriptionId ->
+                        val unsubscribeEvent = UnsubscribeEvent(subscriptionId, deviceId)
+
+                        try {
+                            api.unsubscribe(unsubscribeEvent).execute()
+                            sdkRepository.removeContactSubscription()
+                            continuation.resume(Unit)
+                        } catch (exception: Exception) {
+                            continuation.resumeWithException(exception)
+                        }
+                    } ?: continuation.resumeWithException(
+                        EverlyticNotSubscribedException("No subscription to unsubscribe.")
+                    )
+                } ?: continuation.resumeWithException(Exception("No device ID set."))
+            }
+        }
     }
 
     internal fun saveContactSubscriptionFromResponse(response: Response<ResponseBody>) {

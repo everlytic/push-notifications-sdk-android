@@ -18,7 +18,7 @@ class EverlyticPushTest {
     @Before
     fun setUp() {
         Mock.BuildFacade()
-        Mock.FirebaseInstanceIdFacade();
+        Mock.FirebaseInstanceIdFacade()
     }
 
     @Test
@@ -77,7 +77,7 @@ class EverlyticPushTest {
 
         EverlyticPush.subscribe("test@test.com")
 
-        coVerify(exactly = 1) { EverlyticPush.instance!!.subscribeUser(any()) }
+        coVerify(exactly = 1) { EverlyticPush.instance!!.subscribeContact(any()) }
     }
 
     @Test
@@ -88,27 +88,29 @@ class EverlyticPushTest {
             assertTrue { it.isSuccessful }
         }
 
-        coVerify(exactly = 1) { EverlyticPush.instance!!.subscribeUser(any()) }
+        coVerify(exactly = 1) { EverlyticPush.instance!!.subscribeContact(any()) }
     }
 
     @Test
-    fun testResubscribe_WithContactEmail_IsSuccessful() {
-        initialiseEverlyticPush()
-
-        EverlyticPush.resubscribe("test@test.com")
-
-        coVerify { EverlyticPush.instance!!.resubscribeUser(any()) }
-    }
-
-    @Test
-    fun testResubscribe_EverlyticPushNotInitialised_ReturnsError() {
+    fun testUnsubscribe_EverlyticPushNotInitialised_ReturnsError() {
         val everlyticPush = spyk<EverlyticPush> {
             this.instance = null
         }
 
         assertFailsWith<EverlyticPushNotInitialisedException> {
-            everlyticPush.resubscribe("test@test.com")
+            everlyticPush.unsubscribe()
         }
+    }
+
+    @Test
+    fun testUnsubscribe_WithOnCompleteCallback_IsSuccessful() {
+        initialiseEverlyticPush()
+
+        EverlyticPush.unsubscribe {
+            assertTrue { it.isSuccessful }
+        }
+
+        coVerify { EverlyticPush.instance!!.unsubscribeCurrentContact() }
     }
 
     private fun initialiseEverlyticPush() {
@@ -148,8 +150,9 @@ class EverlyticPushTest {
     private fun mockPushSdk(): PushSdk {
         mockkConstructor(PushSdk::class)
         val mockPushSdk = mockk<PushSdk>()
-        coEvery { mockPushSdk.subscribeUser(any()) } just Runs
+        coEvery { mockPushSdk.subscribeContact(any()) } just Runs
         coEvery { mockPushSdk.resubscribeUser(any()) } just Runs
+        coEvery { mockPushSdk.unsubscribeCurrentContact() } just Runs
         return mockPushSdk
     }
 
