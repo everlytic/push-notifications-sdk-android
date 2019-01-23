@@ -1,6 +1,7 @@
 package com.everlytic.android.pushnotificationsdk
 
 import android.content.Context
+import com.everlytic.android.pushnotificationsdk.database.Database
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticNotSubscribedException
 import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
 import com.everlytic.android.pushnotificationsdk.models.*
@@ -10,7 +11,6 @@ import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
-import retrofit2.Call
 import retrofit2.HttpException
 import retrofit2.Response
 import java.util.*

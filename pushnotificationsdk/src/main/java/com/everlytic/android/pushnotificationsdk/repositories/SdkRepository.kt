@@ -3,9 +3,8 @@ package com.everlytic.android.pushnotificationsdk.repositories
 import android.content.Context
 import android.content.SharedPreferences
 import com.everlytic.android.pushnotificationsdk.models.ApiSubscription
-import java.util.*
 
-internal class SdkRepository(val context: Context) {
+internal class SdkRepository(private val context: Context) {
 
     private fun getPreferences() : SharedPreferences {
         return context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)

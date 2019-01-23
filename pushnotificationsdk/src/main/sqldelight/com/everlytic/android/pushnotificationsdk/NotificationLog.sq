@@ -1,0 +1,44 @@
+import android.graphics.Color;
+import java.lang.Boolean;
+import java.util.Date;
+
+CREATE TABLE NotificationLog (
+    _id INTEGER PRIMARY KEY AUTOINCREMENT,
+    message_id INTEGER as Long,
+    android_notificaiton_id INTEGER,
+    subscription_id INTEGER as Long,
+    contact_id INTEGER as Long,
+    title TEXT,
+    body TEXT,
+    metadata TEXT,
+    actions TEXT,
+    color INTEGER,
+    group_id INTEGER,
+    raw_notification TEXT,
+    received_at TEXT as Date,
+    read_at TEXT as Date DEFAULT NULL,
+    dismissed_at TEXT as Date DEFAULT NULL
+);
+
+-- QUERIES
+
+getNotificationsAsPublicInbox:
+SELECT message_id, title, body, metadata, received_at, read_at, dismissed_at FROM NotificationLog;
+
+getAllUnread:
+SELECT * FROM NotificationLog WHERE read_at = NULL;
+
+getAllForRestore:
+SELECT * FROM NotificationLog WHERE read_at = NULL AND dismissed_at = NULL;
+
+getNotificationById:
+SELECT * FROM NotificationLog WHERE _id = :id;
+
+getNotificationByMessageId:
+SELECT * FROM NotificationLog WHERE message_id = :message_id;
+
+getWhereTitleLike:
+SELECT * FROM NotificationLog WHERE title LIKE ('%' || :title || '%');
+
+getWhereBodyLike:
+SELECT * FROM NotificationLog WHERE body LIKE ('%' || :title || '%');
