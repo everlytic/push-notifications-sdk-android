@@ -1,10 +1,6 @@
 package com.everlytic.android.pushnotificationsdk.models
 
-import android.content.res.Resources
-import android.os.Bundle
-import com.everlytic.android.pushnotificationsdk.EverlyticPush
 import com.everlytic.android.pushnotificationsdk.facades.BuildFacade
-import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import java.util.*
 

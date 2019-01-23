@@ -1,6 +1,6 @@
 package com.everlytic.android.pushnotificationsdk.models
 
-data class ApiSubscription(
+internal data class ApiSubscription(
     val pns_id: Int,
     val pns_configuration_id: Int,
     val pns_customer_id: Int,

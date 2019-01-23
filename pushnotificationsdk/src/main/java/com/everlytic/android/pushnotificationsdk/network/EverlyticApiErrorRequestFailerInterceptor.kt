@@ -7,7 +7,7 @@ import com.squareup.moshi.Moshi
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class EverlyticApiErrorRequestFailerInterceptor : Interceptor {
+internal class EverlyticApiErrorRequestFailerInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val response = chain.proceed(chain.request())
 

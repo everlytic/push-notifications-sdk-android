@@ -1,5 +1,5 @@
 package com.everlytic.android.pushnotificationsdk.models
 
-class Status {
+internal class Status {
     val status: String? = null
 }

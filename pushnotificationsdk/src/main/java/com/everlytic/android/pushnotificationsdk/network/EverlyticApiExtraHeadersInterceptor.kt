@@ -5,7 +5,7 @@ import com.everlytic.android.pushnotificationsdk.facades.BuildFacade
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class EverlyticApiExtraHeadersInterceptor : Interceptor {
+internal class EverlyticApiExtraHeadersInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         return chain.request()
             .newBuilder()

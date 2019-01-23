@@ -4,7 +4,7 @@ import com.google.firebase.iid.FirebaseInstanceId
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class FirebaseInstanceIdFacade(private val firebaseInstanceId: FirebaseInstanceId) {
+internal class FirebaseInstanceIdFacade(private val firebaseInstanceId: FirebaseInstanceId) {
 
     @Throws(Exception::class)
     suspend fun getInstanceId(): String {

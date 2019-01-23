@@ -3,7 +3,7 @@ package com.everlytic.android.pushnotificationsdk.facades
 import android.os.Build
 import com.everlytic.android.pushnotificationsdk.BuildConfig
 
-object BuildFacade {
+internal object BuildFacade {
 
     fun getPlatformVersion(): String = Build.VERSION.RELEASE
     fun getDeviceManufacturer(): String = Build.MANUFACTURER
