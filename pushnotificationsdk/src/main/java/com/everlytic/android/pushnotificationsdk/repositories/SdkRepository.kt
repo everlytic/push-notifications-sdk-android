@@ -2,12 +2,13 @@ package com.everlytic.android.pushnotificationsdk.repositories
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.everlytic.android.pushnotificationsdk.database.SharedPreferenceStore
 import com.everlytic.android.pushnotificationsdk.models.ApiSubscription
 
 internal class SdkRepository(private val context: Context) {
 
     private fun getPreferences() : SharedPreferences {
-        return context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
+        return SharedPreferenceStore.getInstance(context)
     }
 
     private fun edit(block: SharedPreferences.Editor.() -> Unit) {
@@ -44,10 +45,6 @@ internal class SdkRepository(private val context: Context) {
             remove(Keys.SubscriptionId.key)
             remove(Keys.ContactId.key)
         }
-    }
-
-    companion object {
-        const val PREFERENCES_NAME = "ev_push_notifications_kv_store"
     }
 
     enum class Keys(val key: String) {

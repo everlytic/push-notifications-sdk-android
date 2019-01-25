@@ -1,10 +1,12 @@
 package com.everlytic.android.pushnotificationsdk.network
 
+import com.everlytic.android.pushnotificationsdk.models.NotificationEvent
 import com.everlytic.android.pushnotificationsdk.models.SubscriptionEvent
 import com.everlytic.android.pushnotificationsdk.models.UnsubscribeEvent
 import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.POST
 
 internal interface EverlyticApi {
     @POST("push-notifications/subscriptions/subscribe")
@@ -12,4 +14,7 @@ internal interface EverlyticApi {
 
     @POST("push-notifications/subscriptions/unsubscribe")
     fun unsubscribe(@Body unsubscribeEvent: UnsubscribeEvent): Call<ResponseBody>
+
+    @POST("push-notifications/events/clicks")
+    fun recordClickEvent(@Body event: NotificationEvent): Call<ResponseBody>
 }

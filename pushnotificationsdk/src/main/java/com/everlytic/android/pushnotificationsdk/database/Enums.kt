@@ -1,12 +1,18 @@
 package com.everlytic.android.pushnotificationsdk.database
 
-abstract class Types {
-    enum class NotificationEvent {
+object Enums {
+    enum class NotificationEventType {
         DELIVERY,
         CLICK,
         DISMISS,
         BOUNCE,
         SOFT_BOUNCE,
         UNKNOWN
+    }
+
+    enum class NotificationEventState {
+        PENDING,
+        RESERVED,
+        UPLOADED,
     }
 }

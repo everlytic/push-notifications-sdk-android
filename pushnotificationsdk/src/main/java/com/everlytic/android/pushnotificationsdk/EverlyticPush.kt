@@ -2,7 +2,10 @@ package com.everlytic.android.pushnotificationsdk
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.content.pm.PackageManager
+import com.everlytic.android.pushnotificationsdk.SdkSettings.META_API_INSTALL_URL
+import com.everlytic.android.pushnotificationsdk.SdkSettings.META_API_KEY_PATH
+import com.everlytic.android.pushnotificationsdk.SdkSettings.META_API_USERNAME_PATH
+import com.everlytic.android.pushnotificationsdk.SdkSettings.META_PUSH_PROJECT_ID
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushInvalidSDKConfigurationException
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushNotInitialisedException
 import kotlinx.coroutines.GlobalScope
@@ -13,17 +16,13 @@ import kotlinx.coroutines.launch
  * */
 object EverlyticPush {
     private const val TAG = "EverlyticPush"
-    private const val META_API_USERNAME_PATH = "com.everlytic.api.API_USERNAME"
-    private const val META_API_KEY_PATH = "com.everlytic.api.API_KEY"
-    private const val META_PUSH_PROJECT_ID = "com.everlytic.api.PUSH_NOTIFICATIONS_PROJECT_ID"
-    private const val META_API_INSTALL_URL = "com.everlytic.api.API_INSTALL_URL"
 
     @SuppressLint("StaticFieldLeak")
     internal var instance: PushSdk? = null
     internal var application: Application? = null
 
     /**
-     * Initialises the Everlytic Push Notification SDK
+     * Initialises the Everlytic Push EvNotification SDK
      * */
     @JvmStatic
     @Throws(EverlyticPushInvalidSDKConfigurationException::class)
@@ -31,14 +30,12 @@ object EverlyticPush {
 
         this.application = application
 
-        val appInfo = application
-            .packageManager
-            .getApplicationInfo(application.packageName, PackageManager.GET_META_DATA)
+        val settingsBag = SdkSettings.getSettings(application)
 
-        val apiInstallUrl = appInfo.metaData.getString(META_API_INSTALL_URL)
-        val apiUsername = appInfo.metaData.getString(META_API_USERNAME_PATH)
-        val apiKey = appInfo.metaData.getString(META_API_KEY_PATH)
-        val pushProjectId = appInfo.metaData.getInt(META_PUSH_PROJECT_ID, -1)
+        val apiInstallUrl = settingsBag.apiInstall
+        val apiUsername = settingsBag.apiUsername
+        val apiKey = settingsBag.apiKey
+        val pushProjectId = settingsBag.projectId
 
         if (apiInstallUrl.isNullOrBlank()) {
             throw newInvalidSdkConfigurationException(META_API_INSTALL_URL)

@@ -21,6 +21,10 @@ object Database {
             }
     }
 
+    fun releaseInstance() {
+        instance = null
+    }
+
     private fun createDbWrapper(driver: SqlDriver): EverlyticDb {
         return EverlyticDb(
             driver = driver,

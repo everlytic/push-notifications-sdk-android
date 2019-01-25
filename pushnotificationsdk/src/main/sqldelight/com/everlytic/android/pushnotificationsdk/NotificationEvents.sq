@@ -1,0 +1,49 @@
+import com.everlytic.android.pushnotificationsdk.database.Enums.NotificationEventType;
+import com.everlytic.android.pushnotificationsdk.database.Enums.NotificationEventState;
+import java.util.Date;
+
+CREATE TABLE NotificationEventsLog (
+    _id INTEGER PRIMARY KEY AUTOINCREMENT,
+    android_notification_id INTEGER as Long NOT NULL,
+    event_type TEXT as NotificationEventType NOT NULL,
+    subscription_id INTEGER as Long NOT NULL,
+    message_id INTEGER as Long NOT NULL,
+    device_id TEXT NOT NULL,
+    metadata TEXT NOT NULL DEFAULT '{}',
+    is_uploaded INTEGER AS Boolean DEFAULT 0,
+    datetime TEXT AS Date NOT NULL
+);
+
+CREATE INDEX ev_notification_event_log_event_type ON NotificationEventsLog(event_type);
+CREATE INDEX ev_notification_event_log_is_uploaded_event_type ON NotificationEventsLog(is_uploaded, event_type);
+
+-- QUERIES
+
+insertEvent:
+INSERT INTO NotificationEventsLog (
+    event_type,
+    android_notification_id,
+    subscription_id,
+    message_id,
+    device_id,
+    datetime,
+    is_uploaded
+) VALUES (:eventType, : androidNotificationId, :subscriptionId, :messageId, :deviceId, :datetime, :isUploaded);
+
+updateEventIsUploadedById:
+UPDATE NotificationEventsLog SET is_uploaded = :isUploaded WHERE _id = :_id;
+
+getEventById:
+SELECT * FROM NotificationEventsLog WHERE _id = :id;
+
+getEventsByType:
+SELECT * FROM NotificationEventsLog WHERE event_type = :eventType;
+
+getEventsForNotificationByType:
+SELECT * FROM NotificationEventsLog WHERE android_notification_id = :androidNotificationId AND event_type = :eventType;
+
+getEventsPendingUpload:
+SELECT * FROM NotificationEventsLog WHERE is_uploaded = 0;
+
+getEventsPendingUploadByType:
+SELECT * FROM NotificationEventsLog WHERE is_uploaded = 0 AND event_type = :eventType;
