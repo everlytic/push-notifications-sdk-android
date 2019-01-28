@@ -6,8 +6,7 @@ import androidx.work.WorkerParameters
 import com.everlytic.android.pushnotificationsdk.NotificationEventsLog
 import com.everlytic.android.pushnotificationsdk.SdkSettings
 import com.everlytic.android.pushnotificationsdk.database.Database
-import com.everlytic.android.pushnotificationsdk.database.Enums
-import com.everlytic.android.pushnotificationsdk.database.Enums.NotificationEventType
+import com.everlytic.android.pushnotificationsdk.database.NotificationEventType
 import com.everlytic.android.pushnotificationsdk.models.NotificationEvent
 import com.everlytic.android.pushnotificationsdk.network.EverlyticApi
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
@@ -67,7 +66,7 @@ class UploadMessageEventsWorker(val context: Context, params: WorkerParameters) 
     }
 
     private fun createUploadCallForEvent(
-        eventType: Enums.NotificationEventType,
+        eventType: NotificationEventType,
         event: NotificationEvent
     ): Call<*> {
         return when (eventType) {

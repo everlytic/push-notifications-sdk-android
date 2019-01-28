@@ -19,6 +19,7 @@ class EverlyticPushTest {
     fun setUp() {
         Mock.BuildFacade()
         Mock.FirebaseInstanceIdFacade()
+        Mock.SdkSettings()
     }
 
     @Test
@@ -26,28 +27,18 @@ class EverlyticPushTest {
 
         val mockApp = mockk<Application> {
 
-            val mPackageManager = mockk<PackageManager> {
+            val mockApplicationInfo = mockk<ApplicationInfo>()
 
-                val applicationInfo = mockk<ApplicationInfo> {
+            every { SdkSettings.getSettings(ofType()) } returns SdkSettings.SdkSettingsBag(null, null, null, -1)
 
-                    metaData = mockk {
-                        every { getString(eq("com.everlytic.api.API_INSTALL_URL")) } returns null
-                        every { getString(eq("com.everlytic.api.API_USERNAME")) } returns null
-                        every { getString(eq("com.everlytic.api.API_KEY")) } returns null
-                        every { getInt(eq("com.everlytic.api.PUSH_NOTIFICATIONS_PROJECT_ID"), any()) } returns -1
-                    }
-                }
-
-                every { getApplicationInfo(any(), any()) } returns applicationInfo
-            }
-
-            every { packageManager } returns mPackageManager
-            every { packageName } returns "test_package"
+            every { applicationInfo } returns mockApplicationInfo
         }
 
         assertFailsWith<EverlyticPushInvalidSDKConfigurationException> {
             EverlyticPush.init(mockApp)
         }
+
+        Mock.SdkSettings()
     }
 
     @Test
@@ -55,7 +46,7 @@ class EverlyticPushTest {
         mockApplication().let { app ->
             mockkConstructor(PushSdk::class)
             EverlyticPush.init(app)
-            verify { app.packageManager }
+            verify { SdkSettings.getSettings(ofType()) }
         }
     }
 
@@ -135,6 +126,7 @@ class EverlyticPushTest {
 
     private fun mockApplication() = mockk<Application> {
         val pm = mockPackageManager()
+        val appInfo = mockApplicationInfo()
         val ctx = mockk<Context>().apply {
             val sharedPreferences = mockk<SharedPreferences>().apply {
                 every { getString(any(), any()) } answers { "[val for] ${args.first()}" }
@@ -142,6 +134,7 @@ class EverlyticPushTest {
             every { getSharedPreferences(any(), any()) } returns sharedPreferences
         }
 
+        every { applicationInfo } returns appInfo
         every { packageManager } returns pm
         every { packageName } returns "packageName"
         every { applicationContext } returns ctx

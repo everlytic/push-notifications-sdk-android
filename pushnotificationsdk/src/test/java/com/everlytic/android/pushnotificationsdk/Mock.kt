@@ -25,4 +25,14 @@ object Mock {
         every { FirebaseInstanceIdFacade.getDefaultInstance() } returns mockFirebaseFacade
     }
 
+    fun SdkSettings() {
+        mockkObject(SdkSettings)
+        every { SdkSettings.getSettings(ofType()) } returns SdkSettings.SdkSettingsBag(
+            "install_id",
+            "api_username",
+            "api_key",
+            0
+        )
+    }
+
 }

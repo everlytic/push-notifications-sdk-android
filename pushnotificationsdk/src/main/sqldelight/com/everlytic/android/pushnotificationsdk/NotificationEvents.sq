@@ -1,5 +1,4 @@
-import com.everlytic.android.pushnotificationsdk.database.Enums.NotificationEventType;
-import com.everlytic.android.pushnotificationsdk.database.Enums.NotificationEventState;
+import com.everlytic.android.pushnotificationsdk.database.NotificationEventType;
 import java.util.Date;
 
 CREATE TABLE NotificationEventsLog (

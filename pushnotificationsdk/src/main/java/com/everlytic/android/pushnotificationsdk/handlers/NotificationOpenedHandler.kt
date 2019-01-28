@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import com.everlytic.android.pushnotificationsdk.EvIntentExtras
 import com.everlytic.android.pushnotificationsdk.database.Database
-import com.everlytic.android.pushnotificationsdk.database.Enums
+import com.everlytic.android.pushnotificationsdk.database.NotificationEventType
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import com.everlytic.android.pushnotificationsdk.models.NotificationEvent
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationEventRepository
@@ -12,7 +12,10 @@ import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import com.everlytic.android.pushnotificationsdk.workers.EvWorkManager
 import com.everlytic.android.pushnotificationsdk.workers.UploadMessageEventsWorker
 
-internal object NotificationOpenedHandler {
+internal class NotificationOpenedHandler(
+    private val sdkRepository: SdkRepository,
+    private val repository: NotificationEventRepository
+) {
 
     fun handleIntentWithContext(context: Context, intent: Intent) {
         if (!intent.isEverlyticEventIntent()) {
@@ -27,14 +30,22 @@ internal object NotificationOpenedHandler {
     }
 
     private fun processIntent(context: Context, intent: Intent) {
-        val sdkRepository = SdkRepository(context)
-        val repository = NotificationEventRepository(Database.getInstance(context), sdkRepository)
 
         val event = createNotificationEvent(intent, sdkRepository)
 
-        repository.storeNotificationEvent(Enums.NotificationEventType.CLICK, event)
+        repository.storeNotificationEvent(NotificationEventType.CLICK, event)
 
-        EvWorkManager.scheduleOneTimeWorker<UploadMessageEventsWorker>()
+        scheduleEventUploadWorker()
+
+        startLauncherActivityInContext(context)
+    }
+
+    private fun startLauncherActivityInContext(context: Context) {
+        context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+            flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT and Intent.FLAG_ACTIVITY_NEW_TASK
+        }?.let {
+            context.startActivity(it)
+        }
     }
 
     private fun createNotificationEvent(
@@ -48,5 +59,9 @@ internal object NotificationOpenedHandler {
             sdkRepository.getSubscriptionId()?.toLong() ?: -1,
             notification.messageId
         )
+    }
+
+    private fun scheduleEventUploadWorker() {
+        EvWorkManager.scheduleOneTimeWorker<UploadMessageEventsWorker>()
     }
 }

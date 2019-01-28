@@ -1,9 +1,7 @@
 package com.everlytic.android.pushnotificationsdk.repositories
 
 import com.everlytic.android.pushnotificationsdk.EverlyticDb
-import com.everlytic.android.pushnotificationsdk.NotificationEventsLog
-import com.everlytic.android.pushnotificationsdk.database.Enums
-import com.everlytic.android.pushnotificationsdk.database.Enums.NotificationEventState.*
+import com.everlytic.android.pushnotificationsdk.database.NotificationEventType
 import com.everlytic.android.pushnotificationsdk.models.NotificationEvent
 import java.util.*
 
@@ -14,7 +12,7 @@ internal class NotificationEventRepository(
 
     val queries = database.notificationEventsQueries
 
-    fun storeNotificationEvent(eventType: Enums.NotificationEventType, event: NotificationEvent) {
+    fun storeNotificationEvent(eventType: NotificationEventType, event: NotificationEvent) {
 
         val deviceId = sdkRepository.getDeviceId()
 
@@ -32,10 +30,10 @@ internal class NotificationEventRepository(
 
     fun getEventsForNotificationByType(
         androidNotificationId: Long,
-        eventType: Enums.NotificationEventType
+        eventType: NotificationEventType
     ) = queries.getEventsForNotificationByType(androidNotificationId, eventType).executeAsList()
 
-    fun getAllPendingEventsForType(eventLog: Enums.NotificationEventType) =
+    fun getAllPendingEventsForType(eventLog: NotificationEventType) =
         queries.getEventsPendingUploadByType(eventLog).executeAsList()
 
     fun updateEventIsUploaded(eventId: Long, isUploaded: Boolean) =
