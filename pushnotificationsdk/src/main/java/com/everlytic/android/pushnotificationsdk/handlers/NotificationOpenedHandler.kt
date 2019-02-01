@@ -3,18 +3,19 @@ package com.everlytic.android.pushnotificationsdk.handlers
 import android.content.Context
 import android.content.Intent
 import com.everlytic.android.pushnotificationsdk.EvIntentExtras
-import com.everlytic.android.pushnotificationsdk.database.Database
 import com.everlytic.android.pushnotificationsdk.database.NotificationEventType
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import com.everlytic.android.pushnotificationsdk.models.NotificationEvent
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationEventRepository
+import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import com.everlytic.android.pushnotificationsdk.workers.EvWorkManager
 import com.everlytic.android.pushnotificationsdk.workers.UploadMessageEventsWorker
 
 internal class NotificationOpenedHandler(
     private val sdkRepository: SdkRepository,
-    private val repository: NotificationEventRepository
+    private val notificationEventRepository: NotificationEventRepository,
+    private val notificationLogRepository: NotificationLogRepository
 ) {
 
     fun handleIntentWithContext(context: Context, intent: Intent) {
@@ -23,6 +24,7 @@ internal class NotificationOpenedHandler(
         }
 
         processIntent(context, intent)
+        setNotificationReadFromIntent(intent)
     }
 
     private fun Intent.isEverlyticEventIntent(): Boolean {
@@ -33,11 +35,18 @@ internal class NotificationOpenedHandler(
 
         val event = createNotificationEvent(intent, sdkRepository)
 
-        repository.storeNotificationEvent(NotificationEventType.CLICK, event)
+        notificationEventRepository.storeNotificationEvent(NotificationEventType.CLICK, event)
 
         scheduleEventUploadWorker()
 
         startLauncherActivityInContext(context)
+    }
+
+    private fun setNotificationReadFromIntent(intent: Intent) {
+        val androidNotificationId =
+            intent.getParcelableExtra<EvNotification>(EvIntentExtras.EVERLYTIC_DATA).androidNotificationId
+
+        notificationLogRepository.setNotificationAsRead(androidNotificationId)
     }
 
     private fun startLauncherActivityInContext(context: Context) {
@@ -56,7 +65,7 @@ internal class NotificationOpenedHandler(
 
         return NotificationEvent(
             notification.androidNotificationId,
-            sdkRepository.getSubscriptionId()?.toLong() ?: -1,
+            sdkRepository.getSubscriptionId() ?: -1,
             notification.messageId
         )
     }

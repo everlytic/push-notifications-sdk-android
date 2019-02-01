@@ -5,9 +5,11 @@ import android.content.Intent
 import com.everlytic.android.pushnotificationsdk.EvIntentExtras
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationEventRepository
+import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import io.mockk.*
 import org.junit.Test
+import java.util.*
 
 class NotificationOpenedHandlerTest {
 
@@ -19,9 +21,12 @@ class NotificationOpenedHandlerTest {
         val mockEventRepository = mockNotificationEventRepository().apply {
             every { storeNotificationEvent(any(), any()) } just Runs
         }
+        val mockLogRepository = mockNotificationLogRepository().apply {
+            every { setNotificationAsRead(any(), any()) } just Runs
+        }
 
         val handler = spyk(
-            objToCopy = NotificationOpenedHandler(mockSdkRepository, mockEventRepository),
+            objToCopy = NotificationOpenedHandler(mockSdkRepository, mockEventRepository, mockLogRepository),
             recordPrivateCalls = true
         )
 
@@ -37,7 +42,9 @@ class NotificationOpenedHandlerTest {
                 0,
                 0,
                 0,
-                emptyList()
+                emptyList(),
+                "{}",
+                Date()
             )
             every { hasExtra(EvIntentExtras.EVERLYTIC_DATA) } returns true
             every { getParcelableExtra<EvNotification>(EvIntentExtras.EVERLYTIC_DATA) } returns notificationParcelable
@@ -46,6 +53,7 @@ class NotificationOpenedHandlerTest {
         handler.handleIntentWithContext(mockCtx, intent)
 
         verify { handler invoke "processIntent" withArguments listOf(mockCtx, intent) }
+        verify { handler invoke "setNotificationReadFromIntent" withArguments listOf(intent) }
         verify { mockEventRepository.storeNotificationEvent(any(), any()) }
         verify { handler invokeNoArgs "scheduleEventUploadWorker" }
         verify { mockCtx.startActivity(any()) }
@@ -59,9 +67,12 @@ class NotificationOpenedHandlerTest {
         val mockEventRepository = mockNotificationEventRepository().apply {
             every { storeNotificationEvent(any(), any()) } just Runs
         }
+        val mockLogRepository = mockNotificationLogRepository().apply {
+            every { setNotificationAsRead(any(), any()) } just Runs
+        }
 
         val handler = spyk(
-            objToCopy = NotificationOpenedHandler(mockSdkRepository, mockEventRepository),
+            objToCopy = NotificationOpenedHandler(mockSdkRepository, mockEventRepository, mockLogRepository),
             recordPrivateCalls = true
         )
 
@@ -92,6 +103,10 @@ class NotificationOpenedHandlerTest {
     }
 
     private fun mockNotificationEventRepository(): NotificationEventRepository {
+        return mockk()
+    }
+
+    private fun mockNotificationLogRepository(): NotificationLogRepository {
         return mockk()
     }
 

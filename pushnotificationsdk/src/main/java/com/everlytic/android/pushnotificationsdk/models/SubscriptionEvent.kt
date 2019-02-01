@@ -26,7 +26,7 @@ internal data class DeviceData(
 
 @JsonClass(generateAdapter = true)
 internal data class SubscriptionEvent (
-    val push_configuration_id: String,
+    val push_project_id: String,
     val contact: ContactData,
     val metadata: Map<String, String> = emptyMap(),
     val platform: PlatformData = PlatformData(),

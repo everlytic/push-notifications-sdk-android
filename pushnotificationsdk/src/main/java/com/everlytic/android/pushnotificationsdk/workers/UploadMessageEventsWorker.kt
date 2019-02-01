@@ -51,6 +51,7 @@ class UploadMessageEventsWorker(val context: Context, params: WorkerParameters) 
 
         try {
             createUploadCallForEvent(rawEvent.event_type, notificationEvent).execute()
+            repository.updateEventIsUploaded(rawEvent._id, true)
         } catch (exception: Exception) {
             repository.updateEventIsUploaded(rawEvent._id, false)
         }

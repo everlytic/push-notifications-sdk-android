@@ -3,7 +3,7 @@ import java.util.Date;
 
 CREATE TABLE NotificationEventsLog (
     _id INTEGER PRIMARY KEY AUTOINCREMENT,
-    android_notification_id INTEGER as Long NOT NULL,
+    android_notification_id INTEGER as Int NOT NULL,
     event_type TEXT as NotificationEventType NOT NULL,
     subscription_id INTEGER as Long NOT NULL,
     message_id INTEGER as Long NOT NULL,

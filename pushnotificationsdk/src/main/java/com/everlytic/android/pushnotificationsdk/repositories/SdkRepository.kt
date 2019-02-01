@@ -27,16 +27,22 @@ internal class SdkRepository(private val context: Context) {
         return id
     }
 
-    fun getSubscriptionId() : Int? {
+    fun getSubscriptionId() : Long? {
         return getPreferences()
-            .getInt(Keys.SubscriptionId.key, -1)
+            .getLong(Keys.SubscriptionId.key, -1)
+            .let { if (it > 0) it else null }
+    }
+
+    fun getContactId() : Long? {
+        return getPreferences()
+            .getLong(Keys.ContactId.key, -1)
             .let { if (it > 0) it else null }
     }
 
     fun setContactSubscription(apiSubscription: ApiSubscription) {
         edit {
-            putInt(Keys.SubscriptionId.key, apiSubscription.pns_id)
-            putInt(Keys.ContactId.key, apiSubscription.pns_contact_id)
+            putLong(Keys.SubscriptionId.key, apiSubscription.pns_id.toLong())
+            putLong(Keys.ContactId.key, apiSubscription.pns_contact_id.toLong())
         }
     }
 

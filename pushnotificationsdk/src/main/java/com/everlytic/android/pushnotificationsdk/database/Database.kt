@@ -15,7 +15,7 @@ object Database {
     fun getInstance(context: Context): EverlyticDb {
         instance?.let { return it }
 
-        return createDbWrapper(AndroidSqliteDriver(EverlyticDb.Schema, context))
+        return createDbWrapper(AndroidSqliteDriver(EverlyticDb.Schema, context, "evpush.db"))
             .also {
                 instance = it
             }

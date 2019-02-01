@@ -3,7 +3,7 @@ package com.everlytic.android.pushnotificationsdk
 import android.content.Context
 import android.content.pm.PackageManager
 
-object SdkSettings {
+internal object SdkSettings {
 
     const val META_API_USERNAME_PATH = "com.everlytic.api.API_USERNAME"
     const val META_API_KEY_PATH = "com.everlytic.api.API_KEY"
@@ -18,7 +18,10 @@ object SdkSettings {
     )
 
     fun getSettings(context: Context) : SdkSettingsBag {
-        val appInfo = context.applicationInfo
+        val appInfo = context
+            .packageManager
+            .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+
 
         return SdkSettingsBag(
             appInfo.metaData.getString(SdkSettings.META_API_INSTALL_URL),

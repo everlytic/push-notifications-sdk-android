@@ -5,10 +5,10 @@ import java.util.*
 
 internal data class NotificationEvent (
     @Transient
-    val android_notification_id: Long,
+    val android_notification_id: Int,
     val subscription_id: Long,
     val message_id: Long,
-    @Json(name = "meta")
-    val metadata: String = "{}",
+    val meta: String = "{}",
+    @field:Json(name = "create_date")
     val datetime: Date = Date()
 )

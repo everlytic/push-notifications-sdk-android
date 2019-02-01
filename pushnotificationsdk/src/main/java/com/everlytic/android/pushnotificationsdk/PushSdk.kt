@@ -1,7 +1,7 @@
 package com.everlytic.android.pushnotificationsdk
 
 import android.content.Context
-import com.everlytic.android.pushnotificationsdk.database.Database
+import android.util.Log
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticNotSubscribedException
 import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
 import com.everlytic.android.pushnotificationsdk.models.*
@@ -50,9 +50,14 @@ internal class PushSdk constructor(
                 try {
                     val response = api.subscribe(subscription).execute()
 
-                    saveContactSubscriptionFromResponse(response)
+                    if (response.isSuccessful) {
+                        saveContactSubscriptionFromResponse(response)
 
-                    continuation.resume(Unit)
+                        continuation.resume(Unit)
+                    } else {
+                        continuation.resumeWithException(Exception("An API Exception occurred"))
+                    }
+
                 } catch (exception: HttpException) {
                     continuation.resumeWithException(exception)
                 }
@@ -76,9 +81,15 @@ internal class PushSdk constructor(
                         val unsubscribeEvent = UnsubscribeEvent(subscriptionId, deviceId)
 
                         try {
-                            api.unsubscribe(unsubscribeEvent).execute()
-                            sdkRepository.removeContactSubscription()
-                            continuation.resume(Unit)
+                            val response = api.unsubscribe(unsubscribeEvent).execute()
+
+                            if (response.isSuccessful) {
+                                sdkRepository.removeContactSubscription()
+                                continuation.resume(Unit)
+                            } else {
+                                continuation.resumeWithException(Exception("An API Exception occurred"))
+                            }
+
                         } catch (exception: Exception) {
                             continuation.resumeWithException(exception)
                         }
@@ -90,20 +101,20 @@ internal class PushSdk constructor(
         }
     }
 
-    internal fun saveContactSubscriptionFromResponse(response: Response<ResponseBody>) {
-        response.body()?.string()?.let { responseBody ->
+    internal fun saveContactSubscriptionFromResponse(response: Response<ApiSubscriptionResponse>) {
+        response.body()?.let { responseBody ->
             try {
-                val subscription = Moshi.Builder()
-                    .build()
-                    .adapter(ApiSubscription::class.java)
-                    .fromJson(responseBody)!!
-
-                sdkRepository.setContactSubscription(subscription)
+//                val subscription = Moshi.Builder()
+//                    .build()
+//                    .adapter(ApiSubscription::class.java)
+//                    .fromJson(responseBody)!!
+                Log.d("PushSdk", "API Response: $responseBody")
+                sdkRepository.setContactSubscription(responseBody.data.subscription)
             } catch (jsonException: JsonDataException) {
                 throw jsonException
             } catch (otherException: Exception) {
                 throw otherException
             }
-        }
+        } ?: throw Exception("Empty response body string")
     }
 }

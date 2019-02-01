@@ -19,6 +19,7 @@ internal class EverlyticHttp {
     private fun getRetrofitClient(installUrl: String, username: String, key: String): Retrofit {
 
         val okhttp = OkHttpClient.Builder()
+            .retryOnConnectionFailure(false)
             .authenticator(EverlyticApiAuthenticator(username, key))
             .addInterceptor(EverlyticApiAuthenticationHeaderInterceptor(username, key))
             .addInterceptor(EverlyticApiErrorRequestFailerInterceptor())

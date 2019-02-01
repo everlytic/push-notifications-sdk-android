@@ -6,11 +6,11 @@ import com.everlytic.android.pushnotificationsdk.models.NotificationEvent
 import java.util.*
 
 internal class NotificationEventRepository(
-    private val database: EverlyticDb,
+    database: EverlyticDb,
     private val sdkRepository: SdkRepository
 ) {
 
-    val queries = database.notificationEventsQueries
+    private val queries = database.notificationEventsQueries
 
     fun storeNotificationEvent(eventType: NotificationEventType, event: NotificationEvent) {
 
@@ -29,7 +29,7 @@ internal class NotificationEventRepository(
     }
 
     fun getEventsForNotificationByType(
-        androidNotificationId: Long,
+        androidNotificationId: Int,
         eventType: NotificationEventType
     ) = queries.getEventsForNotificationByType(androidNotificationId, eventType).executeAsList()
 

@@ -9,14 +9,16 @@ import okhttp3.Response
 
 internal class EverlyticApiErrorRequestFailerInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val response = chain.proceed(chain.request())
+        var response = chain.proceed(chain.request())
 
         if (response.isSuccessful) {
-            val bodyString = response.peekBody(10240).string();
+            val bodyString = response.peekBody(10240).string()
             Log.d("ApiRequestFailer", bodyString)
             Moshi.Builder().build().adapter(Status::class.java).fromJson(bodyString)?.let { status ->
-                if (status.status != null && status.status == "error") {
-                    throw EverlyticApiException("An API Exception occurred")
+                if (status.status == "error" || status.result == "error") {
+                    response = response.newBuilder()
+                        .code(400)
+                        .build()
                 }
             }
         }

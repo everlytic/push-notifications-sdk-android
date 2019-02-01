@@ -5,22 +5,46 @@ import java.util.Date;
 CREATE TABLE NotificationLog (
     _id INTEGER PRIMARY KEY AUTOINCREMENT,
     message_id INTEGER as Long,
-    android_notificaiton_id INTEGER,
+    android_notificaiton_id INTEGER as Int,
     subscription_id INTEGER as Long,
     contact_id INTEGER as Long,
     title TEXT,
     body TEXT,
-    metadata TEXT,
+    metadata TEXT DEFAULT '{}',
     actions TEXT,
-    color INTEGER,
-    group_id INTEGER,
+    color INTEGER DEFAULT -1,
+    group_id INTEGER DEFAULT 0,
     raw_notification TEXT,
-    received_at TEXT as Date,
+    received_at TEXT as Date NOT NULL,
     read_at TEXT as Date DEFAULT NULL,
     dismissed_at TEXT as Date DEFAULT NULL
 );
 
 -- QUERIES
+
+insertNotification:
+INSERT INTO NotificationLog (
+    message_id,
+    android_notificaiton_id,
+    subscription_id,
+    contact_id,
+    title,
+    body,
+    received_at
+) VALUES (
+    :message_id,
+    :android_notificaiton_id,
+    :subscription_id,
+    :contact_id,
+    :title,
+    :body,
+    :received_at
+);
+
+updateNotificationDateStampsById:
+UPDATE NotificationLog
+    SET read_at = :read_at, dismissed_at = :dismissed_at
+    WHERE android_notificaiton_id = :android_notificaiton_id;
 
 getNotificationsAsPublicInbox:
 SELECT message_id, title, body, metadata, received_at, read_at, dismissed_at FROM NotificationLog;
