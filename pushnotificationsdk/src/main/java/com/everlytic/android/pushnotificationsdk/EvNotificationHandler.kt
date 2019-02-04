@@ -9,20 +9,17 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat.getSystemService
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import java.security.SecureRandom
 
-internal object EvNotificationManager {
+internal class EvNotificationHandler(val context: Context) {
 
-    private const val DEFAULT_CHANNEL = "ev_ch_default"
-
-    fun displayNotification(context: Context, evNotification: EvNotification) {
+    fun displayNotification(evNotification: EvNotification) {
 
         registerChannel(context)
 
         val notificationManager = NotificationManagerCompat.from(context)
-        val notification = createNotification(context, evNotification)
+        val notification = createNotification(evNotification)
 
         notificationManager.notify(evNotification.androidNotificationId, notification)
     }
@@ -41,27 +38,43 @@ internal object EvNotificationManager {
         }
     }
 
-    fun createNotification(context: Context, notification: EvNotification): Notification {
-        val intent = Intent(context, EvNotificationClickReceiver::class.java).apply {
-            putExtra(EvIntentExtras.EVERLYTIC_DATA, notification)
-            putExtra(EvIntentExtras.ANDROID_NOTIFICATION_ID, notification.androidNotificationId)
-        }
+    private fun createNotification(notification: EvNotification): Notification {
+        val intent = createLauncherIntent(notification)
 
-        val onClickIntent =
-            PendingIntent.getBroadcast(context, SecureRandom().nextInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val onClickIntent = createPendingIntent(intent)
 
-        val smallIcon = context
-            .resources
-            .getIdentifier("ic_ev_notification", "drawable", context.packageName)
+        val smallIcon = getSmallIconReference()
 
         return NotificationCompat.Builder(context, DEFAULT_CHANNEL)
             .setSmallIcon(smallIcon)
             .setContentTitle(notification.title)
             .setContentText(notification.body)
             .setPriority(notification.priority)
+            .setGroup(DEFAULT_GROUP)
             // todo color, dismiss action
             .setContentIntent(onClickIntent)
             .build()
+    }
+
+    private fun getSmallIconReference(): Int {
+        return context
+            .resources
+            .getIdentifier("ic_ev_notification", "drawable", context.packageName)
+    }
+
+    private fun createPendingIntent(intent: Intent) =
+        PendingIntent.getBroadcast(context, SecureRandom().nextInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+    private fun createLauncherIntent(notification: EvNotification): Intent {
+        return Intent(context, EvNotificationClickReceiver::class.java).apply {
+            putExtra(EvIntentExtras.EVERLYTIC_DATA, notification)
+            putExtra(EvIntentExtras.ANDROID_NOTIFICATION_ID, notification.androidNotificationId)
+        }
+    }
+
+    companion object {
+        private const val DEFAULT_CHANNEL = "ev_ch_default"
+        private const val DEFAULT_GROUP = "ev_grp_default"
     }
 
 }

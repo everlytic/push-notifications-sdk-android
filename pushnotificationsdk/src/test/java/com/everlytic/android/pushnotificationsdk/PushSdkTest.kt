@@ -3,6 +3,7 @@ package com.everlytic.android.pushnotificationsdk
 import android.content.Context
 import android.content.res.Resources
 import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
+import com.everlytic.android.pushnotificationsdk.models.ApiSubscriptionResponse
 import com.everlytic.android.pushnotificationsdk.network.EverlyticApi
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
@@ -29,8 +30,10 @@ class PushSdkTest {
     fun testSubscribe_RequestSucceeds_ReturnsSuccess() {
 
         val mockEverlyticApi = mockk<EverlyticApi>().apply {
-            val mockCall = mockk<Call<ResponseBody>>()
-            val mockResponse = mockk<Response<ResponseBody>>()
+            val mockCall = mockk<Call<ApiSubscriptionResponse>>()
+            val mockResponse = mockk<Response<ApiSubscriptionResponse>> {
+                every { isSuccessful } returns true
+            }
             every { subscribe(ofType()) } returns mockCall
             every { subscribe(ofType()).execute() } returns mockResponse
         }
@@ -69,18 +72,18 @@ class PushSdkTest {
     @MockK(relaxed = true)
     fun testSubscribe_RequestFails_ReturnsError() {
 
-        val mockResponse = mockk<Response<ResponseBody>>().apply {
+        val mockResponse = mockk<Response<ResponseBody>> {
             every { code() } returns 400
             every { message() } returns "Test Exception"
         }
         val httpException = HttpException(mockResponse)
 
-        val mockEverlyticApi = mockk<EverlyticApi>().apply {
-            val mockCall = mockk<Call<ResponseBody>>()
+        val mockEverlyticApi = mockk<EverlyticApi> {
+            val mockCall = mockk<Call<ApiSubscriptionResponse>>()
             every { subscribe(ofType()) } returns mockCall
             every { subscribe(ofType()).execute() } throws httpException
         }
-        val mockHttp = mockk<EverlyticHttp>().apply {
+        val mockHttp = mockk<EverlyticHttp> {
             every { buildEverlyticApi(API_INSTALL, API_USERNAME, API_KEY) } answers { mockEverlyticApi }
         }
 
@@ -109,17 +112,19 @@ class PushSdkTest {
     fun testUnsubscribe_RequestSucceeds_ReturnsSuccess() {
         val mockSdkRepository = mockSdkRepository()
 
-        val mockEverlyticApi = mockk<EverlyticApi>().apply {
+        val mockEverlyticApi = mockk<EverlyticApi> {
             val mockCall = mockk<Call<ResponseBody>>()
-            val mockResponse = mockk<Response<ResponseBody>>()
+            val mockResponse = mockk<Response<ResponseBody>> {
+                every { isSuccessful } returns true
+            }
             every { unsubscribe(ofType()) } returns mockCall
             every { unsubscribe(ofType()).execute() } returns mockResponse
         }
-        val mockHttp = mockk<EverlyticHttp>().apply {
+        val mockHttp = mockk<EverlyticHttp> {
             every { buildEverlyticApi(API_INSTALL, API_USERNAME, API_KEY) } answers { mockEverlyticApi }
         }
 
-        val mockContext = mockk<Context>().apply {
+        val mockContext = mockk<Context> {
             val mockResources = mockk<Resources>().apply {
                 every { getBoolean(R.bool.isTablet) } returns false
             }
@@ -154,13 +159,13 @@ class PushSdkTest {
             every { message() } returns "Test Exception"
         }
 
-        val mockEverlyticApi = mockk<EverlyticApi>().apply {
+        val mockEverlyticApi = mockk<EverlyticApi> {
             val httpException = HttpException(mockResponse)
-            val mockCall = mockk<Call<ResponseBody>>()
+            val mockCall = mockk<Call<ApiSubscriptionResponse>>()
             every { subscribe(ofType()) } returns mockCall
             every { subscribe(ofType()).execute() } throws httpException
         }
-        val mockHttp = mockk<EverlyticHttp>().apply {
+        val mockHttp = mockk<EverlyticHttp> {
             every { buildEverlyticApi(API_INSTALL, API_USERNAME, API_KEY) } answers { mockEverlyticApi }
         }
 
@@ -191,12 +196,7 @@ class PushSdkTest {
     }
 
     private fun mockSdkRepository(): SdkRepository {
-        return mockk<SdkRepository>().apply {
-            every { getDeviceId() } returns "[test] device id"
-            every { setDeviceId(any()) } returns "[test] generated device id"
-            every { getSubscriptionId() } returns 5
-            every { removeContactSubscription() } just Runs
-        }
+        return Mock.getSdkRepositoryMock()
     }
 
     companion object {

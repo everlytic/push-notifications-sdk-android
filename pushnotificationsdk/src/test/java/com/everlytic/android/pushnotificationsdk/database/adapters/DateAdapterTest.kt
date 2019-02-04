@@ -33,7 +33,7 @@ class DateAdapterTest {
     @Test
     fun testDecodeString_StringIsInvalidFormat_DecodeFails() {
         val adapter = DateAdapter()
-        val dateString = "1970-01-0100:00:00.000Z"
+        val dateString = "1970-01-01 00:00:00"
 
         assertFails {
             adapter.decode(dateString)

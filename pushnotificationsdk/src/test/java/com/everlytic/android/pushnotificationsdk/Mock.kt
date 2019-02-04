@@ -2,12 +2,10 @@ package com.everlytic.android.pushnotificationsdk
 
 import com.everlytic.android.pushnotificationsdk.facades.BuildFacade
 import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkObject
+import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
+import io.mockk.*
 
-object Mock {
+internal object Mock {
 
     fun BuildFacade() {
         mockkObject(BuildFacade)
@@ -33,6 +31,16 @@ object Mock {
             "api_key",
             0
         )
+    }
+
+    fun getSdkRepositoryMock(): SdkRepository {
+        return mockk {
+            every { getDeviceId() } returns "[test] device id"
+            every { setDeviceId(any()) } returns "[test] generated device id"
+            every { getSubscriptionId() } returns 5
+            every { getContactId() } returns 10
+            every { removeContactSubscription() } just Runs
+        }
     }
 
 }

@@ -3,6 +3,7 @@ package com.everlytic.android.pushnotificationsdk.handlers
 import android.content.Context
 import android.content.Intent
 import com.everlytic.android.pushnotificationsdk.EvIntentExtras
+import com.everlytic.android.pushnotificationsdk.Mock
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationEventRepository
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
@@ -43,7 +44,6 @@ class NotificationOpenedHandlerTest {
                 0,
                 0,
                 emptyList(),
-                "{}",
                 Date()
             )
             every { hasExtra(EvIntentExtras.EVERLYTIC_DATA) } returns true
@@ -96,10 +96,7 @@ class NotificationOpenedHandlerTest {
     }
 
     private fun mockSdkRepository(): SdkRepository {
-        return mockk<SdkRepository>().apply {
-            every { getSubscriptionId() } returns 0
-            every { getDeviceId() } returns "<deviceid>"
-        }
+        return Mock.getSdkRepositoryMock()
     }
 
     private fun mockNotificationEventRepository(): NotificationEventRepository {

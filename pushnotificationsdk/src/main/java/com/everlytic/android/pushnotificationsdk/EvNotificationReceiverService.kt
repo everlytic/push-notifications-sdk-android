@@ -1,30 +1,27 @@
 package com.everlytic.android.pushnotificationsdk
 
-import android.content.Context
 import com.everlytic.android.pushnotificationsdk.database.Database
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
 import java.security.SecureRandom
 import java.util.*
 
 
 internal class EvNotificationReceiverService : FirebaseMessagingService() {
 
-    val context : Context
-        get() = applicationContext
-
     private val notificationRepository by lazy {
         NotificationLogRepository(getDatabase())
     }
 
     private val sdkRepository by lazy {
-        SdkRepository(context)
+        SdkRepository(getContext())
+    }
+
+    private val notificationHandler by lazy {
+        EvNotificationHandler(getContext())
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
@@ -35,7 +32,7 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
 
         notificationRepository.storeNotification(notification, subscriptionId, contactId)
 
-        EvNotificationManager.displayNotification(context, notification)
+        notificationHandler.displayNotification(notification)
     }
 
     private fun createEvNotification(data: MutableMap<String, String>): EvNotification {
@@ -55,6 +52,8 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
         )
 
     }
-    private fun getDatabase() = Database.getInstance(context)
+
+    private fun getContext() = applicationContext
+    private fun getDatabase() = Database.getInstance(getContext())
 
 }
