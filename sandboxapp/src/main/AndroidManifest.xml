@@ -14,7 +14,7 @@
 
         <meta-data android:name="com.everlytic.api.API_USERNAME" android:value="jason"></meta-data>
         <meta-data android:name="com.everlytic.api.API_KEY" android:value="4mw30eCcKrsY76QHgL58UlwbW164kAv0_0"></meta-data>
-        <meta-data android:name="com.everlytic.api.PUSH_NOTIFICATIONS_PROJECT_ID" android:value="4"></meta-data>
+        <meta-data android:name="com.everlytic.api.PUSH_NOTIFICATIONS_LIST_ID" android:value="4"></meta-data>
         <meta-data android:name="com.everlytic.api.API_INSTALL_URL" android:value="qa.everlytic.net"></meta-data>
 
         <activity android:name=".Sandbox">

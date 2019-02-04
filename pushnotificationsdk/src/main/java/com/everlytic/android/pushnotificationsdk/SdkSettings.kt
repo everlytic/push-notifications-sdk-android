@@ -7,7 +7,7 @@ internal object SdkSettings {
 
     const val META_API_USERNAME_PATH = "com.everlytic.api.API_USERNAME"
     const val META_API_KEY_PATH = "com.everlytic.api.API_KEY"
-    const val META_PUSH_PROJECT_ID = "com.everlytic.api.PUSH_NOTIFICATIONS_PROJECT_ID"
+    const val META_PUSH_PROJECT_ID = "com.everlytic.api.PUSH_NOTIFICATIONS_LIST_ID"
     const val META_API_INSTALL_URL = "com.everlytic.api.API_INSTALL_URL"
 
     data class SdkSettingsBag(
