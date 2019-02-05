@@ -32,6 +32,12 @@ INSERT INTO NotificationEventsLog (
 updateEventIsUploadedById:
 UPDATE NotificationEventsLog SET is_uploaded = :isUploaded WHERE _id = :_id;
 
+deleteAllUploaded:
+DELETE FROM NotificationEventsLog WHERE is_uploaded = 1;
+
+deleteAllUploadedByType:
+DELETE FROM NotificationEventsLog WHERE is_uploaded = 1 AND event_type = :event_type;
+
 getEventById:
 SELECT * FROM NotificationEventsLog WHERE _id = :id;
 

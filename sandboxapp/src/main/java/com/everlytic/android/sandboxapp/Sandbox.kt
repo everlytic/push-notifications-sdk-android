@@ -16,6 +16,7 @@ class Sandbox : AppCompatActivity() {
         setContentView(R.layout.activity_sandbox)
 
         updateSubscriptionDisplay()
+
         prepareSubscribeButton()
         prepareUnsubscribeButton()
 
@@ -40,7 +41,7 @@ class Sandbox : AppCompatActivity() {
         btn_subscribe.setOnClickListener {
 
             val edit = EditText(this).apply {
-                inputType = InputType.TYPE_CLASS_TEXT and InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
             }
 
             alert {

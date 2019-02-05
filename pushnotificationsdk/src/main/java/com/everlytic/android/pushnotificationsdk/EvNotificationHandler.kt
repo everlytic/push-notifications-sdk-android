@@ -26,7 +26,7 @@ internal class EvNotificationHandler(val context: Context) {
 
     private fun registerChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = DEFAULT_CHANNEL
+            val name = DEFAULT_CHANNEL_NAME
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(DEFAULT_CHANNEL, name, importance).apply {
                 description = "Default Notification Channel"
@@ -51,7 +51,8 @@ internal class EvNotificationHandler(val context: Context) {
             .setContentText(notification.body)
             .setPriority(notification.priority)
             .setGroup(DEFAULT_GROUP)
-            // todo color, dismiss action
+            .setColor(notification.color)
+            // todo dismiss action
             .setContentIntent(onClickIntent)
             .build()
     }
@@ -72,9 +73,19 @@ internal class EvNotificationHandler(val context: Context) {
         }
     }
 
+    fun dismissNotificationByAndroidId(int: Int) {
+        val notificationManager = NotificationManagerCompat.from(context)
+        notificationManager.cancel(int)
+    }
+
+    fun canDisplayNotifications(): Boolean {
+        return NotificationManagerCompat.from(context).areNotificationsEnabled()
+    }
+
     companion object {
-        private const val DEFAULT_CHANNEL = "ev_ch_default"
-        private const val DEFAULT_GROUP = "ev_grp_default"
+        private const val DEFAULT_CHANNEL = "com.everlytic.android.pushnotificationsdk.DEFAULT_CHANNEL"
+        private const val DEFAULT_CHANNEL_NAME = "All Notifications"
+        private const val DEFAULT_GROUP = "com.everlytic.android.pushnotificationsdk.DEFAULT_GROUP"
     }
 
 }

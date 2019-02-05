@@ -1,5 +1,6 @@
 package com.everlytic.android.pushnotificationsdk
 
+import android.os.Build
 import com.everlytic.android.pushnotificationsdk.database.Database
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
@@ -44,13 +45,27 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
             data["title"] ?: "",
             data["body"],
             data["sound"]?.toBoolean() ?: false,
-            -1,
-            -1,
+            getColorReference(),
+            0,
             0,
             emptyList(),
             Date()
         )
 
+    }
+
+    private fun getColorReference(): Int {
+        val ctx = getContext()
+
+        val id = ctx
+            .resources
+            .getIdentifier("colorPrimary", "color", getContext().packageName)
+
+        return if (Build.VERSION.SDK_INT > 23) {
+            ctx.resources.getColor(id, ctx.theme)
+        } else {
+            ctx.resources.getColor(id)
+        }
     }
 
     private fun getContext() = applicationContext

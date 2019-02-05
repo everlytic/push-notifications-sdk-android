@@ -1,8 +1,10 @@
 package com.everlytic.android.pushnotificationsdk.handlers
 
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import com.everlytic.android.pushnotificationsdk.EvIntentExtras
+import com.everlytic.android.pushnotificationsdk.EvNotificationHandler
 import com.everlytic.android.pushnotificationsdk.database.NotificationEventType
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import com.everlytic.android.pushnotificationsdk.models.NotificationEvent
@@ -38,6 +40,10 @@ internal class NotificationOpenedHandler(
         notificationEventRepository.storeNotificationEvent(NotificationEventType.CLICK, event)
 
         scheduleEventUploadWorker()
+
+        EvNotificationHandler(context).dismissNotificationByAndroidId(
+            intent.extras?.getInt(EvIntentExtras.ANDROID_NOTIFICATION_ID) ?: 0
+        )
 
         startLauncherActivityInContext(context)
     }

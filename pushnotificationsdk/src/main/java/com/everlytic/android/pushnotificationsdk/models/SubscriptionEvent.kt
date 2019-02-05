@@ -1,6 +1,7 @@
 package com.everlytic.android.pushnotificationsdk.models
 
 import com.everlytic.android.pushnotificationsdk.facades.BuildFacade
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import java.util.*
 
@@ -26,6 +27,7 @@ internal data class DeviceData(
 
 @JsonClass(generateAdapter = true)
 internal data class SubscriptionEvent (
+//    @field:Json(name = "push_project_id")
     val list_id: String,
     val contact: ContactData,
     val metadata: Map<String, String> = emptyMap(),
