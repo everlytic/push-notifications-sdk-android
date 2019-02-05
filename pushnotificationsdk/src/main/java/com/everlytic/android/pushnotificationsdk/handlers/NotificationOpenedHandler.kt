@@ -1,6 +1,5 @@
 package com.everlytic.android.pushnotificationsdk.handlers
 
-import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import com.everlytic.android.pushnotificationsdk.EvIntentExtras
@@ -17,7 +16,8 @@ import com.everlytic.android.pushnotificationsdk.workers.UploadMessageEventsWork
 internal class NotificationOpenedHandler(
     private val sdkRepository: SdkRepository,
     private val notificationEventRepository: NotificationEventRepository,
-    private val notificationLogRepository: NotificationLogRepository
+    private val notificationLogRepository: NotificationLogRepository,
+    private val notificationHandler: EvNotificationHandler
 ) {
 
     fun handleIntentWithContext(context: Context, intent: Intent) {
@@ -41,7 +41,7 @@ internal class NotificationOpenedHandler(
 
         scheduleEventUploadWorker()
 
-        EvNotificationHandler(context).dismissNotificationByAndroidId(
+        notificationHandler.dismissNotificationByAndroidId(
             intent.extras?.getInt(EvIntentExtras.ANDROID_NOTIFICATION_ID) ?: 0
         )
 

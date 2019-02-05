@@ -27,7 +27,12 @@ class NotificationOpenedHandlerTest {
         }
 
         val handler = spyk(
-            objToCopy = NotificationOpenedHandler(mockSdkRepository, mockEventRepository, mockLogRepository),
+            objToCopy = NotificationOpenedHandler(
+                mockSdkRepository,
+                mockEventRepository,
+                mockLogRepository,
+                mockk(relaxed = true)
+            ),
             recordPrivateCalls = true
         )
 
@@ -72,7 +77,12 @@ class NotificationOpenedHandlerTest {
         }
 
         val handler = spyk(
-            objToCopy = NotificationOpenedHandler(mockSdkRepository, mockEventRepository, mockLogRepository),
+            objToCopy = NotificationOpenedHandler(
+                mockSdkRepository,
+                mockEventRepository,
+                mockLogRepository,
+                mockk(relaxed = true)
+            ),
             recordPrivateCalls = true
         )
 

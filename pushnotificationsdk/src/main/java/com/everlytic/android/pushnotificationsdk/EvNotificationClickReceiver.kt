@@ -15,6 +15,12 @@ internal class EvNotificationClickReceiver : BroadcastReceiver() {
         val db = Database.getInstance(context)
         val eventsRepository = NotificationEventRepository(db, sdkRepository)
         val logRepository = NotificationLogRepository(db)
-        NotificationOpenedHandler(sdkRepository, eventsRepository, logRepository).handleIntentWithContext(context, intent)
+        val notificationHandler = EvNotificationHandler(context)
+        NotificationOpenedHandler(
+            sdkRepository,
+            eventsRepository,
+            logRepository,
+            notificationHandler
+        ).handleIntentWithContext(context, intent)
     }
 }
