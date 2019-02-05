@@ -35,7 +35,7 @@ object EverlyticPush {
         val apiInstallUrl = settingsBag.apiInstall
         val apiUsername = settingsBag.apiUsername
         val apiKey = settingsBag.apiKey
-        val pushProjectId = settingsBag.projectId
+        val pushProjectId = settingsBag.listId
 
         if (apiInstallUrl.isNullOrBlank()) {
             throw newInvalidSdkConfigurationException(META_API_INSTALL_URL)
@@ -53,7 +53,7 @@ object EverlyticPush {
             throw newInvalidSdkConfigurationException(META_PUSH_PROJECT_ID)
         }
 
-        instance = PushSdk(application.applicationContext, apiInstallUrl, apiUsername, apiKey, "$pushProjectId")
+        instance = PushSdk(application.applicationContext, settingsBag)
     }
 
     /**
@@ -96,11 +96,19 @@ object EverlyticPush {
         } ?: throw newNotInitialisedException()
     }
 
+    @JvmStatic
+    fun isContactSubscribed(): Boolean {
+        return instance?.isContactSubscribed() ?: false
+    }
+
+    @JvmStatic
+    fun isInitialised(): Boolean = instance != null
+
     private fun newNotInitialisedException() =
         EverlyticPushNotInitialisedException(
             """
                 EverlyticPush has not been initialised.
-                Please call EverlyticPush.init(Application) before calling EverlyticPush.subscribe().
+                Please call EverlyticPush.init(Application) in your Application class.
             """.trimIndent()
         )
 

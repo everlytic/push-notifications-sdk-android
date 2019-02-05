@@ -54,7 +54,7 @@ class EvNotificationHandlerTest {
             anyConstructed<NotificationCompat.Builder>().setSmallIcon(any())
             anyConstructed<NotificationCompat.Builder>().setContentTitle(notification.title)
             anyConstructed<NotificationCompat.Builder>().setContentText(notification.body)
-            anyConstructed<NotificationCompat.Builder>().setPriority(notification.priority)
+            anyConstructed<NotificationCompat.Builder>().priority = notification.priority
             anyConstructed<NotificationCompat.Builder>().setGroup(any())
             anyConstructed<NotificationCompat.Builder>().setContentIntent(any())
 //            anyConstructed<NotificationCompat.Builder>().build()

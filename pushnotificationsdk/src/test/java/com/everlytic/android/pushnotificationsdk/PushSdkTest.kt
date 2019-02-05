@@ -17,6 +17,8 @@ import retrofit2.Call
 import retrofit2.HttpException
 import retrofit2.Response
 import kotlin.test.assertFails
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class PushSdkTest {
 
@@ -29,7 +31,7 @@ class PushSdkTest {
     @MockK(relaxed = true)
     fun testSubscribe_RequestSucceeds_ReturnsSuccess() {
 
-        val mockEverlyticApi = mockk<EverlyticApi>().apply {
+        val mockEverlyticApi = mockk<EverlyticApi> {
             val mockCall = mockk<Call<ApiSubscriptionResponse>>()
             val mockResponse = mockk<Response<ApiSubscriptionResponse>> {
                 every { isSuccessful } returns true
@@ -37,12 +39,12 @@ class PushSdkTest {
             every { subscribe(ofType()) } returns mockCall
             every { subscribe(ofType()).execute() } returns mockResponse
         }
-        val mockHttp = mockk<EverlyticHttp>().apply {
+        val mockHttp = mockk<EverlyticHttp> {
             every { buildEverlyticApi(API_INSTALL, API_USERNAME, API_KEY) } answers { mockEverlyticApi }
         }
 
-        val mockContext = mockk<Context>().apply {
-            val mockResources = mockk<Resources>().apply {
+        val mockContext = mockk<Context> {
+            val mockResources = mockk<Resources> {
                 every { getBoolean(R.bool.isTablet) } returns false
             }
             every { resources } returns mockResources
@@ -51,10 +53,7 @@ class PushSdkTest {
         val sdk = spyk(
             PushSdk(
                 mockContext,
-                API_INSTALL,
-                API_USERNAME,
-                API_KEY,
-                PROJECT_ID,
+                getSettingsBag(),
                 mockHttp,
                 getFirebaseInstanceIdFacade(),
                 mockSdkRepository()
@@ -90,10 +89,7 @@ class PushSdkTest {
         val sdk = spyk(
             PushSdk(
                 mockk(),
-                API_INSTALL,
-                API_USERNAME,
-                API_KEY,
-                PROJECT_ID,
+                getSettingsBag(),
                 mockHttp,
                 getFirebaseInstanceIdFacade(),
                 mockSdkRepository()
@@ -125,7 +121,7 @@ class PushSdkTest {
         }
 
         val mockContext = mockk<Context> {
-            val mockResources = mockk<Resources>().apply {
+            val mockResources = mockk<Resources> {
                 every { getBoolean(R.bool.isTablet) } returns false
             }
             every { resources } returns mockResources
@@ -134,10 +130,7 @@ class PushSdkTest {
         val sdk = spyk(
             PushSdk(
                 mockContext,
-                API_INSTALL,
-                API_USERNAME,
-                API_KEY,
-                PROJECT_ID,
+                getSettingsBag(),
                 mockHttp,
                 getFirebaseInstanceIdFacade(),
                 mockSdkRepository
@@ -154,7 +147,7 @@ class PushSdkTest {
     @Test
     @MockK(relaxed = true)
     fun testUnsubscribe_RequestFails_ReturnsError() {
-        val mockResponse = mockk<Response<ResponseBody>>().apply {
+        val mockResponse = mockk<Response<ResponseBody>> {
             every { code() } returns 400
             every { message() } returns "Test Exception"
         }
@@ -172,10 +165,7 @@ class PushSdkTest {
         val sdk = spyk(
             PushSdk(
                 mockk(),
-                API_INSTALL,
-                API_USERNAME,
-                API_KEY,
-                PROJECT_ID,
+                getSettingsBag(),
                 mockHttp,
                 getFirebaseInstanceIdFacade(),
                 mockSdkRepository()
@@ -189,8 +179,84 @@ class PushSdkTest {
         }
     }
 
+    @Test
+    fun testIsContactSubscribed_WithSubscriptionAndContactIds_ReturnsTrue() {
+        val mockHttp = mockk<EverlyticHttp> {
+            every { buildEverlyticApi(API_INSTALL, API_USERNAME, API_KEY) } answers { mockk() }
+        }
+
+        val mockSdkRepo = mockSdkRepository().apply {
+            every { getSubscriptionId() } returns 1
+            every { getContactId() } returns 10
+        }
+
+        val sdk = spyk(
+            PushSdk(
+                mockk(),
+                getSettingsBag(),
+                mockHttp,
+                getFirebaseInstanceIdFacade(),
+                mockSdkRepo
+            )
+        )
+
+        assertTrue { sdk.isContactSubscribed() }
+        verify { mockSdkRepo.getSubscriptionId() }
+        verify { mockSdkRepo.getContactId() }
+    }
+
+    @Test
+    fun testIsContactSubscribed_NullSubscriptionId_ReturnsFalse() {
+        val mockHttp = mockk<EverlyticHttp> {
+            every { buildEverlyticApi(API_INSTALL, API_USERNAME, API_KEY) } answers { mockk() }
+        }
+
+        val mockSdkRepo = mockSdkRepository().apply {
+            every { getSubscriptionId() } returns null
+            every { getContactId() } returns 10
+        }
+
+        val sdk = spyk(
+            PushSdk(
+                mockk(),
+                getSettingsBag(),
+                mockHttp,
+                getFirebaseInstanceIdFacade(),
+                mockSdkRepo
+            )
+        )
+
+        assertFalse { sdk.isContactSubscribed() }
+        verify { mockSdkRepo.getSubscriptionId() }
+    }
+
+    @Test
+    fun testIsContactSubscribed_NullContactId_ReturnsFalse() {
+        val mockHttp = mockk<EverlyticHttp> {
+            every { buildEverlyticApi(API_INSTALL, API_USERNAME, API_KEY) } answers { mockk() }
+        }
+
+        val mockSdkRepo = mockSdkRepository().apply {
+            every { getSubscriptionId() } returns 1
+            every { getContactId() } returns null
+        }
+
+        val sdk = spyk(
+            PushSdk(
+                mockk(),
+                getSettingsBag(),
+                mockHttp,
+                getFirebaseInstanceIdFacade(),
+                mockSdkRepo
+            )
+        )
+
+        assertFalse { sdk.isContactSubscribed() }
+        verify { mockSdkRepo.getContactId() }
+    }
+
     private fun getFirebaseInstanceIdFacade(): FirebaseInstanceIdFacade {
-        return mockk<FirebaseInstanceIdFacade>().apply {
+        return mockk {
             coEvery { getInstanceId() } returns "test_instance_id"
         }
     }
@@ -199,11 +265,20 @@ class PushSdkTest {
         return Mock.getSdkRepositoryMock()
     }
 
+    private fun getSettingsBag(): SdkSettings.SdkSettingsBag {
+        return SdkSettings.SdkSettingsBag(
+            API_INSTALL,
+            API_USERNAME,
+            API_KEY,
+            LIST_ID
+        )
+    }
+
     companion object {
         const val API_INSTALL = "install"
         const val API_USERNAME = "username"
         const val API_KEY = "api_key"
-        const val PROJECT_ID = "123"
+        const val LIST_ID = 123
         const val USER_EMAIL = "test@test.com"
     }
 }

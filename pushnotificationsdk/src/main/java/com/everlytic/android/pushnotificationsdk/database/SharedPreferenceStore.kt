@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 
 object SharedPreferenceStore {
-    private const val PREFERENCES_NAME = "ev_push_notifications_kv_store"
+    private const val PREFERENCES_NAME = "ev_pn_kv_store"
 
     private var instance: SharedPreferences? = null
 

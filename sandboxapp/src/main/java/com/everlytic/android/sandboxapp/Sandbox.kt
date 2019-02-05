@@ -15,38 +15,81 @@ class Sandbox : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sandbox)
 
-        btn_subscribe.setOnClickListener { _ ->
+        updateSubscriptionDisplay()
+        prepareSubscribeButton()
+        prepareUnsubscribeButton()
+
+    }
+
+    private fun alert(block: AlertDialog.Builder.() -> Unit) {
+        runOnUiThread {
+            AlertDialog.Builder(this).apply {
+                setPositiveButton(android.R.string.ok, null)
+                block()
+            }.show()
+        }
+    }
+
+    private fun updateSubscriptionDisplay() {
+        EverlyticPush.isContactSubscribed().let {
+            btn_unsubscribe.isEnabled = it
+        }
+    }
+
+    private fun prepareSubscribeButton() {
+        btn_subscribe.setOnClickListener {
 
             val edit = EditText(this).apply {
-                inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                inputType = InputType.TYPE_CLASS_TEXT and InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
             }
 
-            AlertDialog.Builder(this)
-                .setTitle("Subscribe Contact Email")
-                .setView(edit)
-                .setPositiveButton(android.R.string.ok) { _, _ ->
+            alert {
+                setTitle("Subscribe Contact Email")
+                setView(edit)
+                setPositiveButton(android.R.string.ok) { _, _ ->
                     EverlyticPush.subscribe(edit.text.toString()) {
                         if (it.isSuccessful) {
-                            runOnUiThread {
-                                Toast.makeText(this@Sandbox, "Subscribe success!", Toast.LENGTH_LONG).show()
+                            alert {
+                                setMessage("Subscribe success!")
                             }
                         } else {
                             runOnUiThread {
                                 Toast.makeText(this@Sandbox, "Subscribe failed!", Toast.LENGTH_LONG).show()
 
-                                AlertDialog.Builder(this)
-                                    .setTitle("Subscribe error")
-                                    .setMessage("[MESSAGE]: ${it.exception?.message}")
-                                    .setPositiveButton(android.R.string.ok, null)
-                                    .show()
+                                alert {
+                                    setTitle("Subscribe error")
+                                    setMessage("[MESSAGE]: ${it.exception?.message}")
+                                    setPositiveButton(android.R.string.ok, null)
+                                }
                             }
                         }
+
+                        updateSubscriptionDisplay()
                     }
                 }
-                .show()
-
-
+            }
         }
+    }
 
+    private fun prepareUnsubscribeButton() {
+        btn_unsubscribe.setOnClickListener {
+            alert {
+                setTitle("Unsubscribe contact?")
+                setMessage("Unsubscribe the current contact from receiving push notifications?")
+                setPositiveButton(android.R.string.ok) { _, _ ->
+                    EverlyticPush.unsubscribe {
+                        if (it.isSuccessful) {
+                            alert { setMessage("Contact unsubscribed successfully") }
+                        } else {
+                            alert { setMessage("Failed to unsubscribe contact") }
+                        }
+
+                        updateSubscriptionDisplay()
+                    }
+                }
+
+                setNegativeButton(android.R.string.cancel, null)
+            }
+        }
     }
 }

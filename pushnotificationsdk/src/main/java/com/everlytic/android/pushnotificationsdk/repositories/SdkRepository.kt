@@ -16,12 +16,12 @@ internal class SdkRepository(private val context: Context) {
     }
 
     fun getDeviceId() : String? {
-        return getPreferences().getString(Keys.DeviceId.key, null)
+        return getPreferences().getString(DEVICE_ID, null)
     }
 
     fun setDeviceId(id: String) : String {
         edit {
-            putString(Keys.DeviceId.key, id)
+            putString(DEVICE_ID, id)
         }
 
         return id
@@ -29,34 +29,35 @@ internal class SdkRepository(private val context: Context) {
 
     fun getSubscriptionId() : Long? {
         return getPreferences()
-            .getLong(Keys.SubscriptionId.key, -1)
+            .getLong(SUBSCRIPTION_ID, -1)
             .let { if (it > 0) it else null }
     }
 
     fun getContactId() : Long? {
         return getPreferences()
-            .getLong(Keys.ContactId.key, -1)
+            .getLong(CONTACT_ID, -1)
             .let { if (it > 0) it else null }
     }
 
     fun setContactSubscription(apiSubscription: ApiSubscription) {
         edit {
-            putLong(Keys.SubscriptionId.key, apiSubscription.pns_id.toLong())
-            putLong(Keys.ContactId.key, apiSubscription.pns_contact_id.toLong())
+            putLong(SUBSCRIPTION_ID, apiSubscription.pns_id.toLong())
+            putLong(CONTACT_ID, apiSubscription.pns_contact_id.toLong())
         }
     }
 
     fun removeContactSubscription() {
         edit {
-            remove(Keys.SubscriptionId.key)
-            remove(Keys.ContactId.key)
+            remove(SUBSCRIPTION_ID)
+            remove(CONTACT_ID)
+            remove(DEVICE_ID)
         }
     }
 
-    enum class Keys(val key: String) {
-        DeviceId("device_id"),
-        SubscriptionId("subscription_id"),
-        ContactId("contact_id"),
-        ContactEmail("contact_email"),
+    companion object{
+        const val DEVICE_ID = "device_id"
+        const val SUBSCRIPTION_ID = "subscription_id"
+        const val CONTACT_ID = "contact_id"
+        const val CONTACT_EMAIL = "contact_email"
     }
 }

@@ -14,10 +14,10 @@ internal object SdkSettings {
         val apiInstall: String?,
         val apiUsername: String?,
         val apiKey: String?,
-        val projectId: Int
+        val listId: Int
     )
 
-    fun getSettings(context: Context) : SdkSettingsBag {
+    fun getSettings(context: Context): SdkSettingsBag {
         val appInfo = context
             .packageManager
             .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)

@@ -8,9 +8,7 @@ import com.everlytic.android.pushnotificationsdk.models.*
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import com.squareup.moshi.JsonDataException
-import com.squareup.moshi.Moshi
 import kotlinx.coroutines.runBlocking
-import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
 import java.util.*
@@ -20,16 +18,14 @@ import kotlin.coroutines.suspendCoroutine
 
 internal class PushSdk constructor(
     private val context: Context,
-    private val apiInstallUrl: String,
-    private val apiUsername: String,
-    private val apiKey: String,
-    private val pushProjectId: String,
+    private val settingsBag: SdkSettings.SdkSettingsBag,
     httpBuilder: EverlyticHttp = EverlyticHttp(),
     private val firebaseInstanceId: FirebaseInstanceIdFacade = FirebaseInstanceIdFacade.getDefaultInstance(),
     private val sdkRepository: SdkRepository = SdkRepository(context)
 ) {
 
-    private val api = httpBuilder.buildEverlyticApi(apiInstallUrl, apiUsername, apiKey)
+    private val api =
+        httpBuilder.buildEverlyticApi(settingsBag.apiInstall!!, settingsBag.apiUsername!!, settingsBag.apiKey!!)
 
     init {
         if (sdkRepository.getDeviceId().isNullOrEmpty()) {
@@ -45,7 +41,7 @@ internal class PushSdk constructor(
                 val firebaseToken = firebaseInstanceId.getInstanceId()
 
                 val contactData = ContactData(email, firebaseToken)
-                val subscription = SubscriptionEvent(pushProjectId, contactData, device = device)
+                val subscription = SubscriptionEvent(settingsBag.listId.toString(), contactData, device = device)
 
                 try {
                     val response = api.subscribe(subscription).execute()
@@ -104,10 +100,6 @@ internal class PushSdk constructor(
     internal fun saveContactSubscriptionFromResponse(response: Response<ApiSubscriptionResponse>) {
         response.body()?.let { responseBody ->
             try {
-//                val subscription = Moshi.Builder()
-//                    .build()
-//                    .adapter(ApiSubscription::class.java)
-//                    .fromJson(responseBody)!!
                 Log.d("PushSdk", "API Response: $responseBody")
                 sdkRepository.setContactSubscription(responseBody.data.subscription)
             } catch (jsonException: JsonDataException) {
@@ -116,5 +108,9 @@ internal class PushSdk constructor(
                 throw otherException
             }
         } ?: throw Exception("Empty response body string")
+    }
+
+    internal fun isContactSubscribed(): Boolean {
+        return sdkRepository.getSubscriptionId() != null && sdkRepository.getContactId() != null
     }
 }

@@ -4,7 +4,7 @@ import com.everlytic.android.pushnotificationsdk.database.vendor.Iso8601Utils
 import com.squareup.sqldelight.ColumnAdapter
 import java.util.*
 
-class DateAdapter () : ColumnAdapter<Date, String> {
+class DateAdapter : ColumnAdapter<Date, String> {
     override fun decode(databaseValue: String): Date {
         return Iso8601Utils.parse(databaseValue)
     }

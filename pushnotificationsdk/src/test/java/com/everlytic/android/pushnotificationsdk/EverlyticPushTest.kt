@@ -8,9 +8,11 @@ import android.content.pm.PackageManager
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushInvalidSDKConfigurationException
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushNotInitialisedException
 import io.mockk.*
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class EverlyticPushTest {
@@ -20,6 +22,11 @@ class EverlyticPushTest {
         Mock.BuildFacade()
         Mock.FirebaseInstanceIdFacade()
         Mock.SdkSettings()
+    }
+
+    @After
+    fun tearDown() {
+        clearConstructorMockk(PushSdk::class)
     }
 
     @Test
@@ -47,6 +54,7 @@ class EverlyticPushTest {
             mockkConstructor(PushSdk::class)
             EverlyticPush.init(app)
             verify { SdkSettings.getSettings(ofType()) }
+            clearConstructorMockk(PushSdk::class)
         }
     }
 
@@ -104,6 +112,34 @@ class EverlyticPushTest {
         coVerify { EverlyticPush.instance!!.unsubscribeCurrentContact() }
     }
 
+    @Test
+    fun testIsContactSubscribed_WithSubscribedContact_ReturnsTrue() {
+        val mockPushSdk = mockPushSdk().apply {
+            every { isContactSubscribed() } returns true
+        }
+
+        val everlyticPush = spyk<EverlyticPush> {
+            this.instance = mockPushSdk
+        }
+
+        assertTrue { everlyticPush.isContactSubscribed() }
+        verify { mockPushSdk.isContactSubscribed() }
+    }
+
+    @Test
+    fun testIsContactSubscribed_NoContact_ReturnsFalse() {
+        val mockPushSdk = mockPushSdk().apply {
+            every { isContactSubscribed() } returns false
+        }
+
+        val everlyticPush = spyk<EverlyticPush> {
+            this.instance = mockPushSdk
+        }
+
+        assertFalse { everlyticPush.isContactSubscribed() }
+        verify { mockPushSdk.isContactSubscribed() }
+    }
+
     private fun initialiseEverlyticPush() {
         val mockPushSdk = mockPushSdk()
         spyk(EverlyticPush).instance = mockPushSdk
@@ -142,11 +178,11 @@ class EverlyticPushTest {
 
     private fun mockPushSdk(): PushSdk {
         mockkConstructor(PushSdk::class)
-        val mockPushSdk = mockk<PushSdk>()
-        coEvery { mockPushSdk.subscribeContact(any()) } just Runs
-        coEvery { mockPushSdk.resubscribeUser(any()) } just Runs
-        coEvery { mockPushSdk.unsubscribeCurrentContact() } just Runs
-        return mockPushSdk
+        return mockk {
+            coEvery { subscribeContact(any()) } just Runs
+            coEvery { resubscribeUser(any()) } just Runs
+            coEvery { unsubscribeCurrentContact() } just Runs
+        }
     }
 
 }
