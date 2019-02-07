@@ -48,6 +48,7 @@ class Sandbox : AppCompatActivity() {
                 setTitle("Subscribe Contact Email")
                 setView(edit)
                 setPositiveButton(android.R.string.ok) { _, _ ->
+
                     EverlyticPush.subscribe(edit.text.toString()) {
                         if (it.isSuccessful) {
                             alert {

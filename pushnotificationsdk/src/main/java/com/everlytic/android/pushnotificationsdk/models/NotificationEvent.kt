@@ -8,7 +8,7 @@ internal data class NotificationEvent (
     val android_notification_id: Int,
     val subscription_id: Long,
     val message_id: Long,
-    val meta: String = "{}",
+    val meta: Map<String, String> = emptyMap(),
     @field:Json(name = "create_date")
     val datetime: Date = Date()
 )

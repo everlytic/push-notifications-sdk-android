@@ -15,4 +15,7 @@ internal interface EverlyticApi {
 
     @POST("push-notifications/events/clicks")
     fun recordClickEvent(@Body event: NotificationEvent): Call<ResponseBody>
+
+    @POST("push-notifications/events/deliveries")
+    fun recordDeliveryEvent(@Body event: NotificationEvent): Call<ResponseBody>
 }

@@ -1,6 +1,7 @@
 package com.everlytic.android.pushnotificationsdk
 
 import android.content.Context
+import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
 import com.google.firebase.messaging.RemoteMessage
 import io.mockk.*
@@ -22,6 +23,9 @@ class EvNotificationReceiverServiceTest {
         every { receiverService getProperty "sdkRepository" } returns mockSdkRepository
         every { receiverService getProperty "notificationRepository" } returns mockNotificationRepository
         every { receiverService getProperty "notificationHandler" } returns mockNotificationHandler
+        every {
+            receiverService invoke "processDeliveryEventForNotification" withArguments listOf(ofType<EvNotification>())
+        } returns Unit
 
         val mockMessage = mockk<RemoteMessage>(relaxed = true) {
             every { data } returns mapOf<String, String>(

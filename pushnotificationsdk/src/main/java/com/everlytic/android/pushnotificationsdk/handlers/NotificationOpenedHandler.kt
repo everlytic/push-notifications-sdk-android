@@ -36,9 +36,7 @@ internal class NotificationOpenedHandler(
     private fun processIntent(context: Context, intent: Intent) {
 
         val event = createNotificationEvent(intent, sdkRepository)
-
         notificationEventRepository.storeNotificationEvent(NotificationEventType.CLICK, event)
-
         scheduleEventUploadWorker()
 
         notificationHandler.dismissNotificationByAndroidId(

@@ -60,6 +60,7 @@ object EverlyticPush {
      * Subscribes a contact email to Everlytic Push Notifications for the current device
      * */
     @JvmStatic
+    @JvmOverloads
     @Throws(EverlyticPushNotInitialisedException::class)
     fun subscribe(email: String, onComplete: ((EvResult) -> Unit)? = null) {
         instance?.let { sdk ->
@@ -79,6 +80,7 @@ object EverlyticPush {
      * Unsubscribes the current contact device from Everlytic Push Notifications
      * */
     @JvmStatic
+    @JvmOverloads
     @Throws(EverlyticPushNotInitialisedException::class)
     fun unsubscribe(onComplete: ((EvResult) -> Unit)? = null) {
         instance?.let { sdk ->
@@ -96,11 +98,21 @@ object EverlyticPush {
         } ?: throw newNotInitialisedException()
     }
 
+    /**
+     * Returns true if a contact has already been subscribed on the device
+     *
+     * @return Boolean
+     * */
     @JvmStatic
     fun isContactSubscribed(): Boolean {
         return instance?.isContactSubscribed() ?: false
     }
 
+    /**
+     * Returns true if the Everlytic Push SDK has been initialised
+     *
+     * @return Boolean
+     * */
     @JvmStatic
     fun isInitialised(): Boolean = instance != null
 
