@@ -7,7 +7,6 @@ import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacad
 import com.everlytic.android.pushnotificationsdk.models.*
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
-import com.squareup.moshi.JsonDataException
 import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
 import retrofit2.Response
@@ -97,13 +96,11 @@ internal class PushSdk constructor(
         }
     }
 
-    internal fun saveContactSubscriptionFromResponse(response: Response<ApiSubscriptionResponse>) {
-        response.body()?.let { responseBody ->
+    internal fun saveContactSubscriptionFromResponse(response: Response<ApiSubscription>) {
+        response.body().let { responseBody ->
             try {
                 Log.d("PushSdk", "API Response: $responseBody")
-                sdkRepository.setContactSubscription(responseBody.data.subscription)
-            } catch (jsonException: JsonDataException) {
-                throw jsonException
+                sdkRepository.setContactSubscription(responseBody!!)
             } catch (otherException: Exception) {
                 throw otherException
             }

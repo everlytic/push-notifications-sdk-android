@@ -15,7 +15,6 @@ package com.everlytic.android.pushnotificationsdk.database.vendor;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import com.squareup.moshi.JsonDataException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -73,7 +72,7 @@ final public class Iso8601Utils {
      * @param date ISO string to parse in the appropriate format.
      * @return the parsed date
      */
-    public static Date parse(String date) {
+    public static Date parse(String date) throws Exception {
         try {
             int offset = 0;
 
@@ -191,7 +190,7 @@ final public class Iso8601Utils {
             // If we get a ParseException it'll already have the right message/offset.
             // Other exception types can convert here.
         } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
-            throw new JsonDataException("Not an RFC 3339 date: " + date, e);
+            throw new Exception("Not an RFC 3339 date: " + date, e);
         }
     }
 

@@ -1,14 +1,9 @@
 package com.everlytic.android.pushnotificationsdk
 
-import com.squareup.moshi.Moshi
+import com.everlytic.android.pushnotificationsdk.models.jsonadapters.MapAdapter
+import org.json.JSONObject
 
 @Suppress("UNCHECKED_CAST")
 internal fun decodeJsonMap(data: String): Map<String, String> {
-    return Moshi
-        .Builder()
-        .build()
-        .adapter(Map::class.java)
-        .let {
-            it.fromJson(data) as Map<String, String>
-        }
+    return MapAdapter.fromJson(JSONObject(data))
 }

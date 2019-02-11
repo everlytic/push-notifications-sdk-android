@@ -1,11 +1,10 @@
 package com.everlytic.android.pushnotificationsdk.network
 
 import android.util.Log
-import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticApiException
-import com.everlytic.android.pushnotificationsdk.models.Status
-import com.squareup.moshi.Moshi
+import com.everlytic.android.pushnotificationsdk.models.jsonadapters.ApiResponseAdapter
 import okhttp3.Interceptor
 import okhttp3.Response
+import org.json.JSONObject
 
 internal class EverlyticApiErrorRequestFailerInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -14,8 +13,8 @@ internal class EverlyticApiErrorRequestFailerInterceptor : Interceptor {
         if (response.isSuccessful) {
             val bodyString = response.peekBody(10240).string()
             Log.d("ApiRequestFailer", bodyString)
-            Moshi.Builder().build().adapter(Status::class.java).fromJson(bodyString)?.let { status ->
-                if (status.status == "error" || status.result == "error") {
+            ApiResponseAdapter.fromJson(JSONObject(bodyString)).let { status ->
+                if (status.result == "error") {
                     response = response.newBuilder()
                         .code(400)
                         .build()

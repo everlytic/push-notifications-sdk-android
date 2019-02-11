@@ -8,7 +8,7 @@ import retrofit2.http.POST
 
 internal interface EverlyticApi {
     @POST("push-notifications/subscriptions/subscribe")
-    fun subscribe(@Body subscription: SubscriptionEvent): Call<ApiSubscriptionResponse>
+    fun subscribe(@Body subscription: SubscriptionEvent): Call<ApiSubscription>
 
     @POST("push-notifications/subscriptions/unsubscribe")
     fun unsubscribe(@Body unsubscribeEvent: UnsubscribeEvent): Call<ResponseBody>

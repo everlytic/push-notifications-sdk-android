@@ -3,18 +3,15 @@ package com.everlytic.android.pushnotificationsdk.models
 import android.os.Parcelable
 import androidx.annotation.IntRange
 import androidx.core.app.NotificationCompat
-import com.squareup.moshi.Json
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 @Parcelize
 data class EvNotification(
-    @Json(name = "message_id")
     val messageId: Long,
     val androidNotificationId: Int,
     val title: String,
     val body: String?,
-    @Json(name = "use_sound")
     val useSound: Boolean,
     val color: Int,
     val icon: Int,

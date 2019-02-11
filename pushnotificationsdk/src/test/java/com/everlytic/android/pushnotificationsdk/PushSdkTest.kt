@@ -3,7 +3,7 @@ package com.everlytic.android.pushnotificationsdk
 import android.content.Context
 import android.content.res.Resources
 import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
-import com.everlytic.android.pushnotificationsdk.models.ApiSubscriptionResponse
+import com.everlytic.android.pushnotificationsdk.models.ApiSubscription
 import com.everlytic.android.pushnotificationsdk.network.EverlyticApi
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
@@ -32,8 +32,8 @@ class PushSdkTest {
     fun testSubscribe_RequestSucceeds_ReturnsSuccess() {
 
         val mockEverlyticApi = mockk<EverlyticApi> {
-            val mockCall = mockk<Call<ApiSubscriptionResponse>>()
-            val mockResponse = mockk<Response<ApiSubscriptionResponse>> {
+            val mockCall = mockk<Call<ApiSubscription>>()
+            val mockResponse = mockk<Response<ApiSubscription>> {
                 every { isSuccessful } returns true
             }
             every { subscribe(ofType()) } returns mockCall
@@ -78,7 +78,7 @@ class PushSdkTest {
         val httpException = HttpException(mockResponse)
 
         val mockEverlyticApi = mockk<EverlyticApi> {
-            val mockCall = mockk<Call<ApiSubscriptionResponse>>()
+            val mockCall = mockk<Call<ApiSubscription>>()
             every { subscribe(ofType()) } returns mockCall
             every { subscribe(ofType()).execute() } throws httpException
         }
@@ -154,7 +154,7 @@ class PushSdkTest {
 
         val mockEverlyticApi = mockk<EverlyticApi> {
             val httpException = HttpException(mockResponse)
-            val mockCall = mockk<Call<ApiSubscriptionResponse>>()
+            val mockCall = mockk<Call<ApiSubscription>>()
             every { subscribe(ofType()) } returns mockCall
             every { subscribe(ofType()).execute() } throws httpException
         }

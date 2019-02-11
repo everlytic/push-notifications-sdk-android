@@ -14,7 +14,6 @@ import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationEventRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import retrofit2.Call
-import com.squareup.moshi.Moshi
 
 
 
