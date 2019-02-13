@@ -3,19 +3,18 @@ package com.everlytic.android.pushnotificationsdk
 import android.content.Context
 import android.content.res.Resources
 import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
+import com.everlytic.android.pushnotificationsdk.models.ApiResponse
 import com.everlytic.android.pushnotificationsdk.models.ApiSubscription
+import com.everlytic.android.pushnotificationsdk.models.jsonadapters.ApiSubscriptionAdapter
 import com.everlytic.android.pushnotificationsdk.network.EverlyticApi
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
-import okhttp3.ResponseBody
+import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
-import retrofit2.Call
-import retrofit2.HttpException
-import retrofit2.Response
 import kotlin.test.assertFails
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -31,16 +30,22 @@ class PushSdkTest {
     @MockK(relaxed = true)
     fun testSubscribe_RequestSucceeds_ReturnsSuccess() {
 
-        val mockEverlyticApi = mockk<EverlyticApi> {
-            val mockCall = mockk<Call<ApiSubscription>>()
-            val mockResponse = mockk<Response<ApiSubscription>> {
-                every { isSuccessful } returns true
+
+        val mockEverlyticApi = mockk<EverlyticApi>(relaxed = true) {
+            val sl = slot<EverlyticHttp.ResponseHandler>()
+            every { subscribe(any(), capture(sl)) } answers {
+
+                val sub = ApiSubscription(
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "213-456-789"
+                )
+
+                val apiResponse = ApiResponse("success", ApiSubscriptionAdapter.toJson(sub))
+                sl.captured.onSuccess(apiResponse)
             }
-            every { subscribe(ofType()) } returns mockCall
-            every { subscribe(ofType()).execute() } returns mockResponse
-        }
-        val mockHttp = mockk<EverlyticHttp> {
-            every { buildEverlyticApi(API_INSTALL, API_USERNAME, API_KEY) } answers { mockEverlyticApi }
         }
 
         val mockContext = mockk<Context> {
@@ -54,7 +59,7 @@ class PushSdkTest {
             PushSdk(
                 mockContext,
                 getSettingsBag(),
-                mockHttp,
+                mockEverlyticApi,
                 getFirebaseInstanceIdFacade(),
                 mockSdkRepository()
             )
@@ -64,33 +69,26 @@ class PushSdkTest {
 
         runBlocking { sdk.subscribeContact(USER_EMAIL) }
 
-        verify(exactly = 1) { mockEverlyticApi.subscribe(ofType()).execute() }
+        verify(exactly = 1) { mockEverlyticApi.subscribe(ofType(), ofType()) }
     }
 
     @Test
     @MockK(relaxed = true)
     fun testSubscribe_RequestFails_ReturnsError() {
 
-        val mockResponse = mockk<Response<ResponseBody>> {
-            every { code() } returns 400
-            every { message() } returns "Test Exception"
-        }
-        val httpException = HttpException(mockResponse)
 
         val mockEverlyticApi = mockk<EverlyticApi> {
-            val mockCall = mockk<Call<ApiSubscription>>()
-            every { subscribe(ofType()) } returns mockCall
-            every { subscribe(ofType()).execute() } throws httpException
-        }
-        val mockHttp = mockk<EverlyticHttp> {
-            every { buildEverlyticApi(API_INSTALL, API_USERNAME, API_KEY) } answers { mockEverlyticApi }
+            val slot = slot<EverlyticHttp.ResponseHandler>()
+            every { subscribe(ofType(), capture(slot)) } answers {
+                slot.captured.onFailure(400, null, null)
+            }
         }
 
         val sdk = spyk(
             PushSdk(
                 mockk(),
                 getSettingsBag(),
-                mockHttp,
+                mockEverlyticApi,
                 getFirebaseInstanceIdFacade(),
                 mockSdkRepository()
             )
@@ -109,15 +107,10 @@ class PushSdkTest {
         val mockSdkRepository = mockSdkRepository()
 
         val mockEverlyticApi = mockk<EverlyticApi> {
-            val mockCall = mockk<Call<ResponseBody>>()
-            val mockResponse = mockk<Response<ResponseBody>> {
-                every { isSuccessful } returns true
+            val slot = slot<EverlyticHttp.ResponseHandler>()
+            every { unsubscribe(ofType(), capture(slot)) } answers {
+                slot.captured.onSuccess(ApiResponse("success", JSONObject()))
             }
-            every { unsubscribe(ofType()) } returns mockCall
-            every { unsubscribe(ofType()).execute() } returns mockResponse
-        }
-        val mockHttp = mockk<EverlyticHttp> {
-            every { buildEverlyticApi(API_INSTALL, API_USERNAME, API_KEY) } answers { mockEverlyticApi }
         }
 
         val mockContext = mockk<Context> {
@@ -131,7 +124,7 @@ class PushSdkTest {
             PushSdk(
                 mockContext,
                 getSettingsBag(),
-                mockHttp,
+                mockEverlyticApi,
                 getFirebaseInstanceIdFacade(),
                 mockSdkRepository
             )
@@ -139,34 +132,28 @@ class PushSdkTest {
 
         runBlocking { sdk.unsubscribeCurrentContact() }
 
-        verify(exactly = 1) { mockEverlyticApi.unsubscribe(ofType()).execute() }
+        verify(exactly = 1) { mockEverlyticApi.unsubscribe(ofType(), ofType()) }
         verify(exactly = 1) { mockSdkRepository.getSubscriptionId() }
         verify(exactly = 1) { mockSdkRepository.removeContactSubscription() }
     }
 
+
     @Test
     @MockK(relaxed = true)
     fun testUnsubscribe_RequestFails_ReturnsError() {
-        val mockResponse = mockk<Response<ResponseBody>> {
-            every { code() } returns 400
-            every { message() } returns "Test Exception"
-        }
 
         val mockEverlyticApi = mockk<EverlyticApi> {
-            val httpException = HttpException(mockResponse)
-            val mockCall = mockk<Call<ApiSubscription>>()
-            every { subscribe(ofType()) } returns mockCall
-            every { subscribe(ofType()).execute() } throws httpException
-        }
-        val mockHttp = mockk<EverlyticHttp> {
-            every { buildEverlyticApi(API_INSTALL, API_USERNAME, API_KEY) } answers { mockEverlyticApi }
+            val slot = slot<EverlyticHttp.ResponseHandler>()
+            every { subscribe(ofType(), capture(slot)) } answers {
+                slot.captured.onFailure(400, null, null)
+            }
         }
 
         val sdk = spyk(
             PushSdk(
                 mockk(),
                 getSettingsBag(),
-                mockHttp,
+                mockEverlyticApi,
                 getFirebaseInstanceIdFacade(),
                 mockSdkRepository()
             )
@@ -181,9 +168,6 @@ class PushSdkTest {
 
     @Test
     fun testIsContactSubscribed_WithSubscriptionAndContactIds_ReturnsTrue() {
-        val mockHttp = mockk<EverlyticHttp> {
-            every { buildEverlyticApi(API_INSTALL, API_USERNAME, API_KEY) } answers { mockk() }
-        }
 
         val mockSdkRepo = mockSdkRepository().apply {
             every { getSubscriptionId() } returns 1
@@ -194,7 +178,7 @@ class PushSdkTest {
             PushSdk(
                 mockk(),
                 getSettingsBag(),
-                mockHttp,
+                mockk(),
                 getFirebaseInstanceIdFacade(),
                 mockSdkRepo
             )
@@ -207,9 +191,6 @@ class PushSdkTest {
 
     @Test
     fun testIsContactSubscribed_NullSubscriptionId_ReturnsFalse() {
-        val mockHttp = mockk<EverlyticHttp> {
-            every { buildEverlyticApi(API_INSTALL, API_USERNAME, API_KEY) } answers { mockk() }
-        }
 
         val mockSdkRepo = mockSdkRepository().apply {
             every { getSubscriptionId() } returns null
@@ -220,7 +201,7 @@ class PushSdkTest {
             PushSdk(
                 mockk(),
                 getSettingsBag(),
-                mockHttp,
+                mockk(),
                 getFirebaseInstanceIdFacade(),
                 mockSdkRepo
             )
@@ -232,10 +213,6 @@ class PushSdkTest {
 
     @Test
     fun testIsContactSubscribed_NullContactId_ReturnsFalse() {
-        val mockHttp = mockk<EverlyticHttp> {
-            every { buildEverlyticApi(API_INSTALL, API_USERNAME, API_KEY) } answers { mockk() }
-        }
-
         val mockSdkRepo = mockSdkRepository().apply {
             every { getSubscriptionId() } returns 1
             every { getContactId() } returns null
@@ -245,7 +222,7 @@ class PushSdkTest {
             PushSdk(
                 mockk(),
                 getSettingsBag(),
-                mockHttp,
+                mockk(),
                 getFirebaseInstanceIdFacade(),
                 mockSdkRepo
             )

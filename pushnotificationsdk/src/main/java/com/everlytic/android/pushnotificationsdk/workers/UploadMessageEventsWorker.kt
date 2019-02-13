@@ -8,13 +8,12 @@ import com.everlytic.android.pushnotificationsdk.SdkSettings
 import com.everlytic.android.pushnotificationsdk.database.Database
 import com.everlytic.android.pushnotificationsdk.database.NotificationEventType
 import com.everlytic.android.pushnotificationsdk.decodeJsonMap
+import com.everlytic.android.pushnotificationsdk.models.ApiResponse
 import com.everlytic.android.pushnotificationsdk.models.NotificationEvent
 import com.everlytic.android.pushnotificationsdk.network.EverlyticApi
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationEventRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
-import retrofit2.Call
-
 
 
 class UploadMessageEventsWorker(val context: Context, params: WorkerParameters) : Worker(context, params) {
@@ -30,12 +29,7 @@ class UploadMessageEventsWorker(val context: Context, params: WorkerParameters) 
             SdkRepository(context)
         )
 
-        api = EverlyticHttp()
-            .buildEverlyticApi(
-                sdkSettings.apiInstall!!,
-                sdkSettings.apiUsername!!,
-                sdkSettings.apiKey!!
-            )
+        api = EverlyticApi(EverlyticHttp(sdkSettings.apiInstall!!, sdkSettings.apiUsername!!, sdkSettings.apiKey!!))
 
         val events = NotificationEventType.values().flatMap {
             repository.getAllPendingEventsForType(it)
@@ -53,10 +47,16 @@ class UploadMessageEventsWorker(val context: Context, params: WorkerParameters) 
         val notificationEvent = createNotificationEvent(rawEvent)
 
         try {
-            createUploadCallForEvent(rawEvent.event_type, notificationEvent)?.let {
-                it.execute()
-                repository.updateEventIsUploaded(rawEvent._id, true)
-            }
+            performUploadForEvent(rawEvent.event_type, notificationEvent, object : EverlyticHttp.ResponseHandler {
+                override fun onSuccess(response: ApiResponse?) {
+                    repository.updateEventIsUploaded(rawEvent._id, true)
+                }
+
+                override fun onFailure(code: Int, response: String?, throwable: Throwable?) {
+
+                }
+
+            })
         } catch (exception: Exception) {
             repository.updateEventIsUploaded(rawEvent._id, false)
         }
@@ -74,13 +74,14 @@ class UploadMessageEventsWorker(val context: Context, params: WorkerParameters) 
         )
     }
 
-    private fun createUploadCallForEvent(
+    private fun performUploadForEvent(
         eventType: NotificationEventType,
-        event: NotificationEvent
-    ): Call<*>? {
+        event: NotificationEvent,
+        responseHandler: EverlyticHttp.ResponseHandler
+    ) {
         return when (eventType) {
-            NotificationEventType.CLICK -> api.recordClickEvent(event)
-            NotificationEventType.DELIVERY -> api.recordDeliveryEvent(event)
+            NotificationEventType.CLICK -> api.recordClickEvent(event, responseHandler)
+            NotificationEventType.DELIVERY -> api.recordDeliveryEvent(event, responseHandler)
             NotificationEventType.DISMISS -> TODO()
             NotificationEventType.BOUNCE -> TODO()
             NotificationEventType.SOFT_BOUNCE -> TODO()

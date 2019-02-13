@@ -2,7 +2,7 @@ package com.everlytic.android.pushnotificationsdk.models.jsonadapters
 
 import org.json.JSONObject
 
-object MapAdapter : JSONAdapter<Map<String, String>> {
+object MapAdapter : JSONAdapterInterface<Map<String, String>> {
     override fun fromJson(json: JSONObject): Map<String, String> {
 
         val map = mutableMapOf<String, String>()
@@ -14,11 +14,11 @@ object MapAdapter : JSONAdapter<Map<String, String>> {
         return map
     }
 
-    override fun toJson(obj: Map<String, String>): String {
+    override fun toJson(obj: Map<String, String>): JSONObject {
         return JSONObject().apply {
             obj.forEach { (key, value) ->
                 put(key, value)
             }
-        }.toString()
+        }
     }
 }

@@ -4,7 +4,7 @@ import com.everlytic.android.pushnotificationsdk.database.vendor.Iso8601Utils
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import org.json.JSONObject
 
-object EvNotificationAdapter : JSONAdapter<EvNotification> {
+object EvNotificationAdapter : JSONAdapterInterface<EvNotification> {
     override fun fromJson(json: JSONObject): EvNotification {
 
         val receivedAt = json.getString("received_at")
@@ -27,7 +27,7 @@ object EvNotificationAdapter : JSONAdapter<EvNotification> {
         )
     }
 
-    override fun toJson(obj: EvNotification): String {
+    override fun toJson(obj: EvNotification): JSONObject {
         return JSONObject()
             .put("messageId", obj.messageId)
             .put("androidNotificationId", obj.androidNotificationId)
@@ -41,6 +41,5 @@ object EvNotificationAdapter : JSONAdapter<EvNotification> {
             .put("read_at", Iso8601Utils.format(obj.read_at))
             .put("dismissed_at", Iso8601Utils.format(obj.dismissed_at))
             // todo serialize notification action listing
-            .toString()
     }
 }

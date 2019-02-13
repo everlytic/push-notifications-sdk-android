@@ -7,7 +7,7 @@ import com.everlytic.android.pushnotificationsdk.models.PlatformData
 import com.everlytic.android.pushnotificationsdk.models.SubscriptionEvent
 import org.json.JSONObject
 
-internal object SubscriptionEventAdapter : JSONAdapter<SubscriptionEvent> {
+internal object SubscriptionEventAdapter : JSONAdapterInterface<SubscriptionEvent> {
     override fun fromJson(json: JSONObject): SubscriptionEvent {
         return SubscriptionEvent(
             json.getString("list_id"),
@@ -19,7 +19,7 @@ internal object SubscriptionEventAdapter : JSONAdapter<SubscriptionEvent> {
         )
     }
 
-    override fun toJson(obj: SubscriptionEvent): String {
+    override fun toJson(obj: SubscriptionEvent): JSONObject {
         return JSONObject()
             .put("list_id", obj.list_id)
             .put("contact", ContactDataAdapter.toJson(obj.contact))
@@ -27,10 +27,9 @@ internal object SubscriptionEventAdapter : JSONAdapter<SubscriptionEvent> {
             .put("device", DeviceDataAdapter.toJson(obj.device))
             .put("metadata", MapAdapter.toJson(obj.metadata))
             .put("datetime", Iso8601Utils.format(obj.datetime))
-            .toString()
     }
 
-    object ContactDataAdapter : JSONAdapter<ContactData> {
+    object ContactDataAdapter : JSONAdapterInterface<ContactData> {
         override fun fromJson(json: JSONObject): ContactData {
             return ContactData(
                 json.getString("email"),
@@ -38,16 +37,15 @@ internal object SubscriptionEventAdapter : JSONAdapter<SubscriptionEvent> {
             )
         }
 
-        override fun toJson(obj: ContactData): String {
+        override fun toJson(obj: ContactData): JSONObject {
             return JSONObject()
                 .put("email", obj.email)
                 .put("push_token", obj.push_token)
-                .toString()
         }
 
     }
 
-    object PlatformDataAdapter : JSONAdapter<PlatformData> {
+    object PlatformDataAdapter : JSONAdapterInterface<PlatformData> {
         override fun fromJson(json: JSONObject): PlatformData {
             return PlatformData(
                 json.getString("type"),
@@ -55,16 +53,15 @@ internal object SubscriptionEventAdapter : JSONAdapter<SubscriptionEvent> {
             )
         }
 
-        override fun toJson(obj: PlatformData): String {
+        override fun toJson(obj: PlatformData): JSONObject {
             return JSONObject()
                 .put("type", obj.type)
                 .put("version", obj.version)
-                .toString()
         }
 
     }
 
-    object DeviceDataAdapter : JSONAdapter<DeviceData> {
+    object DeviceDataAdapter : JSONAdapterInterface<DeviceData> {
         override fun fromJson(json: JSONObject): DeviceData {
             return DeviceData(
                 json.getString("id"),
@@ -74,13 +71,12 @@ internal object SubscriptionEventAdapter : JSONAdapter<SubscriptionEvent> {
             )
         }
 
-        override fun toJson(obj: DeviceData): String {
+        override fun toJson(obj: DeviceData): JSONObject {
             return JSONObject()
                 .put("id", obj.id)
                 .put("manufacturer", obj.manufacturer)
                 .put("model", obj.model)
                 .put("type", obj.type)
-                .toString()
         }
 
     }

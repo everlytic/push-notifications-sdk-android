@@ -1,21 +1,33 @@
 package com.everlytic.android.pushnotificationsdk.network
 
-import com.everlytic.android.pushnotificationsdk.models.*
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.POST
+import com.everlytic.android.pushnotificationsdk.models.NotificationEvent
+import com.everlytic.android.pushnotificationsdk.models.SubscriptionEvent
+import com.everlytic.android.pushnotificationsdk.models.UnsubscribeEvent
+import com.everlytic.android.pushnotificationsdk.models.jsonadapters.JSONAdapter
 
-internal interface EverlyticApi {
-    @POST("push-notifications/subscriptions/subscribe")
-    fun subscribe(@Body subscription: SubscriptionEvent): Call<ApiSubscription>
+internal class EverlyticApi(val http: EverlyticHttp) {
 
-    @POST("push-notifications/subscriptions/unsubscribe")
-    fun unsubscribe(@Body unsubscribeEvent: UnsubscribeEvent): Call<ResponseBody>
+    fun subscribe(subscription: SubscriptionEvent, responseHandler: EverlyticHttp.ResponseHandler) {
+        http.post(
+            "push-notifications/subscriptions/subscribe",
+            JSONAdapter.encodeAsString(subscription),
+            responseHandler
+        )
+    }
 
-    @POST("push-notifications/events/clicks")
-    fun recordClickEvent(@Body event: NotificationEvent): Call<ResponseBody>
+    fun unsubscribe(unsubscribeEvent: UnsubscribeEvent, responseHandler: EverlyticHttp.ResponseHandler) {
+        http.post(
+            "push-notifications/subscriptions/unsubscribe",
+            JSONAdapter.encodeAsString(unsubscribeEvent),
+            responseHandler
+        )
+    }
 
-    @POST("push-notifications/events/deliveries")
-    fun recordDeliveryEvent(@Body event: NotificationEvent): Call<ResponseBody>
+    fun recordClickEvent(event: NotificationEvent, responseHandler: EverlyticHttp.ResponseHandler) {
+        http.post("push-notifications/events/clicks", JSONAdapter.encodeAsString(event), responseHandler)
+    }
+
+    fun recordDeliveryEvent(event: NotificationEvent, responseHandler: EverlyticHttp.ResponseHandler) {
+        http.post("push-notifications/events/deliveries", JSONAdapter.encodeAsString(event), responseHandler)
+    }
 }
