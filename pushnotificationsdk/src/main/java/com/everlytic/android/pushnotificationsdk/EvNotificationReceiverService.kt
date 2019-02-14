@@ -35,7 +35,7 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
     }
 
     override fun onNewToken(p0: String?) {
-        PushSdk()
+        TODO("Implement onNewToken")
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
