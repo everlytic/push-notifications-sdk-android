@@ -16,8 +16,8 @@ object EverlyticPush {
     private const val TAG = "EverlyticPush"
 
     @SuppressLint("StaticFieldLeak")
-    internal var instance: PushSdk? = null
-    internal var application: Application? = null
+    private var instance: PushSdk? = null
+    private var application: Application? = null
 
     /**
      * Initialises the Everlytic Push EvNotification SDK
@@ -59,6 +59,7 @@ object EverlyticPush {
      * @param email
      * @return [Unit]
      * */
+    @JvmStatic
     fun subscribe(email: String) {
         EverlyticPush.subscribe(email, null)
     }
