@@ -76,7 +76,7 @@ class EverlyticPushTest {
 
         EverlyticPush.subscribe("test@test.com")
 
-        coVerify(exactly = 1) { EverlyticPush.instance!!.subscribeContact(any()) }
+        verify(exactly = 1) { EverlyticPush.instance!!.subscribeContact(any(), any()) }
     }
 
     @Test
@@ -87,7 +87,7 @@ class EverlyticPushTest {
             assertTrue { it.isSuccessful }
         }
 
-        coVerify(exactly = 1) { EverlyticPush.instance!!.subscribeContact(any()) }
+        verify(exactly = 1) { EverlyticPush.instance!!.subscribeContact(any(), any()) }
     }
 
     @Test
@@ -109,7 +109,7 @@ class EverlyticPushTest {
             assertTrue { it.isSuccessful }
         }
 
-        coVerify { EverlyticPush.instance!!.unsubscribeCurrentContact() }
+        verify { EverlyticPush.instance!!.unsubscribeCurrentContact(any()) }
     }
 
     @Test
@@ -179,9 +179,9 @@ class EverlyticPushTest {
     private fun mockPushSdk(): PushSdk {
         mockkConstructor(PushSdk::class)
         return mockk {
-            coEvery { subscribeContact(any()) } just Runs
-            coEvery { resubscribeUser(any()) } just Runs
-            coEvery { unsubscribeCurrentContact() } just Runs
+            every { subscribeContact(any(), any()) } just Runs
+            every { resubscribeUser(any(), any()) } just Runs
+            every { unsubscribeCurrentContact() } just Runs
         }
     }
 

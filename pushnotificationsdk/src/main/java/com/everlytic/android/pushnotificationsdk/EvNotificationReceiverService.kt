@@ -34,6 +34,10 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
         NotificationEventRepository(getDatabase(), sdkRepository)
     }
 
+    override fun onNewToken(p0: String?) {
+        PushSdk()
+    }
+
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         val subscriptionId = sdkRepository.getSubscriptionId() ?: -1L
         val contactId = sdkRepository.getContactId() ?: -1L

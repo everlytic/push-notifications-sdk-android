@@ -4,21 +4,20 @@ import com.google.firebase.iid.FirebaseInstanceId
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
+data class TokenResult(val success: Boolean, val value: String?, val throwable: Throwable? = null)
+
 internal class FirebaseInstanceIdFacade(private val firebaseInstanceId: FirebaseInstanceId) {
 
+
     @Throws(Exception::class)
-    suspend fun getInstanceId(): String {
-
-        return suspendCoroutine { continuation ->
-            firebaseInstanceId.instanceId
-                .addOnSuccessListener {
-                    continuation.resumeWith(Result.success(it.token))
-                }
-                .addOnFailureListener {
-                    continuation.resumeWithException(it)
-                }
-        }
-
+    fun getInstanceId(onComplete: (TokenResult) -> Unit) {
+        firebaseInstanceId.instanceId
+            .addOnSuccessListener {
+                onComplete(TokenResult(true, it.token))
+            }
+            .addOnFailureListener {
+                onComplete(TokenResult(false, null, it))
+            }
     }
 
     companion object {

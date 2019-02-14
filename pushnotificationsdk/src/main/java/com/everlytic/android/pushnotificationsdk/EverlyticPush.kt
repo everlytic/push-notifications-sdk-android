@@ -8,8 +8,6 @@ import com.everlytic.android.pushnotificationsdk.SdkSettings.META_API_USERNAME_P
 import com.everlytic.android.pushnotificationsdk.SdkSettings.META_PUSH_PROJECT_ID
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushInvalidSDKConfigurationException
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushNotInitialisedException
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 /**
  * Everlytic Push Notifications SDK
@@ -58,19 +56,29 @@ object EverlyticPush {
 
     /**
      * Subscribes a contact email to Everlytic Push Notifications for the current device
+     * @param email
+     * @return [Unit]
+     * */
+    fun subscribe(email: String) {
+        EverlyticPush.subscribe(email, null)
+    }
+
+    /**
+     * Subscribes a contact email to Everlytic Push Notifications for the current device
+     *
+     * @param email
+     * @param onComplete Callback with result of attempted subscription
+     * @return [Unit]
      * */
     @JvmStatic
-    @JvmOverloads
     @Throws(EverlyticPushNotInitialisedException::class)
-    fun subscribe(email: String, onComplete: ((EvResult) -> Unit)? = null) {
+    fun subscribe(email: String, onComplete: ((EvResult) -> Unit)?) {
         instance?.let { sdk ->
-            GlobalScope.launch {
-                try {
-                    sdk.subscribeContact(email)
-                    onComplete?.invoke(EvResult(true))
-                } catch (exception: Exception) {
-                    onComplete?.invoke(EvResult(false, exception))
-                    exception.printStackTrace()
+            runOnBackgroundThread {
+                sdk.subscribeContact(email) {
+                    runOnMainThread {
+                        onComplete?.invoke(it)
+                    }
                 }
             }
         } ?: throw newNotInitialisedException()
@@ -84,14 +92,11 @@ object EverlyticPush {
     @Throws(EverlyticPushNotInitialisedException::class)
     fun unsubscribe(onComplete: ((EvResult) -> Unit)? = null) {
         instance?.let { sdk ->
-
-            GlobalScope.launch {
-                try {
-                    sdk.unsubscribeCurrentContact()
-                    onComplete?.invoke(EvResult(true))
-                } catch (exception: Exception) {
-                    onComplete?.invoke(EvResult(false, exception))
-                    exception.printStackTrace()
+            runOnBackgroundThread {
+                sdk.unsubscribeCurrentContact {
+                    runOnMainThread {
+                        onComplete?.invoke(it)
+                    }
                 }
             }
 

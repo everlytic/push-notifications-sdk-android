@@ -3,6 +3,7 @@ package com.everlytic.android.pushnotificationsdk
 import android.content.Context
 import android.content.res.Resources
 import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
+import com.everlytic.android.pushnotificationsdk.facades.TokenResult
 import com.everlytic.android.pushnotificationsdk.models.ApiResponse
 import com.everlytic.android.pushnotificationsdk.models.ApiSubscription
 import com.everlytic.android.pushnotificationsdk.models.jsonadapters.ApiSubscriptionAdapter
@@ -42,8 +43,9 @@ class PushSdkTest {
                     "4",
                     "213-456-789"
                 )
-
-                val apiResponse = ApiResponse("success", ApiSubscriptionAdapter.toJson(sub))
+                val json = JSONObject()
+                    .put("subscription", ApiSubscriptionAdapter.toJson(sub))
+                val apiResponse = ApiResponse("success", json)
                 sl.captured.onSuccess(apiResponse)
             }
         }
@@ -67,7 +69,7 @@ class PushSdkTest {
 
         every { sdk.saveContactSubscriptionFromResponse(any()) } just Runs
 
-        runBlocking { sdk.subscribeContact(USER_EMAIL) }
+        sdk.subscribeContact(USER_EMAIL) {}
 
         verify(exactly = 1) { mockEverlyticApi.subscribe(ofType(), ofType()) }
     }
@@ -95,9 +97,7 @@ class PushSdkTest {
         )
 
         assertFails {
-            runBlocking {
-                sdk.subscribeContact(USER_EMAIL)
-            }
+                sdk.subscribeContact(USER_EMAIL) {}
         }
     }
 
@@ -234,7 +234,15 @@ class PushSdkTest {
 
     private fun getFirebaseInstanceIdFacade(): FirebaseInstanceIdFacade {
         return mockk {
-            coEvery { getInstanceId() } returns "test_instance_id"
+            val slot = slot<(TokenResult) -> Unit>()
+            every { getInstanceId(capture(slot)) } answers {
+                slot.captured.invoke(
+                    TokenResult(
+                        true,
+                        "test_instance_id"
+                    )
+                )
+            }
         }
     }
 

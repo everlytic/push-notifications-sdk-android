@@ -71,7 +71,8 @@ internal class EverlyticHttp(installUrl: String, apiUsername: String, apiKey: St
 
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     logd("==> success response code")
-                    val scanner = Scanner(inputStream, "UTF-8")
+                    val istream = inputStream
+                    val scanner = Scanner(istream, "UTF-8")
                     logd("==> reading response")
                     jsonResult = readStringFromScanner(scanner)
                     scanner.close()

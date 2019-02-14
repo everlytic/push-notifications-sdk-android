@@ -1,6 +1,8 @@
 package com.everlytic.android.pushnotificationsdk.models.jsonadapters
 
 import com.everlytic.android.pushnotificationsdk.database.vendor.Iso8601Utils
+import com.everlytic.android.pushnotificationsdk.decodeJsonMap
+import com.everlytic.android.pushnotificationsdk.encodeJsonMap
 import com.everlytic.android.pushnotificationsdk.models.ContactData
 import com.everlytic.android.pushnotificationsdk.models.DeviceData
 import com.everlytic.android.pushnotificationsdk.models.PlatformData
@@ -12,7 +14,7 @@ internal object SubscriptionEventAdapter : JSONAdapterInterface<SubscriptionEven
         return SubscriptionEvent(
             json.getString("list_id"),
             ContactDataAdapter.fromJson(json.getJSONObject("contact")),
-            MapAdapter.fromJson(json.getJSONObject("metadata")),
+            decodeJsonMap(json.getJSONObject("metadata")),
             PlatformDataAdapter.fromJson(json.getJSONObject("platform")),
             DeviceDataAdapter.fromJson(json.getJSONObject("device")),
             Iso8601Utils.parse(json.getString("datetime"))
@@ -22,10 +24,11 @@ internal object SubscriptionEventAdapter : JSONAdapterInterface<SubscriptionEven
     override fun toJson(obj: SubscriptionEvent): JSONObject {
         return JSONObject()
             .put("list_id", obj.list_id)
+//            .put("push_project_id", obj.list_id) // TODO change to list_id
             .put("contact", ContactDataAdapter.toJson(obj.contact))
             .put("platform", PlatformDataAdapter.toJson(obj.platform))
             .put("device", DeviceDataAdapter.toJson(obj.device))
-            .put("metadata", MapAdapter.toJson(obj.metadata))
+            .put("metadata", encodeJsonMap(obj.metadata).toString()) // TODO remove .toString()
             .put("datetime", Iso8601Utils.format(obj.datetime))
     }
 

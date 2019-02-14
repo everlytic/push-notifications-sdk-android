@@ -36,14 +36,12 @@ internal class PushSdk constructor(
         }
     }
 
-    suspend fun subscribeContact(email: String) {
-        return suspendCoroutine { continuation ->
-            runBlocking {
-                val deviceType = if (context.resources.getBoolean(R.bool.isTablet)) "tablet" else "handset"
-                val device = DeviceData(sdkRepository.getDeviceId()!!, type = deviceType)
-                val firebaseToken = firebaseInstanceId.getInstanceId()
-
-                val contactData = ContactData(email, firebaseToken)
+    fun subscribeContact(email: String, onComplete: (EvResult) -> Unit) {
+        val deviceType = if (context.resources.getBoolean(R.bool.isTablet)) "tablet" else "handset"
+        val device = DeviceData(sdkRepository.getDeviceId()!!, type = deviceType)
+        firebaseInstanceId.getInstanceId { result ->
+            if (result.success) {
+                val contactData = ContactData(email, result.value!!)
                 val subscription = SubscriptionEvent(settingsBag.listId.toString(), contactData, device = device)
 
                 api.subscribe(subscription, object : EverlyticHttp.ResponseHandler {
@@ -51,48 +49,43 @@ internal class PushSdk constructor(
                         val responseObject = JSONAdapter.decodeAs(ApiSubscription::class.java, response!!.data)
 
                         saveContactSubscriptionFromResponse(responseObject)
-                        continuation.resume(Unit)
+                        onComplete(EvResult(true))
                     }
 
                     override fun onFailure(code: Int, response: String?, throwable: Throwable?) {
-                        continuation.resumeWithException(throwable ?: Exception("An API Exception occurred"))
+                        onComplete(EvResult(false, throwable ?: Exception("An API Exception occurred")))
                     }
                 })
             }
         }
     }
 
-    suspend fun resubscribeUser(email: String) {
-        return subscribeContact(email)
+    fun resubscribeUser(email: String, onComplete: (EvResult) -> Unit) {
+        return subscribeContact(email, onComplete)
     }
 
     @Suppress("NAME_SHADOWING")
-    suspend fun unsubscribeCurrentContact() {
-        return suspendCoroutine { continuation ->
-            runBlocking {
-                val deviceId = sdkRepository.getDeviceId()
-                val subscriptionId = sdkRepository.getSubscriptionId()
+    fun unsubscribeCurrentContact(onComplete: ((EvResult) -> Unit)? = null) {
+        val deviceId = sdkRepository.getDeviceId()
+        val subscriptionId = sdkRepository.getSubscriptionId()
 
-                deviceId?.let { deviceId ->
-                    subscriptionId?.let { subscriptionId ->
-                        val unsubscribeEvent = UnsubscribeEvent(subscriptionId, deviceId)
+        deviceId?.let { deviceId ->
+            subscriptionId?.let { subscriptionId ->
+                val unsubscribeEvent = UnsubscribeEvent(subscriptionId, deviceId)
 
-                        api.unsubscribe(unsubscribeEvent, object : EverlyticHttp.ResponseHandler {
-                            override fun onSuccess(response: ApiResponse?) {
-                                sdkRepository.removeContactSubscription()
-                                continuation.resume(Unit)
-                            }
+                api.unsubscribe(unsubscribeEvent, object : EverlyticHttp.ResponseHandler {
+                    override fun onSuccess(response: ApiResponse?) {
+                        sdkRepository.removeContactSubscription()
+                        onComplete?.invoke(EvResult(true))
+                    }
 
-                            override fun onFailure(code: Int, response: String?, throwable: Throwable?) {
-                                continuation.resumeWithException(throwable ?: Exception("An API Exception occurred"))
-                            }
-                        })
-                    } ?: continuation.resumeWithException(
-                        EverlyticNotSubscribedException("No subscription to unsubscribe.")
-                    )
-                } ?: continuation.resumeWithException(Exception("No device ID set."))
-            }
-        }
+                    override fun onFailure(code: Int, response: String?, throwable: Throwable?) {
+                        onComplete?.invoke(EvResult(false, throwable ?: Exception("An API Exception occurred")))
+                    }
+                })
+            } ?: onComplete?.invoke(EvResult(false, EverlyticNotSubscribedException("No subscription to unsubscribe.")))
+        } ?: onComplete?.invoke(EvResult(false, Exception("No device ID set.")))
+
     }
 
     internal fun saveContactSubscriptionFromResponse(responseBody: ApiSubscription) {

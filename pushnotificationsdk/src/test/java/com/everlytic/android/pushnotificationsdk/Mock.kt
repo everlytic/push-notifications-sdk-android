@@ -2,6 +2,7 @@ package com.everlytic.android.pushnotificationsdk
 
 import com.everlytic.android.pushnotificationsdk.facades.BuildFacade
 import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
+import com.everlytic.android.pushnotificationsdk.facades.TokenResult
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import io.mockk.*
 
@@ -19,7 +20,15 @@ internal object Mock {
         mockkObject(FirebaseInstanceIdFacade)
         val mockFirebaseFacade = mockk<FirebaseInstanceIdFacade>()
 
-        coEvery { mockFirebaseFacade.getInstanceId() } returns "test token"
+        val slot = slot<(TokenResult) -> Unit>()
+        every { mockFirebaseFacade.getInstanceId(capture(slot)) } answers {
+            slot.captured.invoke(
+                TokenResult(
+                    true,
+                    "test token"
+                )
+            )
+        }
         every { FirebaseInstanceIdFacade.getDefaultInstance() } returns mockFirebaseFacade
     }
 

@@ -5,12 +5,14 @@ import org.json.JSONObject
 
 internal object ApiSubscriptionAdapter : JSONAdapterInterface<ApiSubscription> {
     override fun fromJson(json: JSONObject): ApiSubscription {
+        val subscription = json.getJSONObject("subscription")
         return ApiSubscription(
-            json.getString("pns_id"),
-            json.getString("pns_list_id"),
-            json.getString("pns_customer_id"),
-            json.getString("pns_contact_id"),
-            json.getString("pns_device_id")
+            subscription.getString("pns_id"),
+            subscription.getString("pns_list_id"),
+//            subscription.getString("pns_project_id"), // TODO set to pns_list_id
+            subscription.getString("pns_customer_id"),
+            subscription.getString("pns_contact_id"),
+            subscription.getString("pns_device_id")
         )
     }
 
