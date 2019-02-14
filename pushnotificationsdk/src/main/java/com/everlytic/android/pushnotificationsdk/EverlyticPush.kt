@@ -16,7 +16,7 @@ object EverlyticPush {
     private const val TAG = "EverlyticPush"
 
     @SuppressLint("StaticFieldLeak")
-    private var instance: PushSdk? = null
+    internal var instance: PushSdk? = null
     private var application: Application? = null
 
     /**
