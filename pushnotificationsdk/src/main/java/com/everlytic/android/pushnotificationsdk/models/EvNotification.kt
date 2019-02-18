@@ -1,8 +1,8 @@
 package com.everlytic.android.pushnotificationsdk.models
 
 import android.os.Parcelable
+import android.support.v4.app.NotificationCompat
 import androidx.annotation.IntRange
-import androidx.core.app.NotificationCompat
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 

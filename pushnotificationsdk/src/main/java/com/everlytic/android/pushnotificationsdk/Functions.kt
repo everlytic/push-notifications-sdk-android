@@ -29,10 +29,6 @@ internal inline fun HttpURLConnection.use(block: HttpURLConnection.() -> Unit) {
     }
 }
 
-inline fun runOnMainThread(noinline block: () -> Unit) {
-    Handler(Looper.getMainLooper()).post(block)
-}
-
 fun Any.logd(message: String? = null, throwable: Throwable? = null) {
     EvLogger.d(this::class.java.simpleName, message, throwable)
 }
