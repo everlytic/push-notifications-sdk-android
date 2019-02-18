@@ -2,7 +2,6 @@ package com.everlytic.android.pushnotificationsdk
 
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import com.everlytic.android.pushnotificationsdk.models.jsonadapters.MapAdapter
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -30,14 +29,14 @@ internal inline fun HttpURLConnection.use(block: HttpURLConnection.() -> Unit) {
     }
 }
 
-internal fun logd(message: String) {
-    Log.d("Default tag", message)
-}
-
-fun runOnMainThread(block: () -> Unit) {
+inline fun runOnMainThread(noinline block: () -> Unit) {
     Handler(Looper.getMainLooper()).post(block)
 }
 
-fun runOnBackgroundThread(block: () -> Unit) {
-    Thread(block).start()
+fun Any.logd(message: String? = null, throwable: Throwable? = null) {
+    EvLogger.d(this::class.java.simpleName, message, throwable)
+}
+
+fun Any.logw(message: String? = null, throwable: Throwable? = null) {
+    EvLogger.w(this::class.java.simpleName, message, throwable)
 }

@@ -25,29 +25,30 @@ object EverlyticPush {
     @JvmStatic
     @Throws(EverlyticPushInvalidSDKConfigurationException::class)
     fun init(application: Application) {
-
+        logd("::init(); Initializing SDK")
         this.application = application
 
         val settingsBag = SdkSettings.getSettings(application)
 
-        val apiInstallUrl = settingsBag.apiInstall
-        val apiUsername = settingsBag.apiUsername
-        val apiKey = settingsBag.apiKey
-        val pushProjectId = settingsBag.listId
+        val (apiInstallUrl, apiUsername, apiKey, pushListId) = settingsBag
 
         if (apiInstallUrl.isNullOrBlank()) {
+            logd("SDK API Install URL is blank")
             throw newInvalidSdkConfigurationException(META_API_INSTALL_URL)
         }
 
         if (apiUsername.isNullOrBlank()) {
+            logd("SDK API Username URL is blank")
             throw newInvalidSdkConfigurationException(META_API_USERNAME_PATH)
         }
 
         if (apiKey.isNullOrBlank()) {
+            logd("SDK API Key URL is blank")
             throw newInvalidSdkConfigurationException(META_API_KEY_PATH)
         }
 
-        if (pushProjectId < 0) {
+        if (pushListId < 0) {
+            logd("SDK API List Id URL is blank")
             throw newInvalidSdkConfigurationException(META_PUSH_PROJECT_ID)
         }
 
@@ -72,15 +73,13 @@ object EverlyticPush {
      * @return [Unit]
      * */
     @JvmStatic
+    @JvmName("subscribeWithCallback")
     @Throws(EverlyticPushNotInitialisedException::class)
     fun subscribe(email: String, onComplete: ((EvResult) -> Unit)?) {
+        logd("::subscribe(); email=$email; onComplete=$onComplete")
         instance?.let { sdk ->
-            runOnBackgroundThread {
-                sdk.subscribeContact(email) {
-                    runOnMainThread {
-                        onComplete?.invoke(it)
-                    }
-                }
+            sdk.subscribeContact(email) {
+                onComplete?.invoke(it)
             }
         } ?: throw newNotInitialisedException()
     }
@@ -92,13 +91,10 @@ object EverlyticPush {
     @JvmOverloads
     @Throws(EverlyticPushNotInitialisedException::class)
     fun unsubscribe(onComplete: ((EvResult) -> Unit)? = null) {
+        logd("::unsubscribe()")
         instance?.let { sdk ->
-            runOnBackgroundThread {
-                sdk.unsubscribeCurrentContact {
-                    runOnMainThread {
-                        onComplete?.invoke(it)
-                    }
-                }
+            sdk.unsubscribeCurrentContact {
+                onComplete?.invoke(it)
             }
 
         } ?: throw newNotInitialisedException()
@@ -111,6 +107,7 @@ object EverlyticPush {
      * */
     @JvmStatic
     fun isContactSubscribed(): Boolean {
+        logd("::isContactSubscribed()")
         return instance?.isContactSubscribed() ?: false
     }
 

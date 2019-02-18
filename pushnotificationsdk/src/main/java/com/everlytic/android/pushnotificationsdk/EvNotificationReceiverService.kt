@@ -34,8 +34,9 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
         NotificationEventRepository(getDatabase(), sdkRepository)
     }
 
-    override fun onNewToken(p0: String?) {
-        TODO("Implement onNewToken")
+    override fun onNewToken(token: String?) {
+        logd("::onNewToken() token=$token")
+        // TODO("Implement onNewToken")
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {

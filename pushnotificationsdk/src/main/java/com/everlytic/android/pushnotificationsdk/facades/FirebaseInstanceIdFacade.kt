@@ -8,7 +8,6 @@ data class TokenResult(val success: Boolean, val value: String?, val throwable: 
 
 internal class FirebaseInstanceIdFacade(private val firebaseInstanceId: FirebaseInstanceId) {
 
-
     @Throws(Exception::class)
     fun getInstanceId(onComplete: (TokenResult) -> Unit) {
         firebaseInstanceId.instanceId

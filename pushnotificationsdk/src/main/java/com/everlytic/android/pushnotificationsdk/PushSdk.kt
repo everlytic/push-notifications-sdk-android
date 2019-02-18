@@ -9,12 +9,7 @@ import com.everlytic.android.pushnotificationsdk.models.jsonadapters.JSONAdapter
 import com.everlytic.android.pushnotificationsdk.network.EverlyticApi
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
-import kotlinx.coroutines.runBlocking
-import org.json.JSONObject
 import java.util.*
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 internal class PushSdk constructor(
     private val context: Context,
@@ -31,21 +26,27 @@ internal class PushSdk constructor(
 ) {
 
     init {
+        logd("class::init{}")
         if (sdkRepository.getDeviceId().isNullOrEmpty()) {
             sdkRepository.setDeviceId(UUID.randomUUID().toString())
         }
     }
 
     fun subscribeContact(email: String, onComplete: (EvResult) -> Unit) {
+        logd("::subscribeContact() email=$email onComplete=$onComplete")
         val deviceType = if (context.resources.getBoolean(R.bool.isTablet)) "tablet" else "handset"
         val device = DeviceData(sdkRepository.getDeviceId()!!, type = deviceType)
         firebaseInstanceId.getInstanceId { result ->
+            logd("::subscribeContact() firebaseInstanceId->result=$result")
             if (result.success) {
                 val contactData = ContactData(email, result.value!!)
                 val subscription = SubscriptionEvent(settingsBag.listId.toString(), contactData, device = device)
 
+                logd("::subscribeContact() subscription=$subscription")
+
                 api.subscribe(subscription, object : EverlyticHttp.ResponseHandler {
                     override fun onSuccess(response: ApiResponse?) {
+                        logd("::onSuccess() response=$response")
                         val responseObject = JSONAdapter.decodeAs(ApiSubscription::class.java, response!!.data)
 
                         saveContactSubscriptionFromResponse(responseObject)
@@ -53,10 +54,17 @@ internal class PushSdk constructor(
                     }
 
                     override fun onFailure(code: Int, response: String?, throwable: Throwable?) {
-                        onComplete(EvResult(false, throwable ?: Exception("An API Exception occurred")))
+                        logd("::onFailure() code=$code response=$response throwable=$throwable")
+                        onComplete(
+                            EvResult(
+                                false,
+                                throwable ?: Exception("An API Exception occurred")
+                            )
+                        )
                     }
                 })
             }
+
         }
     }
 
@@ -72,7 +80,6 @@ internal class PushSdk constructor(
         deviceId?.let { deviceId ->
             subscriptionId?.let { subscriptionId ->
                 val unsubscribeEvent = UnsubscribeEvent(subscriptionId, deviceId)
-
                 api.unsubscribe(unsubscribeEvent, object : EverlyticHttp.ResponseHandler {
                     override fun onSuccess(response: ApiResponse?) {
                         sdkRepository.removeContactSubscription()

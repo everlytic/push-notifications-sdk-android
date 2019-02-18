@@ -23,12 +23,12 @@ class Sandbox : AppCompatActivity() {
     }
 
     private fun alert(block: AlertDialog.Builder.() -> Unit) {
-        runOnUiThread {
+//        runOnUiThread {
             AlertDialog.Builder(this).apply {
                 setPositiveButton(android.R.string.ok, null)
                 block()
             }.show()
-        }
+//        }
     }
 
     private fun updateSubscriptionDisplay() {
@@ -55,14 +55,12 @@ class Sandbox : AppCompatActivity() {
                                 setMessage("Subscribe success!")
                             }
                         } else {
-                            runOnUiThread {
-                                Toast.makeText(this@Sandbox, "Subscribe failed!", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this@Sandbox, "Subscribe failed!", Toast.LENGTH_LONG).show()
 
-                                alert {
-                                    setTitle("Subscribe error")
-                                    setMessage("[MESSAGE]: ${it.exception?.message}")
-                                    setPositiveButton(android.R.string.ok, null)
-                                }
+                            alert {
+                                setTitle("Subscribe error")
+                                setMessage("[MESSAGE]: ${it.exception?.message}")
+                                setPositiveButton(android.R.string.ok, null)
                             }
                         }
 

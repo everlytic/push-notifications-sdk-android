@@ -1,14 +1,21 @@
 package com.everlytic.android.pushnotificationsdk.repositories
 
 import android.content.SharedPreferences
+import com.everlytic.android.pushnotificationsdk.Mock
 import com.everlytic.android.pushnotificationsdk.models.ApiSubscription
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
+import org.junit.Before
 import org.junit.Test
 
 class SdkRepositoryTest {
+
+    @Before
+    fun setUp() {
+        Mock.EvLogger()
+    }
 
     @Test
     fun testRemoveContactSubscription_ClearsSubscriptionData() {

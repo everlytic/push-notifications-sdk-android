@@ -3,6 +3,7 @@ package com.everlytic.android.pushnotificationsdk.repositories
 import android.content.Context
 import android.content.SharedPreferences
 import com.everlytic.android.pushnotificationsdk.database.SharedPreferenceStore
+import com.everlytic.android.pushnotificationsdk.logd
 import com.everlytic.android.pushnotificationsdk.models.ApiSubscription
 
 internal class SdkRepository(private val context: Context) {
@@ -20,6 +21,7 @@ internal class SdkRepository(private val context: Context) {
     }
 
     fun setDeviceId(id: String) : String {
+        logd("::setDeviceId($id)")
         edit {
             putString(DEVICE_ID, id)
         }
@@ -40,6 +42,7 @@ internal class SdkRepository(private val context: Context) {
     }
 
     fun setContactSubscription(apiSubscription: ApiSubscription) {
+        logd("::setContactSubscription($apiSubscription)")
         edit {
             putLong(SUBSCRIPTION_ID, apiSubscription.pns_id.toLong())
             putLong(CONTACT_ID, apiSubscription.pns_contact_id.toLong())
@@ -47,6 +50,7 @@ internal class SdkRepository(private val context: Context) {
     }
 
     fun removeContactSubscription() {
+        logd("::removeContactSubscription()")
         edit {
             remove(SUBSCRIPTION_ID)
             remove(CONTACT_ID)
@@ -58,6 +62,5 @@ internal class SdkRepository(private val context: Context) {
         const val DEVICE_ID = "device_id"
         const val SUBSCRIPTION_ID = "subscription_id"
         const val CONTACT_ID = "contact_id"
-        const val CONTACT_EMAIL = "contact_email"
     }
 }

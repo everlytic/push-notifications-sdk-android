@@ -32,6 +32,13 @@ internal object Mock {
         every { FirebaseInstanceIdFacade.getDefaultInstance() } returns mockFirebaseFacade
     }
 
+    fun EvLogger() {
+        mockkObject(EvLogger)
+
+        every { EvLogger.d(any(), any(), any()) } returns Unit
+        every { EvLogger.w(any(), any(), any()) } returns Unit
+    }
+
     fun SdkSettings() {
         mockkObject(SdkSettings)
         every { SdkSettings.getSettings(ofType()) } returns SdkSettings.SdkSettingsBag(

@@ -22,6 +22,7 @@ class EverlyticPushTest {
         Mock.BuildFacade()
         Mock.FirebaseInstanceIdFacade()
         Mock.SdkSettings()
+        Mock.EvLogger()
     }
 
     @After

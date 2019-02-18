@@ -25,6 +25,7 @@ class PushSdkTest {
     @Before
     fun setUp() {
         Mock.BuildFacade()
+        Mock.EvLogger()
     }
 
     @Test
