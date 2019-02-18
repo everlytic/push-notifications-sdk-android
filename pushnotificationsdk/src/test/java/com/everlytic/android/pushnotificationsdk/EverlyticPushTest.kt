@@ -104,7 +104,10 @@ class EverlyticPushTest {
 
     @Test
     fun testUnsubscribe_WithOnCompleteCallback_IsSuccessful() {
-        initialiseEverlyticPush()
+        initialiseEverlyticPush().apply {
+            val slot = slot<(EvResult) -> Unit>()
+            every { unsubscribeCurrentContact(capture(slot)) } answers { slot.captured.invoke(EvResult(true)) }
+        }
 
         EverlyticPush.unsubscribe {
             assertTrue { it.isSuccessful }
@@ -141,9 +144,10 @@ class EverlyticPushTest {
         verify { mockPushSdk.isContactSubscribed() }
     }
 
-    private fun initialiseEverlyticPush() {
+    private fun initialiseEverlyticPush(): PushSdk {
         val mockPushSdk = mockPushSdk()
         spyk(EverlyticPush).instance = mockPushSdk
+        return mockPushSdk
     }
 
     private fun mockApplicationInfo() = mockk<ApplicationInfo> {
