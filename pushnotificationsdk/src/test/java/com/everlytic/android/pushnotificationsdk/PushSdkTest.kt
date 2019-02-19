@@ -12,7 +12,6 @@ import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
@@ -131,7 +130,7 @@ class PushSdkTest {
             )
         )
 
-        runBlocking { sdk.unsubscribeCurrentContact() }
+        sdk.unsubscribeCurrentContact()
 
         verify(exactly = 1) { mockEverlyticApi.unsubscribe(ofType(), ofType()) }
         verify(exactly = 1) { mockSdkRepository.getSubscriptionId() }
@@ -145,7 +144,7 @@ class PushSdkTest {
 
         val mockEverlyticApi = mockk<EverlyticApi> {
             val slot = slot<EverlyticHttp.ResponseHandler>()
-            every { subscribe(ofType(), capture(slot)) } answers {
+            every { unsubscribe(ofType(), capture(slot)) } answers {
                 slot.captured.onFailure(400, null, null)
             }
         }
@@ -160,10 +159,8 @@ class PushSdkTest {
             )
         )
 
-        assertFails {
-            runBlocking {
-                sdk.unsubscribeCurrentContact()
-            }
+        sdk.unsubscribeCurrentContact {
+            assertFalse { it.isSuccessful }
         }
     }
 

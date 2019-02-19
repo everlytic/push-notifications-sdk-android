@@ -36,7 +36,7 @@ class NotificationOpenedHandlerTest {
             recordPrivateCalls = true
         )
 
-        every { handler invokeNoArgs "scheduleEventUploadWorker" } returns Unit
+        every { handler invoke "scheduleEventUploadWorker" withArguments listOf(ofType<Context>()) } returns Unit
 
         val intent = mockIntent().apply {
             val notificationParcelable = EvNotification(
@@ -60,7 +60,7 @@ class NotificationOpenedHandlerTest {
         verify { handler invoke "processIntent" withArguments listOf(mockCtx, intent) }
         verify { handler invoke "setNotificationReadFromIntent" withArguments listOf(intent) }
         verify { mockEventRepository.storeNotificationEvent(any(), any()) }
-        verify { handler invokeNoArgs "scheduleEventUploadWorker" }
+        verify { handler invoke "scheduleEventUploadWorker" withArguments listOf(ofType<Context>()) }
         verify { mockCtx.startActivity(any()) }
     }
 
