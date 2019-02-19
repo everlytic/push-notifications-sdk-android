@@ -1,11 +1,11 @@
 package com.everlytic.android.sandboxapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
 import android.text.InputType
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import com.everlytic.android.pushnotificationsdk.EverlyticPush
 import kotlinx.android.synthetic.main.activity_sandbox.*
 

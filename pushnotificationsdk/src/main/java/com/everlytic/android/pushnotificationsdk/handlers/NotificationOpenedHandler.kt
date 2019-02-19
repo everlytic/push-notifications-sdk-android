@@ -70,7 +70,8 @@ internal class NotificationOpenedHandler(
         return NotificationEvent(
             notification.androidNotificationId,
             sdkRepository.getSubscriptionId() ?: -1,
-            notification.messageId
+            notification.messageId,
+            type = NotificationEventType.CLICK
         )
     }
 

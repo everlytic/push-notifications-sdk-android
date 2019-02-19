@@ -2,15 +2,15 @@ import com.everlytic.android.pushnotificationsdk.database.NotificationEventType;
 import java.util.Date;
 
 CREATE TABLE NotificationEventsLog (
-    _id INTEGER PRIMARY KEY AUTOINCREMENT,
-    android_notification_id INTEGER as Int NOT NULL,
-    event_type TEXT as NotificationEventType NOT NULL,
-    subscription_id INTEGER as Long NOT NULL,
-    message_id INTEGER as Long NOT NULL,
-    device_id TEXT NOT NULL,
-    metadata TEXT NOT NULL DEFAULT '{}',
-    is_uploaded INTEGER AS Boolean DEFAULT 0,
-    datetime TEXT AS Date NOT NULL
+    _id                         INTEGER PRIMARY KEY AUTOINCREMENT,
+    android_notification_id     INTEGER as Int NOT NULL,
+    event_type                  TEXT as NotificationEventType NOT NULL,
+    subscription_id             INTEGER as Long NOT NULL,
+    message_id                  INTEGER as Long NOT NULL,
+    device_id                   TEXT NOT NULL,
+    metadata                    TEXT NOT NULL DEFAULT '{}',
+    is_uploaded                 INTEGER AS Boolean DEFAULT 0,
+    datetime                    TEXT AS Date NOT NULL
 );
 
 CREATE INDEX ev_notification_event_log_event_type ON NotificationEventsLog(event_type);

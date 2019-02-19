@@ -4,20 +4,20 @@ import java.util.Date;
 
 CREATE TABLE NotificationLog (
     _id INTEGER PRIMARY KEY AUTOINCREMENT,
-    message_id INTEGER as Long,
-    android_notificaiton_id INTEGER as Int,
-    subscription_id INTEGER as Long,
-    contact_id INTEGER as Long,
-    title TEXT,
-    body TEXT,
-    metadata TEXT DEFAULT '{}',
-    actions TEXT,
-    color INTEGER DEFAULT -1,
-    group_id INTEGER DEFAULT 0,
-    raw_notification TEXT,
-    received_at TEXT as Date NOT NULL,
-    read_at TEXT as Date DEFAULT NULL,
-    dismissed_at TEXT as Date DEFAULT NULL
+    message_id                      INTEGER as Long,
+    android_notificaiton_id         INTEGER as Int,
+    subscription_id                 INTEGER as Long,
+    contact_id                      INTEGER as Long,
+    title                           TEXT,
+    body                            TEXT,
+    metadata                        TEXT DEFAULT '{}',
+    actions                         TEXT,
+    color                           INTEGER DEFAULT -1,
+    group_id                        INTEGER DEFAULT 0,
+    raw_notification                TEXT,
+    received_at                     TEXT as Date NOT NULL,
+    read_at                         TEXT as Date DEFAULT NULL,
+    dismissed_at                    TEXT as Date DEFAULT NULL
 );
 
 -- QUERIES

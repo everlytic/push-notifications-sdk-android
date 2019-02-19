@@ -132,12 +132,16 @@ internal class EverlyticHttp(installUrl: String, apiUsername: String, apiKey: St
         logd("Handling success response")
 
         return Thread {
-            val response = ApiResponseAdapter.fromJson(JSONObject(jsonResult))
-
-            if (response.result == "error") {
-                responseHandler.onFailure(400, jsonResult, null)
+            if (jsonResult.isNullOrBlank()) {
+                responseHandler.onFailure(500, null, null)
             } else {
-                responseHandler.onSuccess(response)
+                val response = ApiResponseAdapter.fromJson(JSONObject(jsonResult))
+
+                if (response.result == "error") {
+                    responseHandler.onFailure(400, jsonResult, null)
+                } else {
+                    responseHandler.onSuccess(response)
+                }
             }
 
         }.also {

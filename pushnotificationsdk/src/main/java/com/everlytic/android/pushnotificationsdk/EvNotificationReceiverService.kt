@@ -1,7 +1,7 @@
 package com.everlytic.android.pushnotificationsdk
 
 import android.os.Build
-import com.everlytic.android.pushnotificationsdk.database.Database
+import com.everlytic.android.pushnotificationsdk.database.EvDbHelper
 import com.everlytic.android.pushnotificationsdk.database.NotificationEventType
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import com.everlytic.android.pushnotificationsdk.models.NotificationEvent
@@ -66,7 +66,8 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
             notification.androidNotificationId,
             sdkRepository.getSubscriptionId() ?: -1,
             notification.messageId,
-            meta = mapOf("displayed" to notificationHandler.canDisplayNotifications().toString())
+            meta = mapOf("displayed" to notificationHandler.canDisplayNotifications().toString()),
+            type = NotificationEventType.DELIVERY
         )
     }
 
@@ -102,6 +103,6 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
     }
 
     private fun getContext() = applicationContext
-    private fun getDatabase() = Database.getInstance(getContext())
+    private fun getDatabase() = EvDbHelper.getInstance(getContext())
 
 }

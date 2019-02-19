@@ -3,11 +3,10 @@ package com.everlytic.android.pushnotificationsdk.workers
 import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.everlytic.android.pushnotificationsdk.NotificationEventsLog
 import com.everlytic.android.pushnotificationsdk.SdkSettings
-import com.everlytic.android.pushnotificationsdk.database.Database
+import com.everlytic.android.pushnotificationsdk.database.EvDbHelper
 import com.everlytic.android.pushnotificationsdk.database.NotificationEventType
-import com.everlytic.android.pushnotificationsdk.decodeJsonMap
+import com.everlytic.android.pushnotificationsdk.logw
 import com.everlytic.android.pushnotificationsdk.models.ApiResponse
 import com.everlytic.android.pushnotificationsdk.models.NotificationEvent
 import com.everlytic.android.pushnotificationsdk.network.EverlyticApi
@@ -25,7 +24,7 @@ class UploadMessageEventsWorker(val context: Context, params: WorkerParameters) 
         val sdkSettings = SdkSettings.getSettings(applicationContext)
 
         repository = NotificationEventRepository(
-            Database.getInstance(context),
+            EvDbHelper.getInstance(context),
             SdkRepository(context)
         )
 
@@ -37,41 +36,29 @@ class UploadMessageEventsWorker(val context: Context, params: WorkerParameters) 
 
         events.forEach(::processEventUpload)
 
-        Database.releaseInstance()
-
         return Result.success()
     }
 
-    private fun processEventUpload(rawEvent: NotificationEventsLog) {
-
-        val notificationEvent = createNotificationEvent(rawEvent)
+    private fun processEventUpload(notificationEvent: NotificationEvent) {
 
         try {
-            performUploadForEvent(rawEvent.event_type, notificationEvent, object : EverlyticHttp.ResponseHandler {
+            performUploadForEvent(notificationEvent.type, notificationEvent, object : EverlyticHttp.ResponseHandler {
                 override fun onSuccess(response: ApiResponse?) {
-                    repository.updateEventIsUploaded(rawEvent._id, true)
+                    notificationEvent._id?.let { id ->
+                        repository.updateEventIsUploaded(id, true)
+                    }
                 }
 
                 override fun onFailure(code: Int, response: String?, throwable: Throwable?) {
-
+                    logw(throwable = throwable)
                 }
 
             })
         } catch (exception: Exception) {
-            repository.updateEventIsUploaded(rawEvent._id, false)
+            notificationEvent._id?.let { id ->
+                repository.updateEventIsUploaded(id, false)
+            }
         }
-    }
-
-    private fun createNotificationEvent(event: NotificationEventsLog): NotificationEvent {
-
-        val jsonObject = decodeJsonMap(event.metadata)
-
-        return NotificationEvent(
-            event.android_notification_id,
-            event.subscription_id,
-            event.message_id,
-            jsonObject
-        )
     }
 
     private fun performUploadForEvent(

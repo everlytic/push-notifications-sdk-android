@@ -1,5 +1,6 @@
 package com.everlytic.android.pushnotificationsdk.models.jsonadapters
 
+import com.everlytic.android.pushnotificationsdk.database.NotificationEventType
 import com.everlytic.android.pushnotificationsdk.database.vendor.Iso8601Utils
 import com.everlytic.android.pushnotificationsdk.decodeJsonMap
 import com.everlytic.android.pushnotificationsdk.encodeJsonMap
@@ -13,7 +14,9 @@ internal object NotificationEventAdapter : JSONAdapterInterface<NotificationEven
             json.getLong("subscription_id"),
             json.getLong("message_id"),
             decodeJsonMap(json.getJSONObject("meta")),
-            Iso8601Utils.parse(json.getString("datetime"))
+            Iso8601Utils.parse(json.getString("datetime")),
+            type = NotificationEventType.valueOf(json.getString("type")),
+            _id = json.getString("_id").toLongOrNull()
         )
     }
 
