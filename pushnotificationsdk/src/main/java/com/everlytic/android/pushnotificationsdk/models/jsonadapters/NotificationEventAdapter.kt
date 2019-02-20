@@ -13,7 +13,7 @@ internal object NotificationEventAdapter : JSONAdapterInterface<NotificationEven
             json.getInt("android_notification_id"),
             json.getLong("subscription_id"),
             json.getLong("message_id"),
-            decodeJsonMap(json.getJSONObject("meta")),
+            decodeJsonMap(json.getJSONObject("metadata")),
             Iso8601Utils.parse(json.getString("datetime")),
             type = NotificationEventType.valueOf(json.getString("type")),
             _id = json.getString("_id").toLongOrNull()
@@ -24,7 +24,7 @@ internal object NotificationEventAdapter : JSONAdapterInterface<NotificationEven
         return JSONObject()
             .put("subscription_id", obj.subscription_id)
             .put("message_id", obj.subscription_id)
-            .put("meta", encodeJsonMap(obj.meta))
+            .put("metadata", encodeJsonMap(obj.metadata))
             .put("datetime", Iso8601Utils.format(obj.datetime))
     }
 }

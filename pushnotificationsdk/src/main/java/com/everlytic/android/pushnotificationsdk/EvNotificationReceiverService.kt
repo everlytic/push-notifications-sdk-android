@@ -69,7 +69,7 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
             notification.androidNotificationId,
             sdkRepository.getSubscriptionId() ?: -1,
             notification.messageId,
-            meta = mapOf("displayed" to notificationHandler.canDisplayNotifications().toString()),
+            metadata = mapOf("displayed" to notificationHandler.canDisplayNotifications().toString()),
             type = NotificationEventType.DELIVERY
         )
     }

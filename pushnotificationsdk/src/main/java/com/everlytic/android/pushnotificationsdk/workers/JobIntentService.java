@@ -379,9 +379,9 @@ public abstract class JobIntentService extends Service {
     /**
      * This is a task to dequeue and process work in the background.
      */
-    final public class CommandProcessor extends AsyncTask<Void, Void, Void> {
+    final class CommandProcessor extends AsyncTask<Object, Object, Object> {
         @Override
-        public Void doInBackground(Void... params) {
+        protected Object doInBackground(Object... params) {
             GenericWorkItem work;
 
             if (DEBUG) Log.d(TAG, "Starting to dequeue work...");
@@ -399,12 +399,12 @@ public abstract class JobIntentService extends Service {
         }
 
         @Override
-        public void onCancelled(Void aVoid) {
+        protected void onCancelled(Object aVoid) {
             processorFinished();
         }
 
         @Override
-        public void onPostExecute(Void aVoid) {
+        protected void onPostExecute(Object aVoid) {
             processorFinished();
         }
     }

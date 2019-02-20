@@ -18,7 +18,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Users/Jason/AppData/Local/JetBrains/Toolbox/apps/AndroidStudio/ch-0/182.5199772/plugins/android/lib/android.jar!/images/material_design_icons/places/ic_child_care_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Users/Jason/AppData/Local/JetBrains/Toolbox/apps/AndroidStudio/ch-0/182.5199772/plugins/android/lib/android.jar!/images/material_design_icons/social/ic_notifications_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -28,7 +28,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_ev_notification" />
+                            <entry key="outputName" value="ic_ev_default_small" />
                             <entry key="sourceFile" value="C:\Users\Jason" />
                           </map>
                         </option>
