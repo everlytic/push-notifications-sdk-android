@@ -55,8 +55,6 @@ class Sandbox : AppCompatActivity() {
                                 setMessage("Subscribe success!")
                             }
                         } else {
-                            Toast.makeText(this@Sandbox, "Subscribe failed!", Toast.LENGTH_LONG).show()
-
                             alert {
                                 setTitle("Subscribe error")
                                 setMessage("[MESSAGE]: ${it.exception?.message}")

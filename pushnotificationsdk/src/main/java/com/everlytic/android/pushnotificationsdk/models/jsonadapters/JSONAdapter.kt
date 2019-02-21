@@ -1,6 +1,7 @@
 package com.everlytic.android.pushnotificationsdk.models.jsonadapters
 
 import com.everlytic.android.pushnotificationsdk.models.*
+import org.json.JSONException
 import org.json.JSONObject
 import kotlin.reflect.KClass
 
@@ -23,20 +24,26 @@ internal object JSONAdapter {
             else -> throw NotImplementedError("JSONAdapterInterface not implemented for object type")
         }
     }
+
     fun <T> encodeAsString(obj: T): String {
         return encode(obj).toString()
     }
 
     fun <T> decodeAs(clazz: Class<T>, value: JSONObject): T {
-        return when (clazz) {
-            ApiResponse::class.java -> ApiResponseAdapter.fromJson(value)
-            ApiSubscription::class.java -> ApiSubscriptionAdapter.fromJson(value)
-            EvNotification::class.java -> EvNotificationAdapter.fromJson(value)
-            NotificationEvent::class.java -> NotificationEventAdapter.fromJson(value)
-            SubscriptionEvent::class.java -> SubscriptionEventAdapter.fromJson(value)
-            UnsubscribeEvent::class.java -> UnsubscribeEventAdapter.fromJson(value)
-            else -> throw NotImplementedError("JSONAdapterInterface not implemented for object type")
-        } as T
+        try {
+            return when (clazz) {
+                ApiResponse::class.java -> ApiResponseAdapter.fromJson(value)
+                ApiSubscription::class.java -> ApiSubscriptionAdapter.fromJson(value)
+                EvNotification::class.java -> EvNotificationAdapter.fromJson(value)
+                NotificationEvent::class.java -> NotificationEventAdapter.fromJson(value)
+                SubscriptionEvent::class.java -> SubscriptionEventAdapter.fromJson(value)
+                UnsubscribeEvent::class.java -> UnsubscribeEventAdapter.fromJson(value)
+                else -> throw NotImplementedError("JSONAdapterInterface not implemented for object type")
+            } as T
+        } catch (e: JSONException) {
+            e.printStackTrace()
+            throw e
+        }
     }
 
 }

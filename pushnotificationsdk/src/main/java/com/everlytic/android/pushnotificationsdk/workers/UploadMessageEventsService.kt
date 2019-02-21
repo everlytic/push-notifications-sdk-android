@@ -26,11 +26,12 @@ class UploadMessageEventsService : JobIntentService() {
 
         api = EverlyticApi(EverlyticHttp(sdkSettings.apiInstall!!, sdkSettings.apiUsername!!, sdkSettings.apiKey!!))
 
-        val events = NotificationEventType.values().flatMap {
-            repository.getAllPendingEventsForType(it)
-        }
-
-        events.forEach(::processEventUpload)
+        NotificationEventType
+            .values()
+            .flatMap {
+                repository.getAllPendingEventsForType(it)
+            }
+            .forEach(::processEventUpload)
     }
 
     private fun processEventUpload(notificationEvent: NotificationEvent) {
@@ -56,7 +57,6 @@ class UploadMessageEventsService : JobIntentService() {
     }
 
 
-
     private fun performUploadForEvent(
         eventType: NotificationEventType,
         event: NotificationEvent,
@@ -68,7 +68,8 @@ class UploadMessageEventsService : JobIntentService() {
             NotificationEventType.DISMISS -> TODO()
             NotificationEventType.BOUNCE -> TODO()
             NotificationEventType.SOFT_BOUNCE -> TODO()
-            NotificationEventType.UNKNOWN -> TODO()
+            NotificationEventType.UNKNOWN -> {
+            }
         }
     }
 

@@ -3,7 +3,6 @@ package com.everlytic.android.pushnotificationsdk.database
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.os.SystemClock
 import com.everlytic.android.pushnotificationsdk.logd
 
 class EvDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {

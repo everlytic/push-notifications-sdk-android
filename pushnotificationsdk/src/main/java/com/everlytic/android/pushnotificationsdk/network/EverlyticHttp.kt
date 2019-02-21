@@ -129,7 +129,7 @@ internal class EverlyticHttp(installUrl: String, apiUsername: String, apiKey: St
         responseHandler: ResponseHandler,
         jsonResult: String?
     ): Thread {
-        logd("Handling success response")
+        logd("Handling success response. jsonResult=$jsonResult")
 
         return Thread {
             if (jsonResult.isNullOrBlank()) {

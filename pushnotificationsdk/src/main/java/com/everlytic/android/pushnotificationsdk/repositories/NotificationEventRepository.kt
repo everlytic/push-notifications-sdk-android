@@ -40,7 +40,7 @@ internal class NotificationEventRepository(
             put(COL_IS_UPLOADED, false)
         }
 
-        database.writableDatabase.use { db ->
+        database.writableDatabase.let { db ->
             db.insert(tableName, null, values)
         }
 
@@ -50,12 +50,12 @@ internal class NotificationEventRepository(
         androidNotificationId: Int,
         eventType: NotificationEventType
     ): List<NotificationEvent> {
-        database.readableDatabase.use { db ->
+        database.readableDatabase.let { db ->
             db.query(
                 tableName,
                 null,
-                "${EvDbContract.NotificationEventsLogTable.COL_ANDROID_NOTIFICATION_ID} = ?",
-                arrayOf(androidNotificationId.toString()),
+                "$COL_ANDROID_NOTIFICATION_ID = ? AND $COL_EVENT_TYPE = ?",
+                arrayOf(androidNotificationId.toString(), eventType.name),
                 null,
                 null,
                 null
@@ -80,12 +80,12 @@ internal class NotificationEventRepository(
     }
 
     fun getAllPendingEventsForType(eventLog: NotificationEventType): List<NotificationEvent> {
-        database.readableDatabase.use { db ->
+        database.readableDatabase.let { db ->
             db.query(
                 tableName,
                 null,
-                "${EvDbContract.NotificationEventsLogTable.COL_EVENT_TYPE} = ?",
-                arrayOf(eventLog.name),
+                "$COL_EVENT_TYPE = ? AND $COL_IS_UPLOADED = ?",
+                arrayOf(eventLog.name, 0.toString()),
                 null,
                 null,
                 null
@@ -114,11 +114,11 @@ internal class NotificationEventRepository(
             put(EvDbContract.NotificationEventsLogTable.COL_IS_UPLOADED, isUploaded)
         }
 
-        database.writableDatabase.use { db ->
+        database.writableDatabase.let { db ->
             db.update(
                 tableName,
                 values,
-                "${EvDbContract.NotificationEventsLogTable.COL_ID} = ?",
+                "$COL_ID = ?",
                 arrayOf(eventId.toString())
             )
         }

@@ -3,6 +3,7 @@ package com.everlytic.android.pushnotificationsdk
 import android.os.Handler
 import android.os.Looper
 import com.everlytic.android.pushnotificationsdk.models.jsonadapters.MapAdapter
+import org.json.JSONException
 import org.json.JSONObject
 import java.net.HttpURLConnection
 
@@ -26,6 +27,14 @@ internal inline fun HttpURLConnection.use(block: HttpURLConnection.() -> Unit) {
         this.block()
     } finally {
         this.disconnect()
+    }
+}
+
+fun JSONObject.getJSONObjectOrNull(name: String): JSONObject? {
+    return try {
+        this.getJSONObject(name)
+    } catch (e: JSONException) {
+        null
     }
 }
 

@@ -22,7 +22,7 @@ class NotificationLogRepository(val database: EvDbHelper) {
             put(EvDbContract.NotificationLogTable.COL_RECEIVED_AT, notification.received_at.toIso8601())
         }
 
-        database.writableDatabase.use { db ->
+        database.writableDatabase.let { db ->
             db.insert(tableName, null, insert)
         }
     }
@@ -33,7 +33,7 @@ class NotificationLogRepository(val database: EvDbHelper) {
             put(EvDbContract.NotificationLogTable.COL_READ_AT, date.toIso8601())
         }
 
-        database.writableDatabase.use { db ->
+        database.writableDatabase.let { db ->
             db.update(
                 tableName,
                 update,
@@ -48,7 +48,7 @@ class NotificationLogRepository(val database: EvDbHelper) {
             put(EvDbContract.NotificationLogTable.COL_DISMISSED_AT, date.toIso8601())
         }
 
-        database.writableDatabase.use { db ->
+        database.writableDatabase.let { db ->
             db.update(
                 tableName,
                 update,
@@ -57,5 +57,4 @@ class NotificationLogRepository(val database: EvDbHelper) {
             )
         }
     }
-
 }
