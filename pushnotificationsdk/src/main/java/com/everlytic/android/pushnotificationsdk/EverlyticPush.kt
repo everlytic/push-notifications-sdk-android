@@ -2,6 +2,7 @@ package com.everlytic.android.pushnotificationsdk
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Context
 import com.everlytic.android.pushnotificationsdk.SdkSettings.META_API_INSTALL_URL
 import com.everlytic.android.pushnotificationsdk.SdkSettings.META_API_KEY_PATH
 import com.everlytic.android.pushnotificationsdk.SdkSettings.META_API_USERNAME_PATH
@@ -17,18 +18,17 @@ object EverlyticPush {
 
     @SuppressLint("StaticFieldLeak")
     internal var instance: PushSdk? = null
-    private var application: Application? = null
 
     /**
      * Initialises the Everlytic Push EvNotification SDK
+     * @param context [Application] instance
      * */
     @JvmStatic
     @Throws(EverlyticPushInvalidSDKConfigurationException::class)
-    fun init(application: Application) {
+    fun init(context: Context) {
         logd("::init(); Initializing SDK")
-        this.application = application
 
-        val settingsBag = SdkSettings.getSettings(application)
+        val settingsBag = SdkSettings.getSettings(context)
 
         val (apiInstallUrl, apiUsername, apiKey, pushListId) = settingsBag
 
@@ -52,7 +52,7 @@ object EverlyticPush {
             throw newInvalidSdkConfigurationException(META_PUSH_PROJECT_ID)
         }
 
-        instance = PushSdk(application.applicationContext, settingsBag)
+        instance = PushSdk(context.applicationContext, settingsBag)
     }
 
     /**
