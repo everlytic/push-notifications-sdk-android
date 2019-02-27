@@ -1,3 +1,4 @@
+@file:JvmName("Functions")
 package com.everlytic.android.pushnotificationsdk
 
 import android.os.Handler
@@ -38,10 +39,12 @@ fun JSONObject.getJSONObjectOrNull(name: String): JSONObject? {
     }
 }
 
+@JvmOverloads
 fun Any.logd(message: String? = null, throwable: Throwable? = null) {
     EvLogger.d(this::class.java.simpleName, message, throwable)
 }
 
+@JvmOverloads
 fun Any.logw(message: String? = null, throwable: Throwable? = null) {
     EvLogger.w(this::class.java.simpleName, message, throwable)
 }

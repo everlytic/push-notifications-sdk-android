@@ -10,6 +10,7 @@ import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushNotInit
 import io.mockk.*
 import org.junit.After
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -28,6 +29,7 @@ class EverlyticPushTest {
     @After
     fun tearDown() {
         clearConstructorMockk(PushSdk::class)
+        unmockkAll()
     }
 
     @Test
@@ -67,7 +69,7 @@ class EverlyticPushTest {
         }
 
         assertFailsWith<EverlyticPushNotInitialisedException> {
-            everlyticPush.subscribe("test@test.com")
+            everlyticPush.subscribe("test@test.com", null)
         }
     }
 
@@ -75,7 +77,7 @@ class EverlyticPushTest {
     fun testSubscribe_WithSdkInitialised_IsSuccessful() {
         initialiseEverlyticPush()
 
-        EverlyticPush.subscribe("test@test.com")
+        EverlyticPush.subscribe("test@test.com", null)
 
         verify(exactly = 1) { EverlyticPush.instance!!.subscribeContact(any(), any()) }
     }
@@ -84,9 +86,9 @@ class EverlyticPushTest {
     fun testSubscribe_WithOnCompleteCallback_ReturnsSuccess() {
         initialiseEverlyticPush()
 
-        EverlyticPush.subscribe("test@test.com") {
+        EverlyticPush.subscribe("test@test.com", OnResultReceiver {
             assertTrue { it.isSuccessful }
-        }
+        })
 
         verify(exactly = 1) { EverlyticPush.instance!!.subscribeContact(any(), any()) }
     }
@@ -98,7 +100,7 @@ class EverlyticPushTest {
         }
 
         assertFailsWith<EverlyticPushNotInitialisedException> {
-            everlyticPush.unsubscribe()
+            everlyticPush.unsubscribe(null)
         }
     }
 
@@ -109,9 +111,9 @@ class EverlyticPushTest {
             every { unsubscribeCurrentContact(capture(slot)) } answers { slot.captured.invoke(EvResult(true)) }
         }
 
-        EverlyticPush.unsubscribe {
+        EverlyticPush.unsubscribe( OnResultReceiver {
             assertTrue { it.isSuccessful }
-        }
+        })
 
         verify { EverlyticPush.instance!!.unsubscribeCurrentContact(any()) }
     }

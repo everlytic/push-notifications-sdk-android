@@ -2,16 +2,18 @@ package com.everlytic.android.pushnotificationsdk
 
 import android.content.Context
 import android.util.Log
+import com.everlytic.android.pushnotificationsdk.database.EvDbHelper
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticNotSubscribedException
 import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
 import com.everlytic.android.pushnotificationsdk.models.*
 import com.everlytic.android.pushnotificationsdk.models.jsonadapters.JSONAdapter
 import com.everlytic.android.pushnotificationsdk.network.EverlyticApi
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
+import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import java.util.*
 
-internal class PushSdk constructor(
+internal class PushSdk @JvmOverloads constructor(
     private val context: Context,
     private val settingsBag: SdkSettings.SdkSettingsBag,
     private val api: EverlyticApi = EverlyticApi(
@@ -93,6 +95,13 @@ internal class PushSdk constructor(
             } ?: onComplete?.invoke(EvResult(false, EverlyticNotSubscribedException("No subscription to unsubscribe.")))
         } ?: onComplete?.invoke(EvResult(false, Exception("No device ID set.")))
 
+    }
+
+    fun getPublicNotificationHistory() : List<EverlyticNotification> {
+        val dbHelper = EvDbHelper.getInstance(context)
+        val notificationRepository = NotificationLogRepository(dbHelper)
+
+        return notificationRepository.getNotificationLogHistory()
     }
 
     internal fun saveContactSubscriptionFromResponse(responseBody: ApiSubscription) {

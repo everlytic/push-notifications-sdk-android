@@ -3,17 +3,20 @@ package com.everlytic.android.pushnotificationsdk
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import com.everlytic.android.pushnotificationsdk.SdkSettings.META_API_INSTALL_URL
 import com.everlytic.android.pushnotificationsdk.SdkSettings.META_API_KEY_PATH
 import com.everlytic.android.pushnotificationsdk.SdkSettings.META_API_USERNAME_PATH
 import com.everlytic.android.pushnotificationsdk.SdkSettings.META_PUSH_PROJECT_ID
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushInvalidSDKConfigurationException
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushNotInitialisedException
+import com.everlytic.android.pushnotificationsdk.models.EverlyticNotification
 
 /**
  * Everlytic Push Notifications SDK
  * */
-object EverlyticPush {
+public object EverlyticPush {
     private const val TAG = "EverlyticPush"
 
     @SuppressLint("StaticFieldLeak")
@@ -61,6 +64,7 @@ object EverlyticPush {
      * @return [Unit]
      * */
     @JvmStatic
+    @Throws(EverlyticPushNotInitialisedException::class)
     fun subscribe(email: String) {
         EverlyticPush.subscribe(email, null)
     }
@@ -73,28 +77,31 @@ object EverlyticPush {
      * @return [Unit]
      * */
     @JvmStatic
-    @JvmName("subscribeWithCallback")
     @Throws(EverlyticPushNotInitialisedException::class)
-    fun subscribe(email: String, onComplete: ((EvResult) -> Unit)?) {
+    fun subscribe(email: String, onComplete: OnResultReceiver?) {
         logd("::subscribe(); email=$email; onComplete=$onComplete")
         instance?.let { sdk ->
             sdk.subscribeContact(email) {
-                onComplete?.invoke(it)
+                onComplete?.onResult(it)
             }
         } ?: throw newNotInitialisedException()
+    }
+
+    fun unsubscribe() {
+        EverlyticPush.unsubscribe(null)
     }
 
     /**
      * Unsubscribes the current contact device from Everlytic Push Notifications
      * */
     @JvmStatic
-    @JvmOverloads
+//    @JvmOverloads
     @Throws(EverlyticPushNotInitialisedException::class)
-    fun unsubscribe(onComplete: ((EvResult) -> Unit)? = null) {
+    fun unsubscribe(onComplete: OnResultReceiver?) {
         logd("::unsubscribe()")
         instance?.let { sdk ->
             sdk.unsubscribeCurrentContact {
-                onComplete?.invoke(it)
+                onComplete?.onResult(it)
             }
 
         } ?: throw newNotInitialisedException()
@@ -118,6 +125,25 @@ object EverlyticPush {
      * */
     @JvmStatic
     fun isInitialised(): Boolean = instance != null
+
+    /**
+     * Retrieve a [List] of [EverlyticNotification] objects and return results in a callback
+     *
+     * @return [List]
+     * */
+    @JvmStatic
+    fun getNotificationHistory(listener: OnNotificationHistoryResultListener) {
+        logd("::getNotificationHistory()")
+        return instance?.let { sdk ->
+            Thread {
+                sdk.getPublicNotificationHistory().let { notifications ->
+                    Handler(Looper.getMainLooper()).post {
+                        listener.onResult(notifications)
+                    }
+                }
+            }.start()
+        } ?: throw newNotInitialisedException()
+    }
 
     private fun newNotInitialisedException() =
         EverlyticPushNotInitialisedException(
