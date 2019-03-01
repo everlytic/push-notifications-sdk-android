@@ -28,7 +28,7 @@ internal object SubscriptionEventAdapter : JSONAdapterInterface<SubscriptionEven
             .put("contact", ContactDataAdapter.toJson(obj.contact))
             .put("platform", PlatformDataAdapter.toJson(obj.platform))
             .put("device", DeviceDataAdapter.toJson(obj.device))
-            .put("metadata", encodeJsonMap(obj.metadata).toString()) // TODO remove .toString()
+            .put("metadata", encodeJsonMap(obj.metadata))
             .put("datetime", Iso8601Utils.format(obj.datetime))
     }
 

@@ -7,6 +7,7 @@ import android.text.InputType
 import android.widget.EditText
 import android.widget.Toast
 import com.everlytic.android.pushnotificationsdk.EverlyticPush
+import com.everlytic.android.pushnotificationsdk.OnResultReceiver
 import kotlinx.android.synthetic.main.activity_sandbox.*
 
 class Sandbox : AppCompatActivity() {
@@ -23,12 +24,12 @@ class Sandbox : AppCompatActivity() {
     }
 
     private fun alert(block: AlertDialog.Builder.() -> Unit) {
-        runOnUiThread {
+//        runOnUiThread {
             AlertDialog.Builder(this).apply {
                 setPositiveButton(android.R.string.ok, null)
                 block()
             }.show()
-        }
+//        }
     }
 
     private fun updateSubscriptionDisplay() {
@@ -49,7 +50,7 @@ class Sandbox : AppCompatActivity() {
                 setView(edit)
                 setPositiveButton(android.R.string.ok) { _, _ ->
 
-                    EverlyticPush.subscribe(edit.text.toString()) {
+                    EverlyticPush.subscribe(edit.text.toString(), OnResultReceiver {
                         if (it.isSuccessful) {
                             alert {
                                 setMessage("Subscribe success!")
@@ -63,7 +64,7 @@ class Sandbox : AppCompatActivity() {
                         }
 
                         updateSubscriptionDisplay()
-                    }
+                    })
                 }
             }
         }
@@ -75,7 +76,7 @@ class Sandbox : AppCompatActivity() {
                 setTitle("Unsubscribe contact?")
                 setMessage("Unsubscribe the current contact from receiving push notifications?")
                 setPositiveButton(android.R.string.ok) { _, _ ->
-                    EverlyticPush.unsubscribe {
+                    EverlyticPush.unsubscribe( OnResultReceiver{
                         if (it.isSuccessful) {
                             alert { setMessage("Contact unsubscribed successfully") }
                         } else {
@@ -83,7 +84,7 @@ class Sandbox : AppCompatActivity() {
                         }
 
                         updateSubscriptionDisplay()
-                    }
+                    })
                 }
 
                 setNegativeButton(android.R.string.cancel, null)

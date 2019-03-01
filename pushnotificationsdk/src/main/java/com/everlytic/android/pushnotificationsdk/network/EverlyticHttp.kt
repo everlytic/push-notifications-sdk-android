@@ -54,10 +54,10 @@ internal class EverlyticHttp(installUrl: String, apiUsername: String, apiKey: St
         connectionThread.start()
 
         try {
-            connectionThread.join(THREAD_TIMEOUT)
-            if (connectionThread.state != Thread.State.TERMINATED) {
-                connectionThread.interrupt()
-            }
+//            connectionThread.join(THREAD_TIMEOUT)
+//            if (connectionThread.state != Thread.State.TERMINATED) {
+//                connectionThread.interrupt()
+//            }
 
             callbackThreads.firstOrNull()?.join()
         } catch (e: InterruptedException) {
