@@ -5,7 +5,7 @@ import com.everlytic.android.pushnotificationsdk.database.EvDbContract
 import com.everlytic.android.pushnotificationsdk.database.EvDbHelper
 import com.everlytic.android.pushnotificationsdk.database.NotificationEventType
 import com.everlytic.android.pushnotificationsdk.database.adapters.toIso8601
-import com.everlytic.android.pushnotificationsdk.models.NotificationEvent;
+import com.everlytic.android.pushnotificationsdk.models.NotificationEvent
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationEventsLogTable.COL_EVENT_TYPE
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationEventsLogTable.COL_ANDROID_NOTIFICATION_ID
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationEventsLogTable.COL_SUBSCRIPTION_ID
@@ -26,12 +26,12 @@ internal class NotificationEventRepository(
 
     val tableName = EvDbContract.NotificationEventsLogTable.TBL_NAME
 
-    fun storeNotificationEvent(eventType: NotificationEventType, event: NotificationEvent) {
+    fun storeNotificationEvent(event: NotificationEvent) {
 
         val deviceId = sdkRepository.getDeviceId()
 
         val values = ContentValues().apply {
-            put(COL_EVENT_TYPE, eventType.name)
+            put(COL_EVENT_TYPE, event.type.name)
             put(COL_ANDROID_NOTIFICATION_ID, event.android_notification_id)
             put(COL_SUBSCRIPTION_ID, event.subscription_id)
             put(COL_MESSAGE_ID, event.message_id)

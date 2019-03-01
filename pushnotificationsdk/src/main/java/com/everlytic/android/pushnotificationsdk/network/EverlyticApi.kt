@@ -30,4 +30,8 @@ internal class EverlyticApi(val http: EverlyticHttp) {
     fun recordDeliveryEvent(event: NotificationEvent, responseHandler: EverlyticHttp.ResponseHandler) {
         http.post("push-notifications/events/deliveries", JSONAdapter.encodeAsString(event), responseHandler)
     }
+
+    fun recordDismissEvent(event: NotificationEvent, responseHandler: EverlyticHttp.ResponseHandler) {
+        http.post("push-notifications/events/dismissals", JSONAdapter.encodeAsString(event), responseHandler)
+    }
 }

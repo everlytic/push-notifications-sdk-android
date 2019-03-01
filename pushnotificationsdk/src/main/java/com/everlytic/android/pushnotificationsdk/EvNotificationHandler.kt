@@ -10,6 +10,8 @@ import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
+import com.everlytic.android.pushnotificationsdk.eventreceivers.EvNotificationClickReceiver
+import com.everlytic.android.pushnotificationsdk.eventreceivers.EvNotificationDismissedReceiver
 import java.security.SecureRandom
 
 internal class EvNotificationHandler(val context: Context) {
@@ -39,9 +41,11 @@ internal class EvNotificationHandler(val context: Context) {
     }
 
     private fun createNotification(notification: EvNotification): Notification {
-        val intent = createLauncherIntent(notification)
+        val launcherIntent = createLauncherIntent(notification)
+        val dismissalIntent = createDismissalIntent(notification)
 
-        val onClickIntent = createPendingIntent(intent)
+        val onClickPendingIntent = createPendingIntent(launcherIntent)
+        val onDismissPendingIntent = createPendingIntent(dismissalIntent)
 
         val smallIcon = getSmallIconReference()
 
@@ -52,8 +56,8 @@ internal class EvNotificationHandler(val context: Context) {
             .setPriority(notification.priority)
             .setGroup(DEFAULT_GROUP)
             .setColor(notification.color)
-            // todo dismiss action
-            .setContentIntent(onClickIntent)
+            .setContentIntent(onClickPendingIntent)
+            .setDeleteIntent(onDismissPendingIntent)
             .build()
     }
 
@@ -77,6 +81,13 @@ internal class EvNotificationHandler(val context: Context) {
 
     private fun createLauncherIntent(notification: EvNotification): Intent {
         return Intent(context, EvNotificationClickReceiver::class.java).apply {
+            putExtra(EvIntentExtras.EVERLYTIC_DATA, notification)
+            putExtra(EvIntentExtras.ANDROID_NOTIFICATION_ID, notification.androidNotificationId)
+        }
+    }
+
+    private fun createDismissalIntent(notification: EvNotification): Intent {
+        return Intent(context, EvNotificationDismissedReceiver::class.java).apply {
             putExtra(EvIntentExtras.EVERLYTIC_DATA, notification)
             putExtra(EvIntentExtras.ANDROID_NOTIFICATION_ID, notification.androidNotificationId)
         }

@@ -24,12 +24,12 @@ class Sandbox : AppCompatActivity() {
     }
 
     private fun alert(block: AlertDialog.Builder.() -> Unit) {
-//        runOnUiThread {
+        runOnUiThread {
             AlertDialog.Builder(this).apply {
                 setPositiveButton(android.R.string.ok, null)
                 block()
             }.show()
-//        }
+        }
     }
 
     private fun updateSubscriptionDisplay() {

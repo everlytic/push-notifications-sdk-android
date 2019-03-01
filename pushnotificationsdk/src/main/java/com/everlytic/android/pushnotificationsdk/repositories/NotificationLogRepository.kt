@@ -53,9 +53,9 @@ class NotificationLogRepository(private val database: EvDbHelper) {
         }
     }
 
-    fun setNotificationAsDismissed(androidNotificationId: Int, date: Date = Date()) {
+    fun setNotificationAsDismissed(androidNotificationId: Int, date: Date? = Date()) {
         val update = ContentValues().apply {
-            put(COL_DISMISSED_AT, date.toIso8601())
+            put(COL_DISMISSED_AT, date?.toIso8601())
         }
 
         database.writableDatabase.let { db ->

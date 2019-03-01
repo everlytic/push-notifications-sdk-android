@@ -15,14 +15,13 @@ import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import com.everlytic.android.pushnotificationsdk.workers.JobIntentService
 import com.everlytic.android.pushnotificationsdk.workers.UploadMessageEventsService
 
-internal class NotificationOpenedHandler(
+internal class NotificationDismissedHandler(
     private val sdkRepository: SdkRepository,
     private val notificationEventRepository: NotificationEventRepository,
-    private val notificationLogRepository: NotificationLogRepository,
-    private val notificationHandler: EvNotificationHandler
+    private val notificationLogRepository: NotificationLogRepository
 ) {
 
-    private val eventType = NotificationEventType.CLICK
+    private val eventType = NotificationEventType.DISMISS
 
     fun handleIntentWithContext(context: Context, intent: Intent) {
         if (!intent.isEverlyticEventIntent()) {
@@ -30,35 +29,20 @@ internal class NotificationOpenedHandler(
         }
 
         processIntent(context, intent)
-        setNotificationReadFromIntent(intent)
+        setNotificationDismissedFromIntent(intent)
     }
 
     private fun processIntent(context: Context, intent: Intent) {
-
         val event = createNotificationEvent(intent, sdkRepository)
         notificationEventRepository.storeNotificationEvent(event)
         scheduleEventUploadWorker(context)
-
-        notificationHandler.dismissNotificationByAndroidId(
-            intent.extras?.getInt(EvIntentExtras.ANDROID_NOTIFICATION_ID) ?: 0
-        )
-
-        startLauncherActivityInContext(context)
     }
 
-    private fun setNotificationReadFromIntent(intent: Intent) {
+    private fun setNotificationDismissedFromIntent(intent: Intent) {
         val androidNotificationId =
             intent.getParcelableExtra<EvNotification>(EvIntentExtras.EVERLYTIC_DATA).androidNotificationId
 
-        notificationLogRepository.setNotificationAsRead(androidNotificationId)
-    }
-
-    private fun startLauncherActivityInContext(context: Context) {
-        context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
-            flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT and Intent.FLAG_ACTIVITY_NEW_TASK
-        }?.let {
-            context.startActivity(it)
-        }
+        notificationLogRepository.setNotificationAsDismissed(androidNotificationId)
     }
 
     private fun createNotificationEvent(

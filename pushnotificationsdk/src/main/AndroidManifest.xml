@@ -22,7 +22,8 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".EvNotificationClickReceiver" />
+        <receiver android:name=".eventreceivers.EvNotificationClickReceiver" />
+        <receiver android:name=".eventreceivers.EvNotificationDismissedReceiver" />
 
         <receiver android:name=".EvBootReceiver">
             <intent-filter>

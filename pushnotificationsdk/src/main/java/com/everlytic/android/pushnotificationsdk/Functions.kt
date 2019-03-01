@@ -1,6 +1,7 @@
 @file:JvmName("Functions")
 package com.everlytic.android.pushnotificationsdk
 
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import com.everlytic.android.pushnotificationsdk.models.jsonadapters.MapAdapter
@@ -47,4 +48,8 @@ fun Any.logd(message: String? = null, throwable: Throwable? = null) {
 @JvmOverloads
 fun Any.logw(message: String? = null, throwable: Throwable? = null) {
     EvLogger.w(this::class.java.simpleName, message, throwable)
+}
+
+fun Intent.isEverlyticEventIntent(): Boolean {
+    return this.hasExtra(EvIntentExtras.EVERLYTIC_DATA) || this.hasExtra(EvIntentExtras.ANDROID_NOTIFICATION_ID)
 }

@@ -65,7 +65,7 @@ class UploadMessageEventsService : JobIntentService() {
         return when (eventType) {
             NotificationEventType.CLICK -> api.recordClickEvent(event, responseHandler)
             NotificationEventType.DELIVERY -> api.recordDeliveryEvent(event, responseHandler)
-            NotificationEventType.DISMISS -> TODO()
+            NotificationEventType.DISMISS -> api.recordDismissEvent(event, responseHandler)
             NotificationEventType.BOUNCE -> TODO()
             NotificationEventType.SOFT_BOUNCE -> TODO()
             NotificationEventType.UNKNOWN -> {

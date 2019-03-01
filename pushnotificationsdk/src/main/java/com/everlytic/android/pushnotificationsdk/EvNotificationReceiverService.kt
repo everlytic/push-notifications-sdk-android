@@ -55,7 +55,7 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
 
     private fun processDeliveryEventForNotification(notification: EvNotification) {
         val event = createDeliveryEvent(notification, sdkRepository)
-        notificationEventRepository.storeNotificationEvent(NotificationEventType.DELIVERY, event)
+        notificationEventRepository.storeNotificationEvent(event)
         scheduleEventUploadWorker()
     }
 
