@@ -4,7 +4,7 @@ enum class NotificationEventType {
     DELIVERY,
     CLICK,
     DISMISS,
-    BOUNCE,
-    SOFT_BOUNCE,
+//    BOUNCE,
+//    SOFT_BOUNCE,
     UNKNOWN
 }

@@ -32,6 +32,10 @@ internal class PushSdk @JvmOverloads constructor(
         if (sdkRepository.getDeviceId().isNullOrEmpty()) {
             sdkRepository.setDeviceId(UUID.randomUUID().toString())
         }
+
+        if (sdkRepository.getHasSubscription()) {
+            resubscribeIfRequired()
+        }
     }
 
     fun subscribeContact(email: String, onComplete: (EvResult) -> Unit) {
@@ -51,7 +55,7 @@ internal class PushSdk @JvmOverloads constructor(
                         logd("::onSuccess() response=$response")
                         val responseObject = JSONAdapter.decodeAs(ApiSubscription::class.java, response!!.data)
 
-                        saveContactSubscriptionFromResponse(responseObject)
+                        saveContactSubscriptionFromResponse(email, responseObject)
                         onComplete(EvResult(true))
                     }
 
@@ -66,12 +70,51 @@ internal class PushSdk @JvmOverloads constructor(
                     }
                 })
             }
-
         }
     }
 
-    fun resubscribeUser(email: String, onComplete: (EvResult) -> Unit) {
-        return subscribeContact(email, onComplete)
+    internal fun resubscribeUserWithToken(email: String, token: String, onComplete: (EvResult) -> Unit) {
+        logd("::resubscribeUserWithToken() email=$email token=$token onComplete=$onComplete")
+        val deviceType = if (context.resources.getBoolean(R.bool.isTablet)) "tablet" else "handset"
+        val device = DeviceData(sdkRepository.getDeviceId()!!, type = deviceType)
+        val contactData = ContactData(email, token)
+        val subscription = SubscriptionEvent(settingsBag.listId.toString(), contactData, device = device)
+
+        logd("::resubscribeUserWithToken() subscription=$subscription")
+
+        api.subscribe(subscription, object : EverlyticHttp.ResponseHandler {
+            override fun onSuccess(response: ApiResponse?) {
+                logd("::onSuccess() response=$response")
+                val responseObject = JSONAdapter.decodeAs(ApiSubscription::class.java, response!!.data)
+
+                saveContactSubscriptionFromResponse(email, responseObject)
+                onComplete(EvResult(true))
+            }
+
+            override fun onFailure(code: Int, response: String?, throwable: Throwable?) {
+                logd("::onFailure() code=$code response=$response throwable=$throwable")
+                onComplete(
+                    EvResult(
+                        false,
+                        throwable ?: Exception("An API Exception occurred")
+                    )
+                )
+            }
+        })
+    }
+
+    internal fun resubscribeIfRequired() {
+        if (sdkRepository.getHasSubscription()) {
+            val newToken = sdkRepository.getNewFcmToken()
+            newToken?.let { fcmToken ->
+                if (fcmToken.datetime.after(sdkRepository.getSubscriptionDatetime() ?: Date(0))) {
+                    val email = sdkRepository.getContactEmail()!!
+                    resubscribeUserWithToken(email, fcmToken.token) {
+                        logd(throwable = it.exception)
+                    }
+                }
+            }
+        }
     }
 
     @Suppress("NAME_SHADOWING")
@@ -97,17 +140,17 @@ internal class PushSdk @JvmOverloads constructor(
 
     }
 
-    fun getPublicNotificationHistory() : List<EverlyticNotification> {
+    fun getPublicNotificationHistory(): List<EverlyticNotification> {
         val dbHelper = EvDbHelper.getInstance(context)
         val notificationRepository = NotificationLogRepository(dbHelper)
 
         return notificationRepository.getNotificationLogHistory()
     }
 
-    internal fun saveContactSubscriptionFromResponse(responseBody: ApiSubscription) {
+    internal fun saveContactSubscriptionFromResponse(contactEmail: String, responseBody: ApiSubscription) {
         try {
             Log.d("PushSdk", "API Response: $responseBody")
-            sdkRepository.setContactSubscription(responseBody)
+            sdkRepository.setContactSubscription(contactEmail, responseBody)
         } catch (otherException: Exception) {
             throw otherException
         }

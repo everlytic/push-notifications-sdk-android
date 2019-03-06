@@ -3,7 +3,7 @@ package com.everlytic.android.pushnotificationsdk.repositories
 import android.content.ContentValues
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract
 import com.everlytic.android.pushnotificationsdk.database.EvDbHelper
-import com.everlytic.android.pushnotificationsdk.database.adapters.toIso8601
+import com.everlytic.android.pushnotificationsdk.database.adapters.toIso8601String
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import com.everlytic.android.pushnotificationsdk.models.EverlyticNotification
 import java.util.*
@@ -15,7 +15,7 @@ import com.everlytic.android.pushnotificationsdk.database.EvDbContract.Notificat
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_BODY
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_DISMISSED_AT
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_RECEIVED_AT
-import com.everlytic.android.pushnotificationsdk.database.adapters.asIso8601Date
+import com.everlytic.android.pushnotificationsdk.database.adapters.toDate
 
 class NotificationLogRepository(private val database: EvDbHelper) {
     private val tableName = EvDbContract.NotificationLogTable.TBL_NAME
@@ -29,7 +29,7 @@ class NotificationLogRepository(private val database: EvDbHelper) {
             put(COL_CONTACT_ID, contactId)
             put(COL_TITLE, notification.title)
             put(COL_BODY, notification.body)
-            put(COL_RECEIVED_AT, notification.received_at.toIso8601())
+            put(COL_RECEIVED_AT, notification.received_at.toIso8601String())
         }
 
         database.writableDatabase.let { db ->
@@ -40,7 +40,7 @@ class NotificationLogRepository(private val database: EvDbHelper) {
     fun setNotificationAsRead(androidNotificationId: Int, date: Date = Date()) {
 
         val update = ContentValues().apply {
-            put(EvDbContract.NotificationLogTable.COL_READ_AT, date.toIso8601())
+            put(EvDbContract.NotificationLogTable.COL_READ_AT, date.toIso8601String())
         }
 
         database.writableDatabase.let { db ->
@@ -55,7 +55,7 @@ class NotificationLogRepository(private val database: EvDbHelper) {
 
     fun setNotificationAsDismissed(androidNotificationId: Int, date: Date? = Date()) {
         val update = ContentValues().apply {
-            put(COL_DISMISSED_AT, date?.toIso8601())
+            put(COL_DISMISSED_AT, date?.toIso8601String())
         }
 
         database.writableDatabase.let { db ->
@@ -88,8 +88,8 @@ class NotificationLogRepository(private val database: EvDbHelper) {
                         cursor.getString(cursor.getColumnIndex(COL_MESSAGE_ID)),
                         cursor.getString(cursor.getColumnIndex(COL_MESSAGE_ID)),
                         cursor.getInt(cursor.getColumnIndex(COL_MESSAGE_ID)),
-                        cursor.getString(cursor.getColumnIndex(COL_MESSAGE_ID)).asIso8601Date(),
-                        cursor.getString(cursor.getColumnIndex(COL_MESSAGE_ID)).asIso8601Date()
+                        cursor.getString(cursor.getColumnIndex(COL_MESSAGE_ID)).toDate(),
+                        cursor.getString(cursor.getColumnIndex(COL_MESSAGE_ID)).toDate()
                     )
                 }
             }

@@ -7,10 +7,10 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushInvalidSDKConfigurationException
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushNotInitialisedException
+import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import io.mockk.*
 import org.junit.After
 import org.junit.Before
-import org.junit.BeforeClass
 import org.junit.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -55,9 +55,14 @@ class EverlyticPushTest {
     fun testInit_WithApplication_CreatesInitialisedSDK() {
         mockApplication().let { app ->
             mockkConstructor(PushSdk::class)
+            mockkConstructor(SdkRepository::class)
+
+            every { anyConstructed<SdkRepository>().getNewFcmToken() } returns null
+
             EverlyticPush.init(app)
             verify { SdkSettings.getSettings(ofType()) }
             clearConstructorMockk(PushSdk::class)
+            clearConstructorMockk(SdkRepository::class)
         }
     }
 
@@ -173,6 +178,7 @@ class EverlyticPushTest {
         val ctx = mockk<Context>().apply {
             val sharedPreferences = mockk<SharedPreferences>().apply {
                 every { getString(any(), any()) } answers { "[val for] ${args.first()}" }
+                every { getLong(any(), any()) } answers { 1 }
             }
             every { getSharedPreferences(any(), any()) } returns sharedPreferences
         }
@@ -187,7 +193,6 @@ class EverlyticPushTest {
         mockkConstructor(PushSdk::class)
         return mockk {
             every { subscribeContact(any(), any()) } just Runs
-            every { resubscribeUser(any(), any()) } just Runs
             every { unsubscribeCurrentContact() } just Runs
         }
     }

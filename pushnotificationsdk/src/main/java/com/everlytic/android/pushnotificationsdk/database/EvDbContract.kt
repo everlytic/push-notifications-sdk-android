@@ -51,6 +51,7 @@ object EvDbContract {
         const val COL_MESSAGE_ID = "message_id"
         const val COL_DEVICE_ID = "device_id"
         const val COL_METADATA = "metadata"
+        @Deprecated("Removed from db version 2")
         const val COL_IS_UPLOADED = "is_uploaded"
         const val COL_DATETIME = "datetime"
 
@@ -63,7 +64,6 @@ object EvDbContract {
                 $COL_MESSAGE_ID INTEGER NOT NULL,
                 $COL_DEVICE_ID TEXT NOT NULL,
                 $COL_METADATA TEXT NOT NULL DEFAULT '{}',
-                $COL_IS_UPLOADED INTEGER DEFAULT 0,
                 $COL_DATETIME TEXT NOT NULL
             );
         """.trimIndent()
@@ -72,6 +72,8 @@ object EvDbContract {
             "CREATE INDEX ev_notification_event_log_event_type ON $TBL_NAME($COL_EVENT_TYPE)"
         const val INDEX_CREATE_IS_UPLOADED_EVENT_TYPE =
             "CREATE INDEX ev_notification_event_log_event_type_uploaded ON $TBL_NAME($COL_EVENT_TYPE, $COL_IS_UPLOADED)"
+
+        val UPGRADE_V2 = listOf("ALTER $TBL_NAME DROP COLUMN $COL_IS_UPLOADED")
     }
 
 }

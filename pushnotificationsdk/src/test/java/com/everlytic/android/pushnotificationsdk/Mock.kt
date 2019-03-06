@@ -56,6 +56,8 @@ internal object Mock {
             every { getSubscriptionId() } returns 5
             every { getContactId() } returns 10
             every { removeContactSubscription() } just Runs
+            every { getHasSubscription() } returns true
+            every { getNewFcmToken() } returns null
         }
     }
 

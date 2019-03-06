@@ -38,7 +38,13 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String?) {
         logd("::onNewToken() token=$token")
-        // TODO("Implement onNewToken")
+        val email = sdkRepository.getContactEmail()
+        if (sdkRepository.getHasSubscription() && !email.isNullOrBlank()) {
+            token?.let { newToken ->
+                sdkRepository.setNewFcmToken(newToken)
+                EverlyticPush.instance?.resubscribeIfRequired()
+            }
+        }
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {

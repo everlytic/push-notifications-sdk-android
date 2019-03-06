@@ -9,12 +9,14 @@ import com.everlytic.android.pushnotificationsdk.models.ApiSubscription
 import com.everlytic.android.pushnotificationsdk.models.jsonadapters.ApiSubscriptionAdapter
 import com.everlytic.android.pushnotificationsdk.network.EverlyticApi
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
+import com.everlytic.android.pushnotificationsdk.repositories.FcmToken
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
+import java.util.*
 import kotlin.test.assertFails
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -67,7 +69,7 @@ class PushSdkTest {
             )
         )
 
-        every { sdk.saveContactSubscriptionFromResponse(any()) } just Runs
+        every { sdk.saveContactSubscriptionFromResponse(any(), any()) } just Runs
 
         sdk.subscribeContact(USER_EMAIL) {}
 
@@ -170,6 +172,7 @@ class PushSdkTest {
         val mockSdkRepo = mockSdkRepository().apply {
             every { getSubscriptionId() } returns 1
             every { getContactId() } returns 10
+            every { getNewFcmToken() } returns null
         }
 
         val sdk = spyk(
@@ -228,6 +231,39 @@ class PushSdkTest {
 
         assertFalse { sdk.isContactSubscribed() }
         verify { mockSdkRepo.getContactId() }
+    }
+
+    @Test
+    fun testResubscribeIfRequired_RequiresResubscribe_ResubscribeIsSuccessful() {
+        val mockSdkRepo = mockSdkRepository().apply {
+            every { getHasSubscription() } returns true
+            every { getSubscriptionDatetime() } returns Date(0)
+            every { getNewFcmToken() } returns FcmToken("abc", Date())
+            every { getContactEmail() } returns "test@example.com"
+        }
+
+        val ctx = mockk<Context>(relaxed = true) {
+            every { resources.getBoolean(any()) } returns false
+        }
+
+        val api = mockk<EverlyticApi> {
+            every { subscribe(any(), any()) } just Runs
+        }
+
+        val sdk = spyk(
+            PushSdk(
+                ctx,
+                getSettingsBag(),
+                api,
+                getFirebaseInstanceIdFacade(),
+                mockSdkRepo
+            )
+        )
+
+        sdk.resubscribeIfRequired()
+
+        verify { sdk.resubscribeUserWithToken(any(), any(), any()) }
+        verify { api.subscribe(any(), any()) }
     }
 
     private fun getFirebaseInstanceIdFacade(): FirebaseInstanceIdFacade {

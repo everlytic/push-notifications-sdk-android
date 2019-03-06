@@ -11,7 +11,7 @@ class DateAdapterTest {
     fun testEncodeDate_ReturnsValidString() {
         val date = Date(0)
 
-        val result = date.toIso8601()
+        val result = date.toIso8601String()
 
         assertEquals("1970-01-01T00:00:00.000Z", result)
     }
@@ -20,7 +20,7 @@ class DateAdapterTest {
     fun testDecodeString_StringIsValidFormat_ReturnsDate() {
         val dateString = "1970-01-01T00:00:00.000Z"
 
-        val result = dateString.asIso8601Date()
+        val result = dateString.toDate()
 
         assertEquals(Date(0), result)
     }
@@ -30,7 +30,7 @@ class DateAdapterTest {
         val dateString = "1970-01-01 00:00:00"
 
         assertFails {
-            dateString.asIso8601Date()
+            dateString.toDate()
         }
     }
 

@@ -12,13 +12,25 @@ class EvDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB
         SQL_INDEXES_CREATE.forEach { db.execSQL(it) }
     }
 
+    @Suppress("UNUSED_CHANGED_VALUE")
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         logd("::onUpgrade()")
+
+        var version = oldVersion
+
+        if (version < 2) {
+
+            EvDbContract.NotificationEventsLogTable.UPGRADE_V2.forEach {
+                db.execSQL(it)
+            }
+
+            version++
+        }
     }
 
     companion object {
         const val DB_NAME = "evpush.db"
-        const val DB_VERSION = 1
+        const val DB_VERSION = 2
 
         val SQL_TABLES_CREATE = arrayOf(
             EvDbContract.NotificationLogTable.CREATE_STATEMENT,
@@ -33,7 +45,7 @@ class EvDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB
         var instance: EvDbHelper? = null
 
         @Synchronized
-        fun getInstance(context: Context) : EvDbHelper {
+        fun getInstance(context: Context): EvDbHelper {
             return instance ?: EvDbHelper(context.applicationContext).also { instance = it }
         }
     }

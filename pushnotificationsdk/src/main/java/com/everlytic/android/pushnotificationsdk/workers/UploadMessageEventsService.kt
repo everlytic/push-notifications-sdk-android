@@ -40,7 +40,7 @@ class UploadMessageEventsService : JobIntentService() {
             performUploadForEvent(notificationEvent.type, notificationEvent, object : EverlyticHttp.ResponseHandler {
                 override fun onSuccess(response: ApiResponse?) {
                     notificationEvent._id?.let { id ->
-                        repository.updateEventIsUploaded(id, true)
+                        repository.deleteNotificationEvent(id)
                     }
                 }
 
@@ -50,9 +50,7 @@ class UploadMessageEventsService : JobIntentService() {
 
             })
         } catch (exception: Exception) {
-            notificationEvent._id?.let { id ->
-                repository.updateEventIsUploaded(id, false)
-            }
+            logw(throwable = exception)
         }
     }
 
@@ -66,10 +64,7 @@ class UploadMessageEventsService : JobIntentService() {
             NotificationEventType.CLICK -> api.recordClickEvent(event, responseHandler)
             NotificationEventType.DELIVERY -> api.recordDeliveryEvent(event, responseHandler)
             NotificationEventType.DISMISS -> api.recordDismissEvent(event, responseHandler)
-            NotificationEventType.BOUNCE -> TODO()
-            NotificationEventType.SOFT_BOUNCE -> TODO()
-            NotificationEventType.UNKNOWN -> {
-            }
+            NotificationEventType.UNKNOWN -> {}
         }
     }
 

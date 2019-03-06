@@ -26,7 +26,7 @@ class SdkRepositoryTest {
 
         val repository = spyk(objToCopy = SdkRepository(mockk()))
 
-        every { repository invokeNoArgs "getPreferences" } returns mockPrefs
+        every { repository getProperty "preferences" } answers { mockPrefs }
 
         repository.removeContactSubscription()
 
@@ -43,10 +43,11 @@ class SdkRepositoryTest {
 
         val repository = spyk(objToCopy = SdkRepository(mockk()))
 
-        every { repository invokeNoArgs "getPreferences" } returns mockPrefs
+        every { repository getProperty "preferences" } answers { mockPrefs }
 
         val subscriptionId = "1"
         val contactId = "4"
+        val contactEmail = "test@example.com"
 
         val apiSubscription = ApiSubscription(
             subscriptionId,
@@ -56,7 +57,7 @@ class SdkRepositoryTest {
             "123-456789"
         )
 
-        repository.setContactSubscription(apiSubscription)
+        repository.setContactSubscription(contactEmail, apiSubscription)
 
         verify { mockEditor.putLong(SdkRepository.SUBSCRIPTION_ID, subscriptionId.toLong()) }
         verify { mockEditor.putLong(SdkRepository.CONTACT_ID, contactId.toLong()) }

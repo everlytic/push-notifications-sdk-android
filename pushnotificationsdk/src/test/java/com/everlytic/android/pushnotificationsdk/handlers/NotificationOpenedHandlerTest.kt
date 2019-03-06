@@ -20,7 +20,7 @@ class NotificationOpenedHandlerTest {
         val mockCtx = mockContext()
         val mockSdkRepository = mockSdkRepository()
         val mockEventRepository = mockNotificationEventRepository().apply {
-            every { storeNotificationEvent(any(), any()) } just Runs
+            every { storeNotificationEvent(any()) } just Runs
         }
         val mockLogRepository = mockNotificationLogRepository().apply {
             every { setNotificationAsRead(any(), any()) } just Runs
@@ -59,7 +59,7 @@ class NotificationOpenedHandlerTest {
 
         verify { handler invoke "processIntent" withArguments listOf(mockCtx, intent) }
         verify { handler invoke "setNotificationReadFromIntent" withArguments listOf(intent) }
-        verify { mockEventRepository.storeNotificationEvent(any(), any()) }
+        verify { mockEventRepository.storeNotificationEvent(any()) }
         verify { handler invoke "scheduleEventUploadWorker" withArguments listOf(ofType<Context>()) }
         verify { mockCtx.startActivity(any()) }
     }
@@ -70,7 +70,7 @@ class NotificationOpenedHandlerTest {
         val mockCtx = mockContext()
         val mockSdkRepository = mockSdkRepository()
         val mockEventRepository = mockNotificationEventRepository().apply {
-            every { storeNotificationEvent(any(), any()) } just Runs
+            every { storeNotificationEvent(any()) } just Runs
         }
         val mockLogRepository = mockNotificationLogRepository().apply {
             every { setNotificationAsRead(any(), any()) } just Runs
