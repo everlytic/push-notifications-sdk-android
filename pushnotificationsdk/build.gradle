@@ -42,7 +42,7 @@ dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    api 'com.android.support:appcompat-v7:27.0.0'
+    api 'com.android.support:appcompat-v7:27.+'
 
     implementation 'com.google.firebase:firebase-messaging:17.3.4'
 
@@ -54,6 +54,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.json:json:20140107'
     androidTestImplementation 'androidx.test:runner:1.1.1'
-    androidTestImplementation "android.arch.work:work-testing:$work_version"
 }
 
