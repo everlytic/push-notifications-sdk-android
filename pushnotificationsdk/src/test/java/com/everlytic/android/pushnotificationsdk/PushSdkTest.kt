@@ -1,6 +1,7 @@
 package com.everlytic.android.pushnotificationsdk
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
 import com.everlytic.android.pushnotificationsdk.facades.TokenResult
@@ -57,6 +58,7 @@ class PushSdkTest {
                 every { getBoolean(R.bool.isTablet) } returns false
             }
             every { resources } returns mockResources
+            every { registerReceiver(any(), any()) } returns Intent()
         }
 
         val sdk = spyk(
@@ -80,7 +82,6 @@ class PushSdkTest {
     @MockK(relaxed = true)
     fun testSubscribe_RequestFails_ReturnsError() {
 
-
         val mockEverlyticApi = mockk<EverlyticApi> {
             val slot = slot<EverlyticHttp.ResponseHandler>()
             every { subscribe(ofType(), capture(slot)) } answers {
@@ -90,7 +91,7 @@ class PushSdkTest {
 
         val sdk = spyk(
             PushSdk(
-                mockk(),
+                mockContext(),
                 getSettingsBag(),
                 mockEverlyticApi,
                 getFirebaseInstanceIdFacade(),
@@ -99,7 +100,7 @@ class PushSdkTest {
         )
 
         assertFails {
-                sdk.subscribeContact(USER_EMAIL) {}
+            sdk.subscribeContact(USER_EMAIL) {}
         }
     }
 
@@ -120,6 +121,7 @@ class PushSdkTest {
                 every { getBoolean(R.bool.isTablet) } returns false
             }
             every { resources } returns mockResources
+            every { registerReceiver(any(), any()) } returns Intent()
         }
 
         val sdk = spyk(
@@ -153,7 +155,7 @@ class PushSdkTest {
 
         val sdk = spyk(
             PushSdk(
-                mockk(),
+                mockContext(),
                 getSettingsBag(),
                 mockEverlyticApi,
                 getFirebaseInstanceIdFacade(),
@@ -177,7 +179,7 @@ class PushSdkTest {
 
         val sdk = spyk(
             PushSdk(
-                mockk(),
+                mockContext(),
                 getSettingsBag(),
                 mockk(),
                 getFirebaseInstanceIdFacade(),
@@ -200,7 +202,7 @@ class PushSdkTest {
 
         val sdk = spyk(
             PushSdk(
-                mockk(),
+                mockContext(),
                 getSettingsBag(),
                 mockk(),
                 getFirebaseInstanceIdFacade(),
@@ -221,7 +223,7 @@ class PushSdkTest {
 
         val sdk = spyk(
             PushSdk(
-                mockk(),
+                mockContext(),
                 getSettingsBag(),
                 mockk(),
                 getFirebaseInstanceIdFacade(),
@@ -231,6 +233,12 @@ class PushSdkTest {
 
         assertFalse { sdk.isContactSubscribed() }
         verify { mockSdkRepo.getContactId() }
+    }
+
+    private fun mockContext(): Context {
+        return mockk<Context> {
+            every { registerReceiver(any(), any()) } returns Intent()
+        }
     }
 
     @Test

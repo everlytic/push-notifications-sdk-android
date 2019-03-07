@@ -2,6 +2,7 @@ package com.everlytic.android.pushnotificationsdk
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -175,8 +176,9 @@ class EverlyticPushTest {
     private fun mockApplication() = mockk<Application> {
         val pm = mockPackageManager()
         val appInfo = mockApplicationInfo()
-        val ctx = mockk<Context>().apply {
-            val sharedPreferences = mockk<SharedPreferences>().apply {
+        val ctx = mockk<Context> {
+            every { registerReceiver(ofType(), ofType()) } returns Intent()
+            val sharedPreferences = mockk<SharedPreferences> {
                 every { getString(any(), any()) } answers { "[val for] ${args.first()}" }
                 every { getLong(any(), any()) } answers { 1 }
             }
