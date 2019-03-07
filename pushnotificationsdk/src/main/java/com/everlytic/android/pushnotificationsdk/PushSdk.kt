@@ -1,6 +1,7 @@
 package com.everlytic.android.pushnotificationsdk
 
 import android.content.Context
+import android.content.IntentFilter
 import android.util.Log
 import com.everlytic.android.pushnotificationsdk.database.EvDbHelper
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticNotSubscribedException
@@ -11,6 +12,7 @@ import com.everlytic.android.pushnotificationsdk.network.EverlyticApi
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
+import com.everlytic.android.pushnotificationsdk.eventreceivers.ResubscribeContactOnNetworkChangeReceiver
 import java.util.*
 
 internal class PushSdk @JvmOverloads constructor(
@@ -36,6 +38,11 @@ internal class PushSdk @JvmOverloads constructor(
         if (sdkRepository.getHasSubscription()) {
             resubscribeIfRequired()
         }
+
+        context.registerReceiver(
+            ResubscribeContactOnNetworkChangeReceiver(),
+            IntentFilter("android.net.conn.CONNECTIVITY_CHANGE")
+        )
     }
 
     fun subscribeContact(email: String, onComplete: (EvResult) -> Unit) {
@@ -104,6 +111,7 @@ internal class PushSdk @JvmOverloads constructor(
     }
 
     internal fun resubscribeIfRequired() {
+        logd("::resubscribeIfRequired()")
         if (sdkRepository.getHasSubscription()) {
             val newToken = sdkRepository.getNewFcmToken()
             newToken?.let { fcmToken ->

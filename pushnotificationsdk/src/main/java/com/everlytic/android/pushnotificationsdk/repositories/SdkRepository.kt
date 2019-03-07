@@ -98,7 +98,7 @@ internal class SdkRepository(private val context: Context) {
         val token = preferences.getString(NEW_FCM_TOKEN, null)
         val datetime = preferences.getString(NEW_FCM_TOKEN_DATETIME, null)
 
-        return if (token.isNotBlank() && datetime.isNotBlank()) {
+        return if (!token.isNullOrBlank() && !datetime.isNullOrBlank()) {
             FcmToken(token, datetime.toDate())
         } else {
             null

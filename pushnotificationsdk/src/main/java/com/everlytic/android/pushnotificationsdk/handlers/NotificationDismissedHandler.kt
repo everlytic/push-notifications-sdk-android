@@ -60,7 +60,6 @@ internal class NotificationDismissedHandler(
     }
 
     private fun scheduleEventUploadWorker(context: Context) {
-        val componentName = ComponentName(context, UploadMessageEventsService::class.java)
-        JobIntentService.enqueueWork(context, componentName, UploadMessageEventsService.JOB_SERVICE_ID, Intent())
+        UploadMessageEventsService.enqueue(context)
     }
 }

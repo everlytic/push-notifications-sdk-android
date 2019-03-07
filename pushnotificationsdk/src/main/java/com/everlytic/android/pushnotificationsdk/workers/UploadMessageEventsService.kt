@@ -1,5 +1,7 @@
 package com.everlytic.android.pushnotificationsdk.workers
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import com.everlytic.android.pushnotificationsdk.SdkSettings
 import com.everlytic.android.pushnotificationsdk.database.EvDbHelper
@@ -69,6 +71,12 @@ class UploadMessageEventsService : JobIntentService() {
     }
 
     companion object {
-        const val JOB_SERVICE_ID = 2018746654
+
+        fun enqueue(context: Context) {
+            val componentName = ComponentName(context, UploadMessageEventsService::class.java)
+            JobIntentService.enqueueWork(context, componentName, UploadMessageEventsService.JOB_SERVICE_ID, Intent())
+        }
+
+        private const val JOB_SERVICE_ID = 2018746654
     }
 }

@@ -1,7 +1,5 @@
 package com.everlytic.android.pushnotificationsdk
 
-import android.content.ComponentName
-import android.content.Intent
 import android.os.Build
 import com.everlytic.android.pushnotificationsdk.database.EvDbHelper
 import com.everlytic.android.pushnotificationsdk.database.NotificationEventType
@@ -10,7 +8,7 @@ import com.everlytic.android.pushnotificationsdk.models.NotificationEvent
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationEventRepository
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
-import com.everlytic.android.pushnotificationsdk.workers.JobIntentService
+import com.everlytic.android.pushnotificationsdk.eventreceivers.ResubscribeContactOnNetworkChangeReceiver
 import com.everlytic.android.pushnotificationsdk.workers.UploadMessageEventsService
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -66,8 +64,7 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
     }
 
     private fun scheduleEventUploadWorker() {
-        val componentName = ComponentName(getContext(), UploadMessageEventsService::class.java)
-        JobIntentService.enqueueWork(getContext(), componentName, UploadMessageEventsService.JOB_SERVICE_ID, Intent())
+        UploadMessageEventsService.enqueue(getContext())
     }
 
     private fun createDeliveryEvent(notification: EvNotification, sdkRepository: SdkRepository): NotificationEvent {
