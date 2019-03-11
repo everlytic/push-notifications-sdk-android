@@ -18,7 +18,9 @@ internal class SdkRepository(private val context: Context) {
             return SharedPreferenceStore.getInstance(context)
         }
 
-    fun getHasSubscription(): Boolean = getSubscriptionId() != null
+    fun getHasSubscription(): Boolean {
+        return getSubscriptionId() != null || getContactEmail() != null
+    }
 
     fun getSubscriptionId(): Long? {
         return preferences
@@ -83,6 +85,13 @@ internal class SdkRepository(private val context: Context) {
         edit {
             putString(NEW_FCM_TOKEN, token)
             putString(NEW_FCM_TOKEN_DATETIME, Date().toIso8601String())
+        }
+    }
+
+    fun setContactEmail(email: String) {
+        logd("::setContactEmail() email=$email")
+        edit {
+            putString(CONTACT_EMAIL, email)
         }
     }
 

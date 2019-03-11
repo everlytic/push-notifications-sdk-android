@@ -5,16 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import com.everlytic.android.pushnotificationsdk.EverlyticPush
+import com.everlytic.android.pushnotificationsdk.isDeviceOnline
 import com.everlytic.android.pushnotificationsdk.logd
 
 class ResubscribeContactOnNetworkChangeReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        logd("::onReceive() activeNetwork.isConnected=${context.isDeviceOnline}")
 
-        val connManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-        logd("::onReceive() activeNetwork.isConnected=${connManager.activeNetworkInfo?.isConnected}")
-
-        if (connManager.activeNetworkInfo?.isConnected == true) {
+        if (context.isDeviceOnline) {
             EverlyticPush.instance?.resubscribeIfRequired()
         }
     }

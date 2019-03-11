@@ -1,7 +1,9 @@
 @file:JvmName("Functions")
 package com.everlytic.android.pushnotificationsdk
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Handler
 import android.os.Looper
 import com.everlytic.android.pushnotificationsdk.models.jsonadapters.MapAdapter
@@ -53,3 +55,9 @@ fun Any.logw(message: String? = null, throwable: Throwable? = null) {
 fun Intent.isEverlyticEventIntent(): Boolean {
     return this.hasExtra(EvIntentExtras.EVERLYTIC_DATA) || this.hasExtra(EvIntentExtras.ANDROID_NOTIFICATION_ID)
 }
+
+val Context.isDeviceOnline: Boolean
+    get() {
+        return (this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
+            .activeNetworkInfo?.isConnected ?: false
+    }

@@ -13,6 +13,8 @@ import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import com.everlytic.android.pushnotificationsdk.eventreceivers.ResubscribeContactOnNetworkChangeReceiver
+import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticSubscriptionDelayedException
+import java.net.UnknownHostException
 import java.util.*
 
 internal class PushSdk @JvmOverloads constructor(
@@ -49,33 +51,42 @@ internal class PushSdk @JvmOverloads constructor(
         logd("::subscribeContact() email=$email onComplete=$onComplete")
         val deviceType = if (context.resources.getBoolean(R.bool.isTablet)) "tablet" else "handset"
         val device = DeviceData(sdkRepository.getDeviceId()!!, type = deviceType)
-        firebaseInstanceId.getInstanceId { result ->
-            logd("::subscribeContact() firebaseInstanceId->result=$result")
-            if (result.success) {
-                val contactData = ContactData(email, result.value!!)
+        firebaseInstanceId.getInstanceId { tokenResult ->
+            logd("::subscribeContact() firebaseInstanceId->tokenResult=$tokenResult")
+            if (tokenResult.success) {
+                val contactData = ContactData(email, tokenResult.value!!)
                 val subscription = SubscriptionEvent(settingsBag.listId.toString(), contactData, device = device)
 
                 logd("::subscribeContact() subscription=$subscription")
 
-                api.subscribe(subscription, object : EverlyticHttp.ResponseHandler {
-                    override fun onSuccess(response: ApiResponse?) {
-                        logd("::onSuccess() response=$response")
-                        val responseObject = JSONAdapter.decodeAs(ApiSubscription::class.java, response!!.data)
+                if (context.isDeviceOnline) {
+                    api.subscribe(subscription, object : EverlyticHttp.ResponseHandler {
+                        override fun onSuccess(response: ApiResponse?) {
+                            logd("::onSuccess() response=$response")
+                            val responseObject = JSONAdapter.decodeAs(ApiSubscription::class.java, response!!.data)
 
-                        saveContactSubscriptionFromResponse(email, responseObject)
-                        onComplete(EvResult(true))
-                    }
+                            saveContactSubscriptionFromResponse(email, responseObject)
+                            onComplete(EvResult(true))
+                        }
 
-                    override fun onFailure(code: Int, response: String?, throwable: Throwable?) {
-                        logd("::onFailure() code=$code response=$response throwable=$throwable")
-                        onComplete(
-                            EvResult(
-                                false,
-                                throwable ?: Exception("An API Exception occurred")
+                        override fun onFailure(code: Int, response: String?, throwable: Throwable?) {
+                            logd("::onFailure() code=$code response=$response throwable=$throwable")
+                            onComplete(
+                                EvResult(
+                                    false,
+                                    throwable ?: Exception("An API Exception occurred")
+                                )
                             )
-                        )
-                    }
-                })
+                        }
+                    })
+                } else {
+                    sdkRepository.setContactEmail(email)
+                    sdkRepository.setNewFcmToken(tokenResult.value)
+                    onComplete(
+                        EvResult(false, EverlyticSubscriptionDelayedException())
+                    )
+                }
+
             }
         }
     }
@@ -93,13 +104,14 @@ internal class PushSdk @JvmOverloads constructor(
             override fun onSuccess(response: ApiResponse?) {
                 logd("::onSuccess() response=$response")
                 val responseObject = JSONAdapter.decodeAs(ApiSubscription::class.java, response!!.data)
-
                 saveContactSubscriptionFromResponse(email, responseObject)
+                sdkRepository.removeNewFcmToken()
                 onComplete(EvResult(true))
             }
 
             override fun onFailure(code: Int, response: String?, throwable: Throwable?) {
                 logd("::onFailure() code=$code response=$response throwable=$throwable")
+                sdkRepository.removeNewFcmToken()
                 onComplete(
                     EvResult(
                         false,
