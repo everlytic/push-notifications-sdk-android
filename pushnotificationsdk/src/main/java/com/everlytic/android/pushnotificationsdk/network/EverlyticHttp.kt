@@ -122,7 +122,6 @@ internal class EverlyticHttp(installUrl: String, apiUsername: String, apiKey: St
         } catch (throwable: UnknownHostException) {
             logw("::performHttpConnection() conn::catch ${throwable.message}", throwable)
             callbackThread = handleFailureResponse(responseHandler, httpResponseCode, jsonResult, throwable)
-
         }
 
         return callbackThread
