@@ -59,7 +59,7 @@ internal class PushSdk @JvmOverloads constructor(
 
                 logd("::subscribeContact() subscription=$subscription")
 
-                if (context.isDeviceOnline) {
+                if (isDeviceOnline(context)) {
                     api.subscribe(subscription, object : EverlyticHttp.ResponseHandler {
                         override fun onSuccess(response: ApiResponse?) {
                             logd("::onSuccess() response=$response")

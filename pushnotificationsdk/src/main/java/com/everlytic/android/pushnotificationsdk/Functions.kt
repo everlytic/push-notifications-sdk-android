@@ -56,8 +56,7 @@ fun Intent.isEverlyticEventIntent(): Boolean {
     return this.hasExtra(EvIntentExtras.EVERLYTIC_DATA) || this.hasExtra(EvIntentExtras.ANDROID_NOTIFICATION_ID)
 }
 
-val Context.isDeviceOnline: Boolean
-    get() {
-        return (this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
+fun isDeviceOnline(context: Context): Boolean {
+        return (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
             .activeNetworkInfo?.isConnected ?: false
     }

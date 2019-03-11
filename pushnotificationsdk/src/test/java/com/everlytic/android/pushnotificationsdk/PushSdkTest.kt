@@ -18,6 +18,7 @@ import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 import java.util.*
+import kotlin.reflect.jvm.internal.impl.utils.FunctionsKt
 import kotlin.test.assertFails
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -28,6 +29,9 @@ class PushSdkTest {
     fun setUp() {
         Mock.BuildFacade()
         Mock.EvLogger()
+
+        mockkStatic("com.everlytic.android.pushnotificationsdk.Functions")
+        every { isDeviceOnline(any()) } returns true
     }
 
     @Test
