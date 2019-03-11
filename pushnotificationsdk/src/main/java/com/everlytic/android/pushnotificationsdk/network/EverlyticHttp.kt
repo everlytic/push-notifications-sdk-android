@@ -9,12 +9,13 @@ import com.everlytic.android.pushnotificationsdk.use
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.UnknownHostException
 import java.util.*
 
 internal class EverlyticHttp(installUrl: String, apiUsername: String, apiKey: String) {
 
-    val baseUrl = "https://$installUrl/api/3.0/"
-    var authenticator = EverlyticApiAuthenticator(apiUsername, apiKey)
+    private val baseUrl = "https://$installUrl/api/3.0/"
+    private var authenticator = EverlyticApiAuthenticator(apiUsername, apiKey)
 
     fun get(url: String, responseHandler: ResponseHandler) {
         performHttpConnection(
@@ -51,15 +52,14 @@ internal class EverlyticHttp(installUrl: String, apiUsername: String, apiKey: St
             }
         }, CONN_THREAD_NAME)
 
-        connectionThread.start()
-
         try {
+            connectionThread.start()
 //            connectionThread.join(THREAD_TIMEOUT)
 //            if (connectionThread.state != Thread.State.TERMINATED) {
 //                connectionThread.interrupt()
 //            }
 
-            callbackThreads.firstOrNull()?.join()
+//            callbackThreads.firstOrNull()?.join()
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }
@@ -73,6 +73,8 @@ internal class EverlyticHttp(installUrl: String, apiUsername: String, apiKey: St
     ): Thread {
         var jsonResult: String? = null
         lateinit var callbackThread: Thread
+        var httpResponseCode = -1
+
         try {
             useCaches = false
             connectTimeout = timeout
@@ -92,9 +94,9 @@ internal class EverlyticHttp(installUrl: String, apiUsername: String, apiKey: St
                 outputStream.write(bytes)
             }
 
-            val responseCode = responseCode
+            httpResponseCode = responseCode
 
-            if (responseCode == HttpURLConnection.HTTP_OK) {
+            if (httpResponseCode == HttpURLConnection.HTTP_OK) {
                 logd("Request Successful")
                 val istream = inputStream
                 val scanner = Scanner(istream, "UTF-8")
@@ -114,12 +116,13 @@ internal class EverlyticHttp(installUrl: String, apiUsername: String, apiKey: St
                     scanner.close()
                 }
 
-                callbackThread = handleFailureResponse(responseHandler, responseCode, jsonResult, null)
+                callbackThread = handleFailureResponse(responseHandler, httpResponseCode, jsonResult, null)
             }
 
-        } catch (throwable: Throwable) {
-            logw("::performHttpConnection() conn::catch", throwable)
-            callbackThread = handleFailureResponse(responseHandler, responseCode, jsonResult, throwable)
+        } catch (throwable: UnknownHostException) {
+            logw("::performHttpConnection() conn::catch ${throwable.message}", throwable)
+            callbackThread = handleFailureResponse(responseHandler, httpResponseCode, jsonResult, throwable)
+
         }
 
         return callbackThread
@@ -155,6 +158,7 @@ internal class EverlyticHttp(installUrl: String, apiUsername: String, apiKey: St
         jsonResult: String?,
         throwable: Throwable?
     ): Thread {
+        logd("::handleFailureResponse()")
         return Thread {
             responseHandler.onFailure(responseCode, jsonResult, throwable)
         }.also {
