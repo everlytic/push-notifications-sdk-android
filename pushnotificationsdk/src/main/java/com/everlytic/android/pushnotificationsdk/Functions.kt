@@ -48,8 +48,18 @@ fun Any.logd(message: String? = null, throwable: Throwable? = null) {
 }
 
 @JvmOverloads
+fun Any.logi(message: String? = null, throwable: Throwable? = null) {
+    EvLogger.i(this::class.java.simpleName, message, throwable)
+}
+
+@JvmOverloads
 fun Any.logw(message: String? = null, throwable: Throwable? = null) {
     EvLogger.w(this::class.java.simpleName, message, throwable)
+}
+
+@JvmOverloads
+fun Any.loge(message: String? = null, throwable: Throwable? = null) {
+    EvLogger.e(this::class.java.simpleName, message, throwable)
 }
 
 fun Intent.isEverlyticEventIntent(): Boolean {

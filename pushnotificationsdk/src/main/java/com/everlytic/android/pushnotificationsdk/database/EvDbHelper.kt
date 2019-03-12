@@ -38,8 +38,7 @@ class EvDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB
         )
 
         val SQL_INDEXES_CREATE = arrayOf(
-            EvDbContract.NotificationEventsLogTable.INDEX_CREATE_EVENT_TYPE,
-            EvDbContract.NotificationEventsLogTable.INDEX_CREATE_IS_UPLOADED_EVENT_TYPE
+            EvDbContract.NotificationEventsLogTable.INDEX_CREATE_EVENT_TYPE
         )
 
         var instance: EvDbHelper? = null

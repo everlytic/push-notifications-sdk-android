@@ -9,25 +9,34 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        >
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".NotificationHistoryViewer"
+            android:label="@string/title_activity_notification_history_viewer"
+            android:parentActivityName=".Sandbox"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.everlytic.android.sandboxapp.Sandbox" />
+        </activity>
 
         <meta-data
             android:name="com.everlytic.api.API_USERNAME"
-            android:value="jason"></meta-data>
+            android:value="jason" />
         <meta-data
             android:name="com.everlytic.api.API_KEY"
-            android:value="4mw30eCcKrsY76QHgL58UlwbW164kAv0_0"></meta-data>
+            android:value="4mw30eCcKrsY76QHgL58UlwbW164kAv0_0" />
         <meta-data
             android:name="com.everlytic.api.PUSH_NOTIFICATIONS_LIST_ID"
-            android:value="4"></meta-data>
+            android:value="4" />
         <meta-data
             android:name="com.everlytic.api.API_INSTALL_URL"
-            android:value="qa.everlytic.net"></meta-data>
+            android:value="qa.everlytic.net" />
 
         <activity android:name=".Sandbox">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

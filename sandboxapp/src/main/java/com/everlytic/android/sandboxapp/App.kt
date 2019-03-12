@@ -9,7 +9,9 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         Stetho.initializeWithDefaults(this)
-        EverlyticPush.init(this)
+        EverlyticPush
+            .setInTestMode(true)
+            .init(this)
     }
 
 }

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">sandboxapp</string>
+    <string name="title_activity_notification_history_viewer">NotificationHistoryViewer</string>
 </resources>

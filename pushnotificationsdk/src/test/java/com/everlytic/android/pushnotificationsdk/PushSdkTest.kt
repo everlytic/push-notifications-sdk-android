@@ -192,16 +192,14 @@ class PushSdkTest {
         )
 
         assertTrue { sdk.isContactSubscribed() }
-        verify { mockSdkRepo.getSubscriptionId() }
-        verify { mockSdkRepo.getContactId() }
+        verify { mockSdkRepo.getHasSubscription() }
     }
 
     @Test
     fun testIsContactSubscribed_NullSubscriptionId_ReturnsFalse() {
 
         val mockSdkRepo = mockSdkRepository().apply {
-            every { getSubscriptionId() } returns null
-            every { getContactId() } returns 10
+            every { getHasSubscription() } returns false
         }
 
         val sdk = spyk(
@@ -215,14 +213,13 @@ class PushSdkTest {
         )
 
         assertFalse { sdk.isContactSubscribed() }
-        verify { mockSdkRepo.getSubscriptionId() }
+        verify { mockSdkRepo.getHasSubscription() }
     }
 
     @Test
     fun testIsContactSubscribed_NullContactId_ReturnsFalse() {
         val mockSdkRepo = mockSdkRepository().apply {
-            every { getSubscriptionId() } returns 1
-            every { getContactId() } returns null
+            every { getHasSubscription() } returns false
         }
 
         val sdk = spyk(
@@ -236,7 +233,6 @@ class PushSdkTest {
         )
 
         assertFalse { sdk.isContactSubscribed() }
-        verify { mockSdkRepo.getContactId() }
     }
 
     private fun mockContext(): Context {

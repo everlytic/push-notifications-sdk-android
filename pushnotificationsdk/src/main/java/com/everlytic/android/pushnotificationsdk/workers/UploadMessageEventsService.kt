@@ -3,9 +3,11 @@ package com.everlytic.android.pushnotificationsdk.workers
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import com.everlytic.android.pushnotificationsdk.EverlyticPush
 import com.everlytic.android.pushnotificationsdk.SdkSettings
 import com.everlytic.android.pushnotificationsdk.database.EvDbHelper
 import com.everlytic.android.pushnotificationsdk.database.NotificationEventType
+import com.everlytic.android.pushnotificationsdk.isDeviceOnline
 import com.everlytic.android.pushnotificationsdk.logw
 import com.everlytic.android.pushnotificationsdk.models.ApiResponse
 import com.everlytic.android.pushnotificationsdk.models.NotificationEvent
@@ -13,12 +15,18 @@ import com.everlytic.android.pushnotificationsdk.network.EverlyticApi
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationEventRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
+import org.json.JSONObject
 
 class UploadMessageEventsService : JobIntentService() {
     private lateinit var repository: NotificationEventRepository
     private lateinit var api: EverlyticApi
 
     override fun onHandleWork(intent: Intent) {
+
+        if (! isDeviceOnline(applicationContext)) {
+            return
+        }
+
         val sdkSettings = SdkSettings.getSettings(applicationContext)
 
         repository = NotificationEventRepository(
@@ -62,6 +70,12 @@ class UploadMessageEventsService : JobIntentService() {
         event: NotificationEvent,
         responseHandler: EverlyticHttp.ResponseHandler
     ) {
+
+        if (EverlyticPush.isInTestMode) {
+            responseHandler.onSuccess(ApiResponse("success", JSONObject()))
+            return
+        }
+
         return when (eventType) {
             NotificationEventType.CLICK -> api.recordClickEvent(event, responseHandler)
             NotificationEventType.DELIVERY -> api.recordDeliveryEvent(event, responseHandler)

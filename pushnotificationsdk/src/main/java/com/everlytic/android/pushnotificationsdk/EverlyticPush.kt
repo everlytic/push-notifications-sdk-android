@@ -16,11 +16,13 @@ import com.everlytic.android.pushnotificationsdk.models.EverlyticNotification
 /**
  * Everlytic Push Notifications SDK
  * */
+@Suppress("unused")
 public object EverlyticPush {
-    private const val TAG = "EverlyticPush"
-
     @SuppressLint("StaticFieldLeak")
     internal var instance: PushSdk? = null
+
+    var isInTestMode: Boolean = false
+        private set
 
     /**
      * Initialises the Everlytic Push EvNotification SDK
@@ -55,7 +57,7 @@ public object EverlyticPush {
             throw newInvalidSdkConfigurationException(META_PUSH_PROJECT_ID)
         }
 
-        instance = PushSdk(context.applicationContext, settingsBag)
+        instance = PushSdk(context.applicationContext, settingsBag, testMode = isInTestMode)
     }
 
     /**
@@ -143,6 +145,12 @@ public object EverlyticPush {
                 }
             }.start()
         } ?: throw newNotInitialisedException()
+    }
+
+    @JvmStatic
+    fun setInTestMode(mode: Boolean): EverlyticPush {
+        isInTestMode = mode
+        return this
     }
 
     private fun newNotInitialisedException() =

@@ -14,7 +14,7 @@ import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRep
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import com.everlytic.android.pushnotificationsdk.eventreceivers.ResubscribeContactOnNetworkChangeReceiver
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticSubscriptionDelayedException
-import java.net.UnknownHostException
+import com.everlytic.android.pushnotificationsdk.facades.TokenResult
 import java.util.*
 
 internal class PushSdk @JvmOverloads constructor(
@@ -28,7 +28,8 @@ internal class PushSdk @JvmOverloads constructor(
         )
     ),
     private val firebaseInstanceId: FirebaseInstanceIdFacade = FirebaseInstanceIdFacade.getDefaultInstance(),
-    private val sdkRepository: SdkRepository = SdkRepository(context)
+    private val sdkRepository: SdkRepository = SdkRepository(context),
+    private val testMode: Boolean = false
 ) {
 
     init {
@@ -45,22 +46,24 @@ internal class PushSdk @JvmOverloads constructor(
             ResubscribeContactOnNetworkChangeReceiver(),
             IntentFilter("android.net.conn.CONNECTIVITY_CHANGE")
         )
+
+        if (testMode) {
+            logi("Everlytic Push SDK initialized with testMode=$testMode")
+        }
     }
 
     fun subscribeContact(email: String, onComplete: (EvResult) -> Unit) {
         logd("::subscribeContact() email=$email onComplete=$onComplete")
-        val deviceType = if (context.resources.getBoolean(R.bool.isTablet)) "tablet" else "handset"
-        val device = DeviceData(sdkRepository.getDeviceId()!!, type = deviceType)
         firebaseInstanceId.getInstanceId { tokenResult ->
             logd("::subscribeContact() firebaseInstanceId->tokenResult=$tokenResult")
-            if (tokenResult.success) {
-                val contactData = ContactData(email, tokenResult.value!!)
-                val subscription = SubscriptionEvent(settingsBag.listId.toString(), contactData, device = device)
+
+            if (tokenResult.success && !tokenResult.value.isNullOrBlank()) {
+                val subscription = createSubscriptionEvent(email, tokenResult.value)
 
                 logd("::subscribeContact() subscription=$subscription")
 
                 if (isDeviceOnline(context)) {
-                    api.subscribe(subscription, object : EverlyticHttp.ResponseHandler {
+                    val responseHandler = object : EverlyticHttp.ResponseHandler {
                         override fun onSuccess(response: ApiResponse?) {
                             logd("::onSuccess() response=$response")
                             val responseObject = JSONAdapter.decodeAs(ApiSubscription::class.java, response!!.data)
@@ -78,7 +81,15 @@ internal class PushSdk @JvmOverloads constructor(
                                 )
                             )
                         }
-                    })
+                    }
+
+                    if (testMode) {
+                        logi("Push Notification Token: ${tokenResult.value}")
+                        responseHandler.onSuccess(Testing_ApiResponses.subscribeSuccess(sdkRepository.getDeviceId()!!))
+                    } else {
+                        api.subscribe(subscription, responseHandler)
+                    }
+
                 } else {
                     sdkRepository.setContactEmail(email)
                     sdkRepository.setNewFcmToken(tokenResult.value)
@@ -93,14 +104,11 @@ internal class PushSdk @JvmOverloads constructor(
 
     internal fun resubscribeUserWithToken(email: String, token: String, onComplete: (EvResult) -> Unit) {
         logd("::resubscribeUserWithToken() email=$email token=$token onComplete=$onComplete")
-        val deviceType = if (context.resources.getBoolean(R.bool.isTablet)) "tablet" else "handset"
-        val device = DeviceData(sdkRepository.getDeviceId()!!, type = deviceType)
-        val contactData = ContactData(email, token)
-        val subscription = SubscriptionEvent(settingsBag.listId.toString(), contactData, device = device)
+        val subscription = createSubscriptionEvent(email, token)
 
         logd("::resubscribeUserWithToken() subscription=$subscription")
 
-        api.subscribe(subscription, object : EverlyticHttp.ResponseHandler {
+        val responseHandler = object : EverlyticHttp.ResponseHandler {
             override fun onSuccess(response: ApiResponse?) {
                 logd("::onSuccess() response=$response")
                 val responseObject = JSONAdapter.decodeAs(ApiSubscription::class.java, response!!.data)
@@ -119,7 +127,13 @@ internal class PushSdk @JvmOverloads constructor(
                     )
                 )
             }
-        })
+        }
+
+        if (testMode) {
+            responseHandler.onSuccess(Testing_ApiResponses.subscribeSuccess(sdkRepository.getDeviceId()!!))
+        } else {
+            api.subscribe(subscription, responseHandler)
+        }
     }
 
     internal fun resubscribeIfRequired() {
@@ -145,7 +159,7 @@ internal class PushSdk @JvmOverloads constructor(
         deviceId?.let { deviceId ->
             subscriptionId?.let { subscriptionId ->
                 val unsubscribeEvent = UnsubscribeEvent(subscriptionId, deviceId)
-                api.unsubscribe(unsubscribeEvent, object : EverlyticHttp.ResponseHandler {
+                val responseHandler = object : EverlyticHttp.ResponseHandler {
                     override fun onSuccess(response: ApiResponse?) {
                         sdkRepository.removeContactSubscription()
                         onComplete?.invoke(EvResult(true))
@@ -154,7 +168,12 @@ internal class PushSdk @JvmOverloads constructor(
                     override fun onFailure(code: Int, response: String?, throwable: Throwable?) {
                         onComplete?.invoke(EvResult(false, throwable ?: Exception("An API Exception occurred")))
                     }
-                })
+                }
+                if (testMode) {
+                    responseHandler.onSuccess(Testing_ApiResponses.unsubscribeSuccess())
+                } else {
+                    api.unsubscribe(unsubscribeEvent, responseHandler)
+                }
             } ?: onComplete?.invoke(EvResult(false, EverlyticNotSubscribedException("No subscription to unsubscribe.")))
         } ?: onComplete?.invoke(EvResult(false, Exception("No device ID set.")))
 
@@ -177,6 +196,16 @@ internal class PushSdk @JvmOverloads constructor(
     }
 
     internal fun isContactSubscribed(): Boolean {
-        return sdkRepository.getSubscriptionId() != null && sdkRepository.getContactId() != null
+        return sdkRepository.getHasSubscription()
+    }
+
+    private fun createSubscriptionEvent(
+        email: String,
+        token: String
+    ): SubscriptionEvent {
+        val deviceType = if (context.resources.getBoolean(R.bool.isTablet)) "tablet" else "handset"
+        val device = DeviceData(sdkRepository.getDeviceId()!!, type = deviceType)
+        val contactData = ContactData(email, token)
+        return SubscriptionEvent(settingsBag.listId.toString(), contactData, device = device)
     }
 }

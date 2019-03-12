@@ -22,7 +22,6 @@ internal object SdkSettings {
             .packageManager
             .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
 
-
         return SdkSettingsBag(
             appInfo.metaData.getString(SdkSettings.META_API_INSTALL_URL),
             appInfo.metaData.getString(SdkSettings.META_API_USERNAME_PATH),
