@@ -14,6 +14,7 @@ import com.everlytic.android.pushnotificationsdk.database.EvDbContract.Notificat
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_TITLE
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_BODY
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_DISMISSED_AT
+import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_READ_AT
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_RECEIVED_AT
 import com.everlytic.android.pushnotificationsdk.database.adapters.toDate
 
@@ -68,7 +69,7 @@ class NotificationLogRepository(private val database: EvDbHelper) {
         }
     }
 
-    fun getNotificationLogHistory() : List<EverlyticNotification> {
+    fun getNotificationLogHistory(): List<EverlyticNotification> {
 
         val list = mutableListOf<EverlyticNotification>()
 
@@ -85,11 +86,11 @@ class NotificationLogRepository(private val database: EvDbHelper) {
                 while (cursor.moveToNext()) {
                     list += EverlyticNotification(
                         cursor.getLong(cursor.getColumnIndex(COL_MESSAGE_ID)),
-                        cursor.getString(cursor.getColumnIndex(COL_MESSAGE_ID)),
-                        cursor.getString(cursor.getColumnIndex(COL_MESSAGE_ID)),
-                        cursor.getInt(cursor.getColumnIndex(COL_MESSAGE_ID)),
-                        cursor.getString(cursor.getColumnIndex(COL_MESSAGE_ID)).toDate(),
-                        cursor.getString(cursor.getColumnIndex(COL_MESSAGE_ID)).toDate()
+                        cursor.getString(cursor.getColumnIndex(COL_TITLE)),
+                        cursor.getString(cursor.getColumnIndex(COL_BODY)),
+                        0 /*cursor.getInt(cursor.getColumnIndex(COL_))*/,
+                        cursor.getString(cursor.getColumnIndex(COL_RECEIVED_AT)).toDate(),
+                        cursor.getString(cursor.getColumnIndex(COL_READ_AT))?.toDate()
                     )
                 }
             }

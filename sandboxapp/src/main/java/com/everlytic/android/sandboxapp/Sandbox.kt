@@ -1,5 +1,6 @@
 package com.everlytic.android.sandboxapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -20,16 +21,8 @@ class Sandbox : AppCompatActivity() {
 
         prepareSubscribeButton()
         prepareUnsubscribeButton()
+        prepareViewHistory()
 
-    }
-
-    private fun alert(block: AlertDialog.Builder.() -> Unit) {
-        runOnUiThread {
-            AlertDialog.Builder(this).apply {
-                setPositiveButton(android.R.string.ok, null)
-                block()
-            }.show()
-        }
     }
 
     private fun updateSubscriptionDisplay() {
@@ -89,6 +82,12 @@ class Sandbox : AppCompatActivity() {
 
                 setNegativeButton(android.R.string.cancel, null)
             }
+        }
+    }
+
+    private fun prepareViewHistory() {
+        btn_view_history.setOnClickListener {
+            startActivity(Intent(this, NotificationHistoryViewer::class.java))
         }
     }
 }

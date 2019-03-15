@@ -10,7 +10,7 @@ class App : Application() {
         super.onCreate()
         Stetho.initializeWithDefaults(this)
         EverlyticPush
-            .setInTestMode(true)
+//            .setInTestMode(true)
             .init(this)
     }
 
