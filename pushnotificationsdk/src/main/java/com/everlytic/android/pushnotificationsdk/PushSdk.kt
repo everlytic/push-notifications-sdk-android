@@ -14,7 +14,6 @@ import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRep
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import com.everlytic.android.pushnotificationsdk.eventreceivers.ResubscribeContactOnNetworkChangeReceiver
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticSubscriptionDelayedException
-import com.everlytic.android.pushnotificationsdk.facades.TokenResult
 import java.util.*
 
 internal class PushSdk @JvmOverloads constructor(
@@ -162,6 +161,7 @@ internal class PushSdk @JvmOverloads constructor(
                 val responseHandler = object : EverlyticHttp.ResponseHandler {
                     override fun onSuccess(response: ApiResponse?) {
                         sdkRepository.removeContactSubscription()
+                        getNotificationLogRepository().clearNotificationLogHistory()
                         onComplete?.invoke(EvResult(true))
                     }
 
@@ -180,10 +180,14 @@ internal class PushSdk @JvmOverloads constructor(
     }
 
     fun getPublicNotificationHistory(): List<EverlyticNotification> {
-        val dbHelper = EvDbHelper.getInstance(context)
-        val notificationRepository = NotificationLogRepository(dbHelper)
+        val notificationRepository = getNotificationLogRepository()
 
         return notificationRepository.getNotificationLogHistory()
+    }
+
+    private fun getNotificationLogRepository(): NotificationLogRepository {
+        val dbHelper = EvDbHelper.getInstance(context)
+        return NotificationLogRepository(dbHelper)
     }
 
     internal fun saveContactSubscriptionFromResponse(contactEmail: String, responseBody: ApiSubscription) {

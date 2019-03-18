@@ -11,6 +11,7 @@ import com.everlytic.android.pushnotificationsdk.models.jsonadapters.ApiSubscrip
 import com.everlytic.android.pushnotificationsdk.network.EverlyticApi
 import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.FcmToken
+import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
@@ -135,8 +136,15 @@ class PushSdkTest {
                 mockEverlyticApi,
                 getFirebaseInstanceIdFacade(),
                 mockSdkRepository
-            )
+            ),
+            recordPrivateCalls = true
         )
+
+        every { sdk invokeNoArgs "getNotificationLogRepository" } answers {
+            mockk<NotificationLogRepository>(
+                relaxed = true
+            )
+        }
 
         sdk.unsubscribeCurrentContact()
 

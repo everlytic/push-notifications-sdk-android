@@ -16,6 +16,7 @@ import com.everlytic.android.pushnotificationsdk.database.EvDbContract.Notificat
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_DISMISSED_AT
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_READ_AT
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_RECEIVED_AT
+import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.TBL_NAME
 import com.everlytic.android.pushnotificationsdk.database.adapters.toDate
 
 class NotificationLogRepository(private val database: EvDbHelper) {
@@ -97,5 +98,9 @@ class NotificationLogRepository(private val database: EvDbHelper) {
         }
 
         return list
+    }
+
+    fun clearNotificationLogHistory() : Int {
+        return database.writableDatabase.delete(TBL_NAME, null, null)
     }
 }
