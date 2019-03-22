@@ -1,5 +1,6 @@
 package com.everlytic.android.pushnotificationsdk.models
 
+import android.net.Uri
 import android.os.Parcelable
 import android.support.annotation.IntRange
 import android.support.v4.app.NotificationCompat
@@ -18,31 +19,52 @@ data class EvNotification(
     @IntRange(from = NotificationCompat.PRIORITY_MIN.toLong(), to = NotificationCompat.PRIORITY_HIGH.toLong())
     val priority: Int,
     val actions: List<NotificationAction>,
+    val customParameters: Map<String, String>,
     val received_at: Date,
     val read_at: Date? = null,
     val dismissed_at: Date? = null
-) : Parcelable
-
-@Parcelize
-data class NotificationAction(
-    val actionType: NotificationAction.ActionType,
-    val intentType: NotificationAction.IntentType,
-    val parameters: Map<String, String>
 ) : Parcelable {
-
-    enum class ActionType(val jsonKey: String) {
-        DEFAULT("default"),
-        PRIMARY("primary"),
-        SECONDARY("secondary")
-    }
-
-    enum class IntentType {
-        LAUNCH_APP,
-        GOTO_URL
-    }
-
     companion object {
         const val ACTION_PREFIX = "@"
         const val CUSTOM_PARAM_DELIMITER = "$"
+    }
+}
+
+sealed class NotificationAction(val actionTitle: String) : Parcelable {
+    enum class ActionType(val jsonKeyName: String) {
+        DEFAULT("default"),
+        PRIMARY("primary"),
+        SECONDARY("secondary");
+
+        companion object {
+            fun getValue(value: String): ActionType {
+                return values().first { it.jsonKeyName == value }
+            }
+        }
+    }
+
+    companion object {
+        const val ACTION_ID_DELIMITER = "="
+    }
+}
+
+@Parcelize
+data class LaunchAppNotificationAction(
+    val actionType: NotificationAction.ActionType,
+    val title: String
+) : NotificationAction(title) {
+    companion object {
+        const val ACTION_ID = "launch"
+    }
+}
+
+@Parcelize
+data class GoToUrlNotificationAction(
+    val actionType: ActionType,
+    val title: String,
+    val url: Uri
+) : NotificationAction(title) {
+    companion object {
+        const val ACTION_ID = "url"
     }
 }

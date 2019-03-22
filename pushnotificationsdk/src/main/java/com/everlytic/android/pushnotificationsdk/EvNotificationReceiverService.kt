@@ -1,20 +1,20 @@
 package com.everlytic.android.pushnotificationsdk
 
+import android.net.Uri
 import android.os.Build
 import com.everlytic.android.pushnotificationsdk.database.EvDbHelper
-import com.everlytic.android.pushnotificationsdk.database.NotificationEventType
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
-import com.everlytic.android.pushnotificationsdk.models.NotificationEvent
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationEventRepository
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
-import com.everlytic.android.pushnotificationsdk.eventreceivers.ResubscribeContactOnNetworkChangeReceiver
-import com.everlytic.android.pushnotificationsdk.workers.UploadMessageEventsService
+import com.everlytic.android.pushnotificationsdk.handlers.NotificationDeliveredHandler
+import com.everlytic.android.pushnotificationsdk.models.GoToUrlNotificationAction
+import com.everlytic.android.pushnotificationsdk.models.LaunchAppNotificationAction
+import com.everlytic.android.pushnotificationsdk.models.NotificationAction
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import java.security.SecureRandom
 import java.util.*
-
 
 internal class EvNotificationReceiverService : FirebaseMessagingService() {
 
@@ -34,6 +34,15 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
         NotificationEventRepository(getDatabase(), sdkRepository)
     }
 
+    private val notificationDeliveredHandler by lazy {
+        NotificationDeliveredHandler(
+            getContext(),
+            sdkRepository,
+            notificationEventRepository,
+            notificationHandler
+        )
+    }
+
     override fun onNewToken(token: String?) {
         logd("::onNewToken() token=$token")
         val email = sdkRepository.getContactEmail()
@@ -51,34 +60,17 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
 
         val notification = createEvNotification(remoteMessage.data)
 
-        processDeliveryEventForNotification(notification)
+        notificationDeliveredHandler.processDeliveryEventForNotification(notification)
 
         notificationRepository.storeNotification(notification, subscriptionId, contactId)
         notificationHandler.displayNotification(notification)
     }
 
-    private fun processDeliveryEventForNotification(notification: EvNotification) {
-        val event = createDeliveryEvent(notification, sdkRepository)
-        notificationEventRepository.storeNotificationEvent(event)
-        scheduleEventUploadWorker()
-    }
-
-    private fun scheduleEventUploadWorker() {
-        UploadMessageEventsService.enqueue(getContext())
-    }
-
-    private fun createDeliveryEvent(notification: EvNotification, sdkRepository: SdkRepository): NotificationEvent {
-        return NotificationEvent(
-            notification.androidNotificationId,
-            sdkRepository.getSubscriptionId() ?: -1,
-            notification.messageId,
-            metadata = mapOf("displayed" to notificationHandler.canDisplayNotifications().toString()),
-            type = NotificationEventType.DELIVERY
-        )
-    }
-
     private fun createEvNotification(data: MutableMap<String, String>): EvNotification {
         val androidMessageId = SecureRandom().nextInt()
+
+        val customParameters = decodeCustomParameters(data)
+        val customActions = decodeCustomActions(data)
 
         return EvNotification(
             data["message_id"]?.toLong() ?: -1L,
@@ -86,15 +78,62 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
             data["title"] ?: "",
             data["body"],
             data["sound"]?.toBoolean() ?: false,
-            getColorReference(),
+            getThemeColor(),
             0,
             0,
-            emptyList(),
+            customActions,
+            customParameters,
             Date()
         )
     }
 
-    private fun getColorReference(): Int {
+    private fun decodeCustomActions(data: MutableMap<String, String>): List<NotificationAction> {
+        return data
+            .filterKeys {
+                it.startsWith(EvNotification.ACTION_PREFIX)
+            }
+            .mapNotNull {
+
+                val actionType =
+                    NotificationAction.ActionType.getValue(it.key.removePrefix(EvNotification.ACTION_PREFIX))
+
+                it.value.let { action ->
+                    val actionParams = action.substring(
+                        action.indexOf(NotificationAction.ACTION_ID_DELIMITER) + 1
+                    )
+
+                    when {
+                        action.startsWith(LaunchAppNotificationAction.ACTION_ID) -> {
+                            LaunchAppNotificationAction(actionType, actionParams)
+                        }
+                        action.startsWith(GoToUrlNotificationAction.ACTION_ID) -> {
+                            val markdownUrlRegex = "^\\[([\\p{L}\\s]+)\\]\\(([a-z]+:\\/\\/.+)\\)\$".toRegex()
+                            val (title, url) =
+                                markdownUrlRegex
+                                    .find(actionParams)!!
+                                    .groupValues
+                                    .drop(1)
+                                    .let { matches -> matches.first() to matches.last() }
+                            GoToUrlNotificationAction(actionType, title, Uri.parse(url))
+                        }
+                        else -> null
+                    }
+                }
+            }
+    }
+
+    private fun decodeCustomParameters(data: MutableMap<String, String>): Map<String, String> {
+        return data
+            .filterKeys {
+                it.startsWith(EvNotification.CUSTOM_PARAM_DELIMITER)
+            }
+            .map {
+                it.key.removePrefix(EvNotification.CUSTOM_PARAM_DELIMITER) to it.value
+            }
+            .toMap()
+    }
+
+    private fun getThemeColor(): Int {
         val ctx = getContext()
 
         val id = ctx

@@ -21,6 +21,7 @@ object EvNotificationAdapter : JSONAdapterInterface<EvNotification> {
             json.getInt("icon"),
             json.getInt("priority"),
             emptyList(), // todo parse notification action listing
+            emptyMap(),
             Iso8601Utils.parse(receivedAt),
             Iso8601Utils.parse(readAt),
             Iso8601Utils.parse(dismissedAt)

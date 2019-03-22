@@ -1,5 +1,6 @@
 package com.everlytic.android.pushnotificationsdk
 
+
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,24 +10,23 @@ import android.content.Intent
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
-import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import com.everlytic.android.pushnotificationsdk.eventreceivers.EvNotificationClickReceiver
 import com.everlytic.android.pushnotificationsdk.eventreceivers.EvNotificationDismissedReceiver
+import com.everlytic.android.pushnotificationsdk.models.EvNotification
+import com.everlytic.android.pushnotificationsdk.models.GoToUrlNotificationAction
+import com.everlytic.android.pushnotificationsdk.models.LaunchAppNotificationAction
 import java.security.SecureRandom
 
-internal class EvNotificationHandler(val context: Context) {
 
+class EvNotificationHandler(val context: Context) {
     fun displayNotification(evNotification: EvNotification) {
+        registerChannel()
 
-        registerChannel(context)
+        val notification = createSystemNotification(evNotification)
 
-        val notificationManager = NotificationManagerCompat.from(context)
-        val notification = createNotification(evNotification)
-
-        notificationManager.notify(evNotification.androidNotificationId, notification)
+        getNotificationManager().notify(evNotification.androidNotificationId, notification)
     }
-
-    private fun registerChannel(context: Context) {
+    private fun registerChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = DEFAULT_CHANNEL_NAME
             val importance = NotificationManager.IMPORTANCE_DEFAULT
@@ -40,7 +40,7 @@ internal class EvNotificationHandler(val context: Context) {
         }
     }
 
-    private fun createNotification(notification: EvNotification): Notification {
+    private fun createSystemNotification(notification: EvNotification): Notification {
         val launcherIntent = createLauncherIntent(notification)
         val dismissalIntent = createDismissalIntent(notification)
 
@@ -49,7 +49,7 @@ internal class EvNotificationHandler(val context: Context) {
 
         val smallIcon = getSmallIconReference()
 
-        return NotificationCompat.Builder(context, DEFAULT_CHANNEL)
+        val builder = NotificationCompat.Builder(context, DEFAULT_CHANNEL)
             .setSmallIcon(smallIcon)
             .setContentTitle(notification.title)
             .setContentText(notification.body)
@@ -58,12 +58,30 @@ internal class EvNotificationHandler(val context: Context) {
             .setColor(notification.color)
             .setContentIntent(onClickPendingIntent)
             .setDeleteIntent(onDismissPendingIntent)
-            .build()
+            .setWhen(notification.received_at.time)
+
+        notification.actions.forEach {
+
+            when (it) {
+                is LaunchAppNotificationAction -> {
+                    val intent = launcherIntent.addCustomParameters(notification)
+                    builder.addAction(0, it.title, createPendingIntent(intent))
+                }
+
+                is GoToUrlNotificationAction -> {
+                    val intent = Intent(Intent.ACTION_VIEW, it.url)
+                    builder.addAction(0, it.title, createPendingIntent(intent))
+                }
+            }
+
+        }
+
+        return builder.build()
     }
 
     private fun getSmallIconReference(): Int {
 
-        fun getReference(resource: String) : Int {
+        fun getReference(resource: String): Int {
             return context
                 .resources
                 .getIdentifier(resource, "drawable", context.packageName)
@@ -94,13 +112,14 @@ internal class EvNotificationHandler(val context: Context) {
     }
 
     fun dismissNotificationByAndroidId(int: Int) {
-        val notificationManager = NotificationManagerCompat.from(context)
-        notificationManager.cancel(int)
+        getNotificationManager().cancel(int)
     }
 
     fun canDisplayNotifications(): Boolean {
-        return NotificationManagerCompat.from(context).areNotificationsEnabled()
+        return getNotificationManager().areNotificationsEnabled()
     }
+
+    private fun getNotificationManager() = NotificationManagerCompat.from(context)
 
     companion object {
         private const val DEFAULT_CHANNEL = "com.everlytic.android.pushnotificationsdk.DEFAULT_CHANNEL"
@@ -108,4 +127,9 @@ internal class EvNotificationHandler(val context: Context) {
         private const val DEFAULT_GROUP = "com.everlytic.android.pushnotificationsdk.DEFAULT_GROUP"
     }
 
+    private fun Intent.addCustomParameters(notification: EvNotification): Intent {
+        return this.apply {
+            notification.customParameters.forEach { putExtra(it.key, it.value) }
+        }
+    }
 }
