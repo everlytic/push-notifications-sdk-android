@@ -49,6 +49,7 @@ class NotificationOpenedHandlerTest {
                 0,
                 0,
                 emptyList(),
+                emptyMap(),
                 Date()
             )
             every { hasExtra(EvIntentExtras.EVERLYTIC_DATA) } returns true
