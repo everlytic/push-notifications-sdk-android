@@ -30,9 +30,12 @@ class SdkRepositoryTest {
 
         repository.removeContactSubscription()
 
-        verify { mockEditor.remove(SdkRepository.SUBSCRIPTION_ID) }
         verify { mockEditor.remove(SdkRepository.CONTACT_ID) }
-        verify { mockEditor.remove(SdkRepository.DEVICE_ID) }
+        verify { mockEditor.remove(SdkRepository.CONTACT_EMAIL) }
+        verify { mockEditor.remove(SdkRepository.NEW_FCM_TOKEN) }
+        verify { mockEditor.remove(SdkRepository.SUBSCRIPTION_ID) }
+        verify { mockEditor.remove(SdkRepository.SUBSCRIPTION_DATETIME) }
+        verify { mockEditor.remove(SdkRepository.NEW_FCM_TOKEN_DATETIME) }
     }
 
     @Test

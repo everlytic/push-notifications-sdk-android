@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.Toast
 import com.everlytic.android.pushnotificationsdk.EverlyticPush
 import com.everlytic.android.pushnotificationsdk.OnResultReceiver
+import com.everlytic.android.pushnotificationsdk.logw
 import kotlinx.android.synthetic.main.activity_sandbox.*
 
 class Sandbox : AppCompatActivity() {
@@ -73,6 +74,7 @@ class Sandbox : AppCompatActivity() {
                         if (it.isSuccessful) {
                             alert { setMessage("Contact unsubscribed successfully") }
                         } else {
+                            logw(throwable = it.exception)
                             alert { setMessage("Failed to unsubscribe contact") }
                         }
 
