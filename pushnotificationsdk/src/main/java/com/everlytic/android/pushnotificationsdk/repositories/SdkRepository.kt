@@ -74,9 +74,12 @@ internal class SdkRepository(private val context: Context) {
     fun removeContactSubscription() {
         logd("::removeContactSubscription()")
         edit {
+            remove(SUBSCRIPTION_DATETIME)
+            remove(NEW_FCM_TOKEN_DATETIME)
             remove(SUBSCRIPTION_ID)
+            remove(CONTACT_EMAIL)
+            remove(NEW_FCM_TOKEN)
             remove(CONTACT_ID)
-            remove(DEVICE_ID)
         }
     }
 
