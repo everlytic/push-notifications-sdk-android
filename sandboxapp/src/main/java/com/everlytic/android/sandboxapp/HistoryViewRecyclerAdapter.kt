@@ -11,12 +11,12 @@ import android.widget.TextView
 import com.everlytic.android.pushnotificationsdk.models.EverlyticNotification
 import java.text.SimpleDateFormat
 
-class HistoryViewRecyclerAdapter(val onClick: (EverlyticNotification) -> Unit) :
+class HistoryViewRecyclerAdapter(private val onClick: (EverlyticNotification) -> Unit) :
     ListAdapter<EverlyticNotification, HistoryViewRecyclerAdapter.ViewHolder>(HistoryViewRecyclerAdapter.DIFFER) {
 
     class ViewHolder(view: View, val onClick: (EverlyticNotification) -> Unit) : RecyclerView.ViewHolder(view) {
 
-        lateinit var itemBacking: EverlyticNotification
+        private lateinit var itemBacking: EverlyticNotification
 
         init {
             itemView.setOnClickListener {
@@ -29,13 +29,13 @@ class HistoryViewRecyclerAdapter(val onClick: (EverlyticNotification) -> Unit) :
             itemBacking = item
             itemView.findViewById<TextView>(R.id.history_item_title).text = item.title
             itemView.findViewById<TextView>(R.id.history_item_subtitle).text = item.body
-            itemView.findViewById<TextView>(R.id.history_item_received_at).text = df.format(item.received_at)
+            itemView.findViewById<TextView>(R.id.history_item_received_at).text = dateFormat.format(item.received_at)
             itemView.findViewById<TextView>(R.id.history_item_read_at).text =
-                item.read_at?.let { df.format(it) } ?: "Unread"
+                item.read_at?.let { dateFormat.format(it) } ?: "Unread"
         }
 
         companion object {
-            val df = SimpleDateFormat.getDateTimeInstance()
+            val dateFormat = SimpleDateFormat.getDateTimeInstance()!!
         }
 
     }

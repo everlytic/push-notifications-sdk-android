@@ -1,10 +1,12 @@
 package com.everlytic.android.sandboxapp
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.widget.TextView
 import com.everlytic.android.pushnotificationsdk.EverlyticPush
 import com.everlytic.android.pushnotificationsdk.OnNotificationHistoryResultListener
 import com.everlytic.android.pushnotificationsdk.models.EverlyticNotification
@@ -27,7 +29,7 @@ class NotificationHistoryViewer : AppCompatActivity() {
         refreshNotifications()
     }
 
-    fun prepareRefreshView() {
+    private fun prepareRefreshView() {
         recycler_history_refresh_layout.setOnRefreshListener {
             refreshNotifications()
         }
@@ -51,14 +53,17 @@ class NotificationHistoryViewer : AppCompatActivity() {
 
     private fun displayNotificationDetail(notification: EverlyticNotification) {
         alert {
-            setTitle("Notification ID ${notification.messageId}")
-            setMessage("""
+            val tv = TextView(this@NotificationHistoryViewer)
+            tv.typeface = Typeface.MONOSPACE
+            tv.text = """
                 Title:        ${notification.title}
                 Message:      ${notification.body}
                 Received at:  ${notification.received_at}
                 Read at:      ${notification.read_at}
                 Dismissed at: ${notification.dismissed_at}
-            """.trimIndent())
+            """.trimIndent()
+            setTitle("Notification ID ${notification.messageId}")
+            setView(tv)
             setPositiveButton(android.R.string.ok, null)
         }
     }
