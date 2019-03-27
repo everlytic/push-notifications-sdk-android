@@ -30,14 +30,14 @@ data class EvNotification(
     }
 }
 
-sealed class NotificationAction(val actionTitle: String) : Parcelable {
-    enum class ActionType(val jsonKeyName: String) {
+sealed class NotificationAction(val action: Action, val actionTitle: String) : Parcelable {
+    enum class Action(val jsonKeyName: String) {
         DEFAULT("default"),
         PRIMARY("primary"),
         SECONDARY("secondary");
 
         companion object {
-            fun getValue(value: String): ActionType {
+            fun getValue(value: String): Action {
                 return values().first { it.jsonKeyName == value }
             }
         }
@@ -50,9 +50,9 @@ sealed class NotificationAction(val actionTitle: String) : Parcelable {
 
 @Parcelize
 data class LaunchAppNotificationAction(
-    val actionType: NotificationAction.ActionType,
-    val title: String
-) : NotificationAction(title) {
+    private val _action: NotificationAction.Action,
+    private val title: String
+) : NotificationAction(_action, title) {
     companion object {
         const val ACTION_ID = "launch"
     }
@@ -60,10 +60,10 @@ data class LaunchAppNotificationAction(
 
 @Parcelize
 data class GoToUrlNotificationAction(
-    val actionType: ActionType,
-    val title: String,
-    val url: Uri
-) : NotificationAction(title) {
+    private val _action: Action,
+    private val title: String,
+    val uri: Uri
+) : NotificationAction(_action, title) {
     companion object {
         const val ACTION_ID = "url"
     }

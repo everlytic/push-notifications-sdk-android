@@ -93,27 +93,29 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
                 it.startsWith(EvNotification.ACTION_PREFIX)
             }
             .mapNotNull {
-
+                logd("::decodeCustomActions() key=${it.key} value=${it.value}")
                 val actionType =
-                    NotificationAction.ActionType.getValue(it.key.removePrefix(EvNotification.ACTION_PREFIX))
+                    NotificationAction.Action.getValue(it.key.removePrefix(EvNotification.ACTION_PREFIX))
 
                 it.value.let { action ->
                     val actionParams = action.substring(
                         action.indexOf(NotificationAction.ACTION_ID_DELIMITER) + 1
                     )
-
+                    logd("::decodeCustomActions() action=$action")
                     when {
                         action.startsWith(LaunchAppNotificationAction.ACTION_ID) -> {
+                            logd("::decodeCustomActions() LaunchAppNotificationAction action=$actionType params=$actionParams")
                             LaunchAppNotificationAction(actionType, actionParams)
                         }
                         action.startsWith(GoToUrlNotificationAction.ACTION_ID) -> {
-                            val markdownUrlRegex = "^\\[([\\p{L}\\s]+)\\]\\(([a-z]+:\\/\\/.+)\\)\$".toRegex()
+                            val markdownUrlRegex = "^\\[([\\p{L}\\s]*)\\]\\(([a-z]+:\\/\\/.+)\\)\$".toRegex()
                             val (title, url) =
                                 markdownUrlRegex
                                     .find(actionParams)!!
                                     .groupValues
                                     .drop(1)
                                     .let { matches -> matches.first() to matches.last() }
+                            logd("::decodeCustomActions() GoToUrlNotificationAction action=$actionType url=$url")
                             GoToUrlNotificationAction(actionType, title, Uri.parse(url))
                         }
                         else -> null
@@ -122,7 +124,7 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
             }
     }
 
-    private fun decodeCustomParameters(data: MutableMap<String, String>): Map<String, String> {
+    private fun decodeCustomParameters(data: Map<String, String>): Map<String, String> {
         return data
             .filterKeys {
                 it.startsWith(EvNotification.CUSTOM_PARAM_DELIMITER)

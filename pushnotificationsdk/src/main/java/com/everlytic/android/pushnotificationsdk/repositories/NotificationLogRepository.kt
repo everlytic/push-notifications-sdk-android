@@ -23,7 +23,6 @@ class NotificationLogRepository(private val database: EvDbHelper) {
     private val tableName = EvDbContract.NotificationLogTable.TBL_NAME
 
     fun storeNotification(notification: EvNotification, subscriptionId: Long, contactId: Long) {
-
         val insert = ContentValues().apply {
             put(COL_MESSAGE_ID, notification.messageId)
             put(COL_ANDROID_NOTIFICAITON_ID, notification.androidNotificationId)
@@ -37,6 +36,8 @@ class NotificationLogRepository(private val database: EvDbHelper) {
         database.writableDatabase.let { db ->
             db.insert(tableName, null, insert)
         }
+
+//        TODO("Add storage of custom data & actions")
     }
 
     fun setNotificationAsRead(androidNotificationId: Int, date: Date = Date()) {

@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.Toast
 import com.everlytic.android.pushnotificationsdk.EverlyticPush
 import com.everlytic.android.pushnotificationsdk.OnResultReceiver
+import com.everlytic.android.pushnotificationsdk.logd
 import com.everlytic.android.pushnotificationsdk.logw
 import kotlinx.android.synthetic.main.activity_sandbox.*
 
@@ -17,6 +18,12 @@ class Sandbox : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sandbox)
+
+        logd("extras=${intent.extras}")
+
+        intent.extras?.keySet()?.forEach {
+            logd("extras.$it=${intent.extras[it]}")
+        }
 
         updateSubscriptionDisplay()
 
