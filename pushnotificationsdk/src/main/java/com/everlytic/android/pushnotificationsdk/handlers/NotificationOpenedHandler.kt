@@ -46,7 +46,9 @@ internal class NotificationOpenedHandler(
         )
 
         val customParams = intent.extras?.getBundle(EvIntentExtras.CUSTOM_PARAMS_BUNDLE)
+
         logd("::processIntent() ")
+
         when (intent.extras.getString(EvIntentExtras.ACTION_TYPE)) {
             LaunchAppNotificationAction.ACTION_ID -> {
                 startLauncherActivityInContext(context, customParams)

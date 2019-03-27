@@ -1,23 +1,29 @@
 package com.everlytic.android.pushnotificationsdk.handlers
 
+import android.app.Application
 import android.content.Context
 import android.content.Intent
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.runner.AndroidJUnit4
 import com.everlytic.android.pushnotificationsdk.EvIntentExtras
 import com.everlytic.android.pushnotificationsdk.Mock
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
+import com.everlytic.android.pushnotificationsdk.models.LaunchAppNotificationAction
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationEventRepository
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import io.mockk.*
 import org.junit.Test
+import org.junit.runner.RunWith
 import java.util.*
 
+@RunWith(AndroidJUnit4::class)
 class NotificationOpenedHandlerTest {
 
     @Test
-    fun testHandleIntentWithContext_WithCorrectIntent_CompletesSuccessfully() {
+    fun testHandleIntentWithContext_WithLaunchAction_CompletesSuccessfully() {
 
-        val mockCtx = mockContext()
+        val context = getContext()
         val mockSdkRepository = mockSdkRepository()
         val mockEventRepository = mockNotificationEventRepository().apply {
             every { storeNotificationEvent(any()) } just Runs
@@ -38,7 +44,7 @@ class NotificationOpenedHandlerTest {
 
         every { handler invoke "scheduleEventUploadWorker" withArguments listOf(ofType<Context>()) } returns Unit
 
-        val intent = mockIntent().apply {
+        val intent = spyk(Intent()).apply {
             val notificationParcelable = EvNotification(
                 0,
                 0,
@@ -52,23 +58,25 @@ class NotificationOpenedHandlerTest {
                 emptyMap(),
                 Date()
             )
+            putExtra(EvIntentExtras.EVERLYTIC_DATA, notificationParcelable)
+            putExtra(EvIntentExtras.ACTION_TYPE, LaunchAppNotificationAction.ACTION_ID)
+
             every { hasExtra(EvIntentExtras.EVERLYTIC_DATA) } returns true
-            every { getParcelableExtra<EvNotification>(EvIntentExtras.EVERLYTIC_DATA) } returns notificationParcelable
         }
 
-        handler.handleIntentWithContext(mockCtx, intent)
+        handler.handleIntentWithContext(context, intent)
 
-        verify { handler invoke "processIntent" withArguments listOf(mockCtx, intent) }
+        verify { handler invoke "processIntent" withArguments listOf(context, intent) }
         verify { handler invoke "setNotificationReadFromIntent" withArguments listOf(intent) }
         verify { mockEventRepository.storeNotificationEvent(any()) }
         verify { handler invoke "scheduleEventUploadWorker" withArguments listOf(ofType<Context>()) }
-        verify { mockCtx.startActivity(any()) }
+        verify { context.startActivity(any()) }
     }
 
     @Test
     fun testHandleIntentWithContext_WithUnknownIntent_DoesNotRun() {
 
-        val mockCtx = mockContext()
+        val mockCtx = getContext()
         val mockSdkRepository = mockSdkRepository()
         val mockEventRepository = mockNotificationEventRepository().apply {
             every { storeNotificationEvent(any()) } just Runs
@@ -98,11 +106,9 @@ class NotificationOpenedHandlerTest {
 
     private fun mockIntent() = mockk<Intent>(relaxed = true)
 
-    private fun mockContext(): Context {
-        return mockk<Context>(relaxed = true).apply {
-            val intent = mockIntent()
-            every { packageManager.getLaunchIntentForPackage(any()) } returns intent
-            every { startActivity(any()) } just Runs
+    private fun getContext(): Context {
+        return spyk(ApplicationProvider.getApplicationContext<Application>()).apply {
+            every { packageManager.getLaunchIntentForPackage(any()) } returns Intent()
         }
     }
 
