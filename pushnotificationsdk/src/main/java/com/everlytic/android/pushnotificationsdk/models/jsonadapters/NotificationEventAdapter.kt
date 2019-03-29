@@ -26,7 +26,7 @@ internal object NotificationEventAdapter : JSONAdapterInterface<NotificationEven
     override fun toJson(obj: NotificationEvent): JSONObject {
         return JSONObject()
             .put("subscription_id", obj.subscription_id)
-            .put("message_id", obj.subscription_id)
+            .put("message_id", obj.message_id)
             .put("metadata", encodeJsonMap(obj.metadata))
             .put("datetime", Iso8601Utils.format(obj.datetime))
     }
