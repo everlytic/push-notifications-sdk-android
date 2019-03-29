@@ -1,6 +1,9 @@
 package com.everlytic.android.sandboxapp
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -18,6 +21,9 @@ class Sandbox : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sandbox)
 
+        txt_version_nr.text = "Version Code: ${BuildConfig.VERSION_CODE}"
+        txt_version_code.text = "Version Name: ${BuildConfig.VERSION_NAME}"
+
         updateSubscriptionDisplay()
 
         prepareSubscribeButton()
@@ -26,9 +32,19 @@ class Sandbox : AppCompatActivity() {
 
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateSubscriptionDisplay() {
-        EverlyticPush.isContactSubscribed().let {
-            btn_unsubscribe.isEnabled = it
+        runOnUiThread {
+            EverlyticPush.isContactSubscribed().let {
+                btn_unsubscribe.isEnabled = it
+            }
+
+            getSharedPreferences("ev_pn_kv_store", Context.MODE_PRIVATE).let { preferences ->
+                txt_device_id.text = "Device ID: ${preferences.getString("device_id", "<unknown>")}"
+                txt_subscription_id.text = "Subscription ID: ${preferences.getLong("subscription_id", -1)}"
+                txt_contact_id.text = "Contact ID: ${preferences.getLong("contact_id", -1)}"
+                txt_contact_email.text = "Contact Email: ${preferences.getString("contact_email", "<unknown>")}"
+            }
         }
     }
 

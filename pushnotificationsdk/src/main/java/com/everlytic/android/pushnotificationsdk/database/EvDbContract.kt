@@ -70,10 +70,8 @@ object EvDbContract {
 
         const val INDEX_CREATE_EVENT_TYPE =
             "CREATE INDEX ev_notification_event_log_event_type ON $TBL_NAME($COL_EVENT_TYPE)"
-        const val INDEX_CREATE_IS_UPLOADED_EVENT_TYPE =
-            "CREATE INDEX ev_notification_event_log_event_type_uploaded ON $TBL_NAME($COL_EVENT_TYPE, $COL_IS_UPLOADED)"
 
-        val UPGRADE_V2 = listOf("ALTER $TBL_NAME DROP COLUMN $COL_IS_UPLOADED")
+        val UPGRADE_V2 = emptyList<String>(/*"ALTER $TBL_NAME DROP COLUMN $COL_IS_UPLOADED"*/)
     }
 
 }
