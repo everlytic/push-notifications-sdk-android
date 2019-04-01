@@ -34,6 +34,7 @@ class EvNotificationHandlerTest {
             1000,
             0,
             emptyList(),
+            emptyMap(),
             Date(0),
             Date()
         )

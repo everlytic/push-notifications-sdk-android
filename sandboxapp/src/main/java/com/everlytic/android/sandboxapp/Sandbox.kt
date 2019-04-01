@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.Toast
 import com.everlytic.android.pushnotificationsdk.EverlyticPush
 import com.everlytic.android.pushnotificationsdk.OnResultReceiver
+import com.everlytic.android.pushnotificationsdk.logd
 import com.everlytic.android.pushnotificationsdk.logw
 import kotlinx.android.synthetic.main.activity_sandbox.*
 
@@ -23,6 +24,12 @@ class Sandbox : AppCompatActivity() {
 
         txt_version_nr.text = "Version Code: ${BuildConfig.VERSION_CODE}"
         txt_version_code.text = "Version Name: ${BuildConfig.VERSION_NAME}"
+
+        logd("extras=${intent.extras}")
+
+        intent.extras?.keySet()?.forEach {
+            logd("extras.$it=${intent.extras[it]}")
+        }
 
         updateSubscriptionDisplay()
 

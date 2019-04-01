@@ -1,6 +1,27 @@
 package com.everlytic.android.pushnotificationsdk.database
-
+/**
+ *
+ * When updating the schema, update the create statements with the new changes as well as adding migration commands
+ * for any changes made.
+ *
+ * Migration key numbers in [getMigrations] should reference the old version of the db being upgraded from
+ *
+ * */
 object EvDbContract {
+
+    fun getCreateStatements() = sortedSetOf(
+        NotificationLogTable.CREATE_STATEMENT,
+        NotificationEventsLogTable.CREATE_STATEMENT
+    )
+
+    fun getMigrations() = sortedMapOf(
+        1 to sortedSetOf(
+            "ALTER TABLE ${NotificationEventsLogTable.TBL_NAME} DROP COLUMN ${NotificationEventsLogTable.COL_IS_UPLOADED}"
+        ),
+        2 to sortedSetOf(
+            "ALTER TABLE ${NotificationLogTable.TBL_NAME} ADD COLUMN ${NotificationLogTable.COL_CUSTOM_PARAMS} TEXT"
+        )
+    )
 
     object NotificationLogTable {
         const val TBL_NAME = "notification_log"
@@ -14,6 +35,7 @@ object EvDbContract {
         const val COL_BODY = "body"
         const val COL_METADATA = "metadata"
         const val COL_ACTIONS = "actions"
+        const val COL_CUSTOM_PARAMS = "custom_parameters"
         const val COL_COLOR = "color"
         const val COL_GROUP_ID = "group_id"
         const val COL_RAW_NOTIFICATION = "raw_notification"
@@ -32,6 +54,7 @@ object EvDbContract {
                 $COL_BODY TEXT,
                 $COL_METADATA TEXT DEFAULT '{}',
                 $COL_ACTIONS TEXT,
+                $COL_CUSTOM_PARAMS TEXT,
                 $COL_COLOR INTEGER DEFAULT -1,
                 $COL_GROUP_ID INTEGER DEFAULT 0,
                 $COL_RAW_NOTIFICATION TEXT,
@@ -67,11 +90,6 @@ object EvDbContract {
                 $COL_DATETIME TEXT NOT NULL
             );
         """.trimIndent()
-
-        const val INDEX_CREATE_EVENT_TYPE =
-            "CREATE INDEX ev_notification_event_log_event_type ON $TBL_NAME($COL_EVENT_TYPE)"
-
-        val UPGRADE_V2 = emptyList<String>(/*"ALTER $TBL_NAME DROP COLUMN $COL_IS_UPLOADED"*/)
     }
 
 }
