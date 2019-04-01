@@ -1,4 +1,5 @@
 @file:JvmName("Functions")
+
 package com.everlytic.android.pushnotificationsdk
 
 import android.content.Context
@@ -67,6 +68,6 @@ fun Intent.isEverlyticEventIntent(): Boolean {
 }
 
 fun isDeviceOnline(context: Context): Boolean {
-        return (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
-            .activeNetworkInfo?.isConnected ?: false
-    }
+    return (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
+        .activeNetworkInfo?.isConnected ?: false
+}

@@ -1,6 +1,8 @@
 package com.everlytic.android.pushnotificationsdk.models.jsonadapters
 
 import com.everlytic.android.pushnotificationsdk.database.vendor.Iso8601Utils
+import com.everlytic.android.pushnotificationsdk.decodeJsonMap
+import com.everlytic.android.pushnotificationsdk.encodeJsonMap
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import org.json.JSONObject
 
@@ -20,8 +22,8 @@ object EvNotificationAdapter : JSONAdapterInterface<EvNotification> {
             json.getInt("color"),
             json.getInt("icon"),
             json.getInt("priority"),
-            emptyList(), // todo parse notification action listing
-            emptyMap(),
+            ListAdapter.fromJson(json.getJSONArray("actions"), NotificationActionAdapter),
+            decodeJsonMap(json.getJSONObject("customActions")),
             Iso8601Utils.parse(receivedAt),
             Iso8601Utils.parse(readAt),
             Iso8601Utils.parse(dismissedAt)
@@ -41,6 +43,7 @@ object EvNotificationAdapter : JSONAdapterInterface<EvNotification> {
             .put("received_at", Iso8601Utils.format(obj.received_at))
             .put("read_at", Iso8601Utils.format(obj.read_at))
             .put("dismissed_at", Iso8601Utils.format(obj.dismissed_at))
-            // todo serialize notification action listing
+            .put("customParameters", encodeJsonMap(obj.customParameters))
+            .put("actions", ListAdapter.toJson(obj.actions, NotificationActionAdapter))
     }
 }

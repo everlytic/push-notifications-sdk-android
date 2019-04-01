@@ -59,7 +59,6 @@ class EvNotificationHandler(val context: Context) {
             setPriority(notification.priority)
             setGroup(DEFAULT_GROUP)
             setColor(notification.color)
-//            setContentIntent(onClickPendingIntent)
             setDeleteIntent(onDismissPendingIntent)
             setWhen(notification.received_at.time)
 

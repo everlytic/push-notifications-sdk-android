@@ -2,22 +2,27 @@ package com.everlytic.android.pushnotificationsdk.repositories
 
 import android.content.ContentValues
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract
-import com.everlytic.android.pushnotificationsdk.database.EvDbHelper
-import com.everlytic.android.pushnotificationsdk.database.adapters.toIso8601String
-import com.everlytic.android.pushnotificationsdk.models.EvNotification
-import com.everlytic.android.pushnotificationsdk.models.EverlyticNotification
-import java.util.*
-import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_MESSAGE_ID
+import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_ACTIONS
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_ANDROID_NOTIFICAITON_ID
-import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_SUBSCRIPTION_ID
-import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_CONTACT_ID
-import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_TITLE
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_BODY
+import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_CONTACT_ID
+import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_CUSTOM_PARAMS
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_DISMISSED_AT
+import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_MESSAGE_ID
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_READ_AT
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_RECEIVED_AT
+import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_SUBSCRIPTION_ID
+import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_TITLE
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.TBL_NAME
+import com.everlytic.android.pushnotificationsdk.database.EvDbHelper
 import com.everlytic.android.pushnotificationsdk.database.adapters.toDate
+import com.everlytic.android.pushnotificationsdk.database.adapters.toIso8601String
+import com.everlytic.android.pushnotificationsdk.encodeJsonMap
+import com.everlytic.android.pushnotificationsdk.models.EvNotification
+import com.everlytic.android.pushnotificationsdk.models.EverlyticNotification
+import com.everlytic.android.pushnotificationsdk.models.jsonadapters.ListAdapter
+import com.everlytic.android.pushnotificationsdk.models.jsonadapters.NotificationActionAdapter
+import java.util.*
 
 class NotificationLogRepository(private val database: EvDbHelper) {
     private val tableName = EvDbContract.NotificationLogTable.TBL_NAME
@@ -31,13 +36,17 @@ class NotificationLogRepository(private val database: EvDbHelper) {
             put(COL_TITLE, notification.title)
             put(COL_BODY, notification.body)
             put(COL_RECEIVED_AT, notification.received_at.toIso8601String())
+
+            val actionListing = ListAdapter.toJson(notification.actions, NotificationActionAdapter)
+            val customParametersListing = encodeJsonMap(notification.customParameters)
+
+            put(COL_ACTIONS, actionListing.toString())
+            put(COL_CUSTOM_PARAMS, customParametersListing.toString())
         }
 
         database.writableDatabase.let { db ->
             db.insert(tableName, null, insert)
         }
-
-//        TODO("Add storage of custom data & actions")
     }
 
     fun setNotificationAsRead(androidNotificationId: Int, date: Date = Date()) {
