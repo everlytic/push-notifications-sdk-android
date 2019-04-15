@@ -9,10 +9,11 @@ import org.json.JSONObject
 object NotificationActionAdapter : JSONAdapterInterface<NotificationAction> {
     override fun fromJson(json: JSONObject): NotificationAction {
         val type = json.getString("_type")
+        val data = json.getJSONObject("data")
 
         return when (type) {
-            LaunchAppNotificationAction.ACTION_ID -> decodeLaunchAppNotificationAction(json)
-            GoToUrlNotificationAction.ACTION_ID -> decodeGoToUrlNotificationAction(json)
+            LaunchAppNotificationAction.ACTION_ID -> decodeLaunchAppNotificationAction(data)
+            GoToUrlNotificationAction.ACTION_ID -> decodeGoToUrlNotificationAction(data)
             else -> LaunchAppNotificationAction(NotificationAction.Action.DEFAULT, "")
         }
     }

@@ -31,7 +31,9 @@ class EvNotificationReceiverServiceTest {
             every { data } returns mapOf<String, String>(
                 "title" to "This is a notification title",
                 "body" to "This is some body content",
-                "message_id" to "15"
+                "message_id" to "15",
+                "@default" to "launch=",
+                "\$custom" to "parameter"
             )
         }
 

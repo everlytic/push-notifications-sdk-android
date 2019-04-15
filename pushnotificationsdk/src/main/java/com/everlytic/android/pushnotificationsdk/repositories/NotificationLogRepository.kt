@@ -17,11 +17,14 @@ import com.everlytic.android.pushnotificationsdk.database.EvDbContract.Notificat
 import com.everlytic.android.pushnotificationsdk.database.EvDbHelper
 import com.everlytic.android.pushnotificationsdk.database.adapters.toDate
 import com.everlytic.android.pushnotificationsdk.database.adapters.toIso8601String
+import com.everlytic.android.pushnotificationsdk.decodeJsonMap
 import com.everlytic.android.pushnotificationsdk.encodeJsonMap
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import com.everlytic.android.pushnotificationsdk.models.EverlyticNotification
 import com.everlytic.android.pushnotificationsdk.models.jsonadapters.ListAdapter
+import com.everlytic.android.pushnotificationsdk.models.jsonadapters.MapAdapter
 import com.everlytic.android.pushnotificationsdk.models.jsonadapters.NotificationActionAdapter
+import org.json.JSONArray
 import java.util.*
 
 class NotificationLogRepository(private val database: EvDbHelper) {
@@ -80,7 +83,7 @@ class NotificationLogRepository(private val database: EvDbHelper) {
         }
     }
 
-    fun getNotificationLogHistory(): List<EverlyticNotification> {
+    fun getPublicNotificationLogHistory(): List<EverlyticNotification> {
 
         val list = mutableListOf<EverlyticNotification>()
 
@@ -102,6 +105,47 @@ class NotificationLogRepository(private val database: EvDbHelper) {
                         0 /*cursor.getInt(cursor.getColumnIndex(COL_))*/,
                         cursor.getString(cursor.getColumnIndex(COL_RECEIVED_AT)).toDate(),
                         cursor.getString(cursor.getColumnIndex(COL_READ_AT))?.toDate()
+                    )
+                }
+            }
+        }
+
+        return list
+    }
+
+    fun getUnactionedNotificationLogHistory(): List<EvNotification> {
+
+        val list = mutableListOf<EvNotification>()
+
+        database.readableDatabase.let { db ->
+            db.query(
+                tableName,
+                null,
+                "${COL_READ_AT} IS NULL AND ${COL_DISMISSED_AT} IS NULL",
+                null,
+                null,
+                null,
+                null
+            ).use { cursor ->
+                while (cursor.moveToNext()) {
+                    val actionArray = JSONArray(cursor.getString(cursor.getColumnIndex(COL_ACTIONS)))
+                    val actions = ListAdapter.fromJson(actionArray, NotificationActionAdapter)
+                    val customParams = decodeJsonMap(cursor.getString(cursor.getColumnIndex(COL_CUSTOM_PARAMS)))
+
+                    list += EvNotification(
+                        cursor.getLong(cursor.getColumnIndex(COL_MESSAGE_ID)),
+                        cursor.getInt(cursor.getColumnIndex(COL_ANDROID_NOTIFICAITON_ID)),
+                        cursor.getString(cursor.getColumnIndex(COL_TITLE)),
+                        cursor.getString(cursor.getColumnIndex(COL_BODY)),
+                        true,
+                        0,
+                        0,
+                        0,
+                        actions,
+                        customParams,
+                        cursor.getString(cursor.getColumnIndex(COL_RECEIVED_AT)).toDate(),
+                        cursor.getString(cursor.getColumnIndex(COL_READ_AT))?.toDate(),
+                        cursor.getString(cursor.getColumnIndex(COL_DISMISSED_AT))?.toDate()
                     )
                 }
             }

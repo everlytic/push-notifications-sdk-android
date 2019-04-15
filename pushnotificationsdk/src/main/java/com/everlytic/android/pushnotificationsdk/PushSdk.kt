@@ -182,7 +182,7 @@ internal class PushSdk @JvmOverloads constructor(
     fun getPublicNotificationHistory(): List<EverlyticNotification> {
         val notificationRepository = getNotificationLogRepository()
 
-        return notificationRepository.getNotificationLogHistory()
+        return notificationRepository.getPublicNotificationLogHistory()
     }
 
     private fun getNotificationLogRepository(): NotificationLogRepository {
