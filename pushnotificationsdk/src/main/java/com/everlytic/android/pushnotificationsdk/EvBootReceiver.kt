@@ -21,8 +21,9 @@ class EvBootReceiver : BroadcastReceiver() {
 
         val handler = EvNotificationHandler(context)
 
-        repository.getUnactionedNotificationLogHistory().also { logd(it.toString()) }.forEach {
-            handler.displayNotification(it)
-        }
+        repository.getUnactionedNotificationLogHistory()
+            .forEach {
+                handler.displayNotification(it)
+            }
     }
 }

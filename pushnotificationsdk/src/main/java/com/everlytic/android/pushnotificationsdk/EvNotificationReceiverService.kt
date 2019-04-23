@@ -108,13 +108,7 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
                             LaunchAppNotificationAction(actionType, actionParams)
                         }
                         action.startsWith(GoToUrlNotificationAction.ACTION_ID) -> {
-                            val markdownUrlRegex = "^\\[([\\p{L}\\s]*)\\]\\(([a-z]+:\\/\\/.+)\\)\$".toRegex()
-                            val (title, url) =
-                                markdownUrlRegex
-                                    .find(actionParams)!!
-                                    .groupValues
-                                    .drop(1)
-                                    .let { matches -> matches.first() to matches.last() }
+                            val (title, url) = decodeMarkdownUrlFragments(actionParams)
                             logd("::decodeCustomActions() GoToUrlNotificationAction action=$actionType url=$url")
                             GoToUrlNotificationAction(actionType, title, Uri.parse(url))
                         }
@@ -122,6 +116,16 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
                     }
                 }
             }
+    }
+
+    private fun decodeMarkdownUrlFragments(actionParams: String): Pair<String, String> {
+        val markdownUrlRegex = "^\\[([\\p{L}\\s]*)\\]\\(([a-z]+:\\/\\/.+)\\)\$".toRegex()
+
+        return markdownUrlRegex
+            .find(actionParams)!!
+            .groupValues
+            .drop(1)
+            .let { matches -> matches.first() to matches.last() }
     }
 
     private fun decodeCustomParameters(data: Map<String, String>): Map<String, String> {
