@@ -2,13 +2,19 @@ package com.everlytic.android.pushnotificationsdk
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Base64
+import java.nio.charset.Charset
 
 internal object SdkSettings {
 
-    const val META_API_USERNAME_PATH = "com.everlytic.api.API_USERNAME"
-    const val META_API_KEY_PATH = "com.everlytic.api.API_KEY"
-    const val META_PUSH_PROJECT_ID = "com.everlytic.api.PUSH_NOTIFICATIONS_LIST_ID"
-    const val META_API_INSTALL_URL = "com.everlytic.api.API_INSTALL_URL"
+    const val KEY_VALUE_SEPARATOR = "="
+    const val VALUES_SEPARATOR = ";"
+    const val KEY_API_USER = "u"
+    const val KEY_API_KEY = "k"
+    const val KEY_INSTALL_URL = "i"
+    const val KEY_LIST_ID = "l"
+
+    const val META_SDK_CONFIGURATION_STRING = "com.everlytic.api.SDK_CONFIGURATION"
 
     data class SdkSettingsBag(
         val apiInstall: String?,
@@ -17,16 +23,28 @@ internal object SdkSettings {
         val listId: Int
     )
 
-    fun getSettings(context: Context): SdkSettingsBag {
-        val appInfo = context
+    private fun getConfigurationString(context: Context): String {
+        return context
             .packageManager
             .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+            .metaData
+            .getString(META_SDK_CONFIGURATION_STRING)
+    }
+
+    fun getSettings(context: Context): SdkSettingsBag {
+        val decoded = Base64.decode(getConfigurationString(context), Base64.DEFAULT).toString(Charset.defaultCharset())
+
+        val map: Map<String, String> = decoded.split(VALUES_SEPARATOR).map { entry ->
+            entry.split(KEY_VALUE_SEPARATOR, limit = 2).let {
+                it[0] to it[1]
+            }
+        }.toMap()
 
         return SdkSettingsBag(
-            appInfo.metaData.getString(SdkSettings.META_API_INSTALL_URL),
-            appInfo.metaData.getString(SdkSettings.META_API_USERNAME_PATH),
-            appInfo.metaData.getString(SdkSettings.META_API_KEY_PATH),
-            appInfo.metaData.getInt(SdkSettings.META_PUSH_PROJECT_ID, -1)
+            map[KEY_INSTALL_URL],
+            map[KEY_API_USER],
+            map[KEY_API_KEY],
+            map[KEY_LIST_ID]!!.toInt()
         )
     }
 
