@@ -14,7 +14,7 @@ import java.util.*
 
 internal class EverlyticHttp(installUrl: String, apiUsername: String, apiKey: String) {
 
-    private val baseUrl = "https://$installUrl/api/3.0/"
+    private val baseUrl = "$installUrl/api/3.0/"
     private var authenticator = EverlyticApiAuthenticator(apiUsername, apiKey)
 
     fun get(url: String, responseHandler: ResponseHandler) {

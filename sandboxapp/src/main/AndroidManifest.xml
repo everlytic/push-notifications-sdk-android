@@ -21,17 +21,8 @@
         </activity>
 
         <meta-data
-            android:name="com.everlytic.api.API_USERNAME"
-            android:value="jason" />
-        <meta-data
-            android:name="com.everlytic.api.API_KEY"
-            android:value="4mw30eCcKrsY76QHgL58UlwbW164kAv0_0" />
-        <meta-data
-            android:name="com.everlytic.api.PUSH_NOTIFICATIONS_LIST_ID"
-            android:value="4" />
-        <meta-data
-            android:name="com.everlytic.api.API_INSTALL_URL"
-            android:value="qa.everlytic.net" />
+            android:name="com.everlytic.api.SDK_CONFIGURATION"
+            android:value="dT1hZG1pbmlzdHJhdG9yO2s9MlVvZXdYaXJSMEJPZVFHOGh1M1pFRHpLNnVXd0l5NHJfMDtpPWh0dHA6Ly9xYS5ldmVybHl0aWMubmV0O2w9NA==" />
 
         <activity android:name=".Sandbox">
             <intent-filter>
