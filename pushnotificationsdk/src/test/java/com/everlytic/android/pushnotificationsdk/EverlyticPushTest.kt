@@ -12,6 +12,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.lang.IllegalArgumentException
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -35,12 +36,10 @@ class EverlyticPushTest {
 
     @Test
     fun testInit_WithInvalidManifestSettings_ReturnsError() {
-
         val mockApp = mockk<Application> {
-
             val mockApplicationInfo = mockk<ApplicationInfo>()
 
-            every { SdkSettings.getSettings(ofType()) } returns SdkSettings.SdkSettingsBag(null, null, null, -1)
+            every { SdkSettings.getSettings(ofType()) } throws IllegalArgumentException()
 
             every { applicationInfo } returns mockApplicationInfo
         }

@@ -9,13 +9,13 @@ import io.mockk.mockkObject
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 
 @RunWith(AndroidJUnit4::class)
 class SdkSettingsTest {
 
     @Test
-    fun testSdkSettings_DecodesSettings() {
-
+    fun testSdkSettings_ValidBase64ConfigString_DecodesSettings() {
         mockkObject(SdkSettings)
 
         every { SdkSettings invoke "getConfigurationString" withArguments listOf(ofType<Context>()) } answers {
@@ -28,6 +28,19 @@ class SdkSettingsTest {
         assertEquals("U3aTqfcQ6v1H9iRdncTXc36Pa2D8Fwna_999", settings.apiKey)
         assertEquals("http://local.everlytic.com", settings.apiInstall)
         assertEquals(1, settings.listId)
+    }
+
+    @Test
+    fun testSdkSettings_InvalidBase64ConfigString_DecodesSettings() {
+        mockkObject(SdkSettings)
+
+        every { SdkSettings invoke "getConfigurationString" withArguments listOf(ofType<Context>()) } answers {
+            "bad"
+        }
+
+        assertFails {
+            SdkSettings.getSettings(ApplicationProvider.getApplicationContext<Application>())
+        }
     }
 
 }

@@ -3,6 +3,7 @@ package com.everlytic.android.pushnotificationsdk
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Base64
+import java.lang.IllegalArgumentException
 import java.nio.charset.Charset
 
 internal object SdkSettings {
@@ -31,6 +32,7 @@ internal object SdkSettings {
             .getString(META_SDK_CONFIGURATION_STRING)
     }
 
+    @Throws(IllegalArgumentException::class)
     fun getSettings(context: Context): SdkSettingsBag {
         val decoded = Base64.decode(getConfigurationString(context), Base64.DEFAULT).toString(Charset.defaultCharset())
 
