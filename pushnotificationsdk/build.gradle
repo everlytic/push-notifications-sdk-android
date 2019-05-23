@@ -48,7 +48,7 @@ dependencies {
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     api 'com.android.support:appcompat-v7:27.+'
 
-    implementation 'com.google.firebase:firebase-messaging:17.3.4'
+    implementation 'com.google.firebase:firebase-messaging:17.3.3'
 
     /* TEST DEPENDENCIES */
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
