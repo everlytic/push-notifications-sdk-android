@@ -20,10 +20,6 @@
                 android:value="com.everlytic.android.sandboxapp.Sandbox" />
         </activity>
 
-        <meta-data
-            android:name="com.everlytic.api.SDK_CONFIGURATION"
-            android:value="dT1hZG1pbmlzdHJhdG9yO2s9MlVvZXdYaXJSMEJPZVFHOGh1M1pFRHpLNnVXd0l5NHJfMDtpPWh0dHA6Ly9xYS5ldmVybHl0aWMubmV0O2w9NA==" />
-
         <activity android:name=".Sandbox">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

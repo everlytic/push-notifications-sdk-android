@@ -16,6 +16,7 @@ import com.everlytic.android.pushnotificationsdk.models.EverlyticNotification
 public object EverlyticPush {
     @SuppressLint("StaticFieldLeak")
     internal var instance: PushSdk? = null
+    internal lateinit var sdkSettingsBag: SdkSettings.SdkSettingsBag
 
     var isInTestMode: Boolean = false
         private set
@@ -27,10 +28,20 @@ public object EverlyticPush {
     @JvmStatic
     @Throws(EverlyticPushInvalidSDKConfigurationException::class)
     fun init(context: Context) {
+        init(context, null)
+    }
+
+    /**
+     * Initialises the Everlytic Push EvNotification SDK
+     * @param context [Application] instance
+     * */
+    @JvmStatic
+    @Throws(EverlyticPushInvalidSDKConfigurationException::class)
+    fun init(context: Context, config: String?) {
         logd("::init(); Initializing SDK")
         try {
-            val settingsBag = SdkSettings.getSettings(context)
-            instance = PushSdk(context.applicationContext, settingsBag, testMode = isInTestMode)
+            sdkSettingsBag = config?.let { SdkSettings.getSettings(it) } ?: SdkSettings.getSettings(context)
+            instance = PushSdk(context.applicationContext, sdkSettingsBag, testMode = isInTestMode)
         } catch (e: Exception) {
             throw newInvalidSdkConfigurationException(SdkSettings.META_SDK_CONFIGURATION_STRING)
         }

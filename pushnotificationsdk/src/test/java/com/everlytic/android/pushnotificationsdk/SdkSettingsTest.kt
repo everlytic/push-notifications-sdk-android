@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.runner.AndroidJUnit4
 import io.mockk.every
 import io.mockk.mockkObject
+import io.mockk.verify
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.test.assertEquals
@@ -18,11 +19,9 @@ class SdkSettingsTest {
     fun testSdkSettings_ValidBase64ConfigString_DecodesSettings() {
         mockkObject(SdkSettings)
 
-        every { SdkSettings invoke "getConfigurationString" withArguments listOf(ofType<Context>()) } answers {
-            "dT1hZG1pbmlzdHJhdG9yO2s9VTNhVHFmY1E2djFIOWlSZG5jVFhjMzZQYTJEOEZ3bmFfOTk5O2k9aHR0cDovL2xvY2FsLmV2ZXJseXRpYy5jb207bD0x"
-        }
+        val configString = "dT1hZG1pbmlzdHJhdG9yO2s9VTNhVHFmY1E2djFIOWlSZG5jVFhjMzZQYTJEOEZ3bmFfOTk5O2k9aHR0cDovL2xvY2FsLmV2ZXJseXRpYy5jb207bD0x"
 
-        val settings = SdkSettings.getSettings(ApplicationProvider.getApplicationContext<Application>())
+        val settings = SdkSettings.getSettings(configString)
 
         assertEquals("administrator", settings.apiUsername)
         assertEquals("U3aTqfcQ6v1H9iRdncTXc36Pa2D8Fwna_999", settings.apiKey)
@@ -31,7 +30,7 @@ class SdkSettingsTest {
     }
 
     @Test
-    fun testSdkSettings_InvalidBase64ConfigString_DecodesSettings() {
+    fun testSdkSettings_InvalidBase64ConfigString_ThrowsError() {
         mockkObject(SdkSettings)
 
         every { SdkSettings invoke "getConfigurationString" withArguments listOf(ofType<Context>()) } answers {

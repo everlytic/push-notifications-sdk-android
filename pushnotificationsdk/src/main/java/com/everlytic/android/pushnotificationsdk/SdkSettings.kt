@@ -32,9 +32,13 @@ internal object SdkSettings {
             .getString(META_SDK_CONFIGURATION_STRING)
     }
 
-    @Throws(IllegalArgumentException::class)
     fun getSettings(context: Context): SdkSettingsBag {
-        val decoded = Base64.decode(getConfigurationString(context), Base64.DEFAULT).toString(Charset.defaultCharset())
+        return getSettings(getConfigurationString(context))
+    }
+
+    @Throws(IllegalArgumentException::class)
+    fun getSettings(configString: String): SdkSettingsBag {
+        val decoded = Base64.decode(configString, Base64.DEFAULT).toString(Charset.defaultCharset())
 
         val map: Map<String, String> = decoded.split(VALUES_SEPARATOR).map { entry ->
             entry.split(KEY_VALUE_SEPARATOR, limit = 2).let {

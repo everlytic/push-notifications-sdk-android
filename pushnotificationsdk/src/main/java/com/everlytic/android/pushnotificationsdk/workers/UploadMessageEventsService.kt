@@ -27,7 +27,7 @@ class UploadMessageEventsService : JobIntentService() {
             return
         }
 
-        val sdkSettings = SdkSettings.getSettings(applicationContext)
+        val sdkSettings = EverlyticPush.sdkSettingsBag
 
         repository = NotificationEventRepository(
             EvDbHelper.getInstance(applicationContext),

@@ -1,6 +1,7 @@
 package com.everlytic.android.pushnotificationsdk
 
 import android.app.Application
+import android.content.Context
 import android.content.pm.ApplicationInfo
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.runner.AndroidJUnit4
@@ -39,7 +40,7 @@ class EverlyticPushTest {
         val mockApp = mockk<Application> {
             val mockApplicationInfo = mockk<ApplicationInfo>()
 
-            every { SdkSettings.getSettings(ofType()) } throws IllegalArgumentException()
+            every { SdkSettings.getSettings(ofType<Context>()) } throws IllegalArgumentException()
 
             every { applicationInfo } returns mockApplicationInfo
         }
@@ -60,7 +61,7 @@ class EverlyticPushTest {
             every { anyConstructed<SdkRepository>().getNewFcmToken() } returns null
 
             EverlyticPush.init(app)
-            verify { SdkSettings.getSettings(ofType()) }
+            verify { SdkSettings.getSettings(ofType<Context>()) }
 
             clearConstructorMockk(PushSdk::class)
             clearConstructorMockk(SdkRepository::class)

@@ -1,5 +1,6 @@
 package com.everlytic.android.pushnotificationsdk
 
+import android.content.Context
 import com.everlytic.android.pushnotificationsdk.facades.BuildFacade
 import com.everlytic.android.pushnotificationsdk.facades.FirebaseInstanceIdFacade
 import com.everlytic.android.pushnotificationsdk.facades.TokenResult
@@ -41,12 +42,14 @@ internal object Mock {
 
     fun SdkSettings() {
         mockkObject(SdkSettings)
-        every { SdkSettings.getSettings(ofType()) } returns SdkSettings.SdkSettingsBag(
+        val sdkSettings = SdkSettings.SdkSettingsBag(
             "install_id",
             "api_username",
             "api_key",
             0
         )
+        every { SdkSettings.getSettings(ofType<Context>()) } returns sdkSettings
+        every { SdkSettings.getSettings(ofType<String>()) } returns sdkSettings
     }
 
     fun getSdkRepositoryMock(): SdkRepository {
