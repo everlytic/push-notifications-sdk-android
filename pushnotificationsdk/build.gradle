@@ -27,6 +27,7 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/sqldelight'
+        main.java.srcDirs += 'src/main/samples'
     }
 
     lintOptions {
@@ -42,20 +43,6 @@ android {
 
 androidExtensions {
     experimental = true
-}
-
-dokka {
-    reportUndocumented = true // Emit warnings about not documented members
-    includeNonPublic = false
-
-    packageOptions {
-        prefix = "com.everlytic.android.pushnotifications.workers"
-        suppress = true
-    }
-    packageOptions {
-        prefix = "com.everlytic.android.pushnotifications.database"
-        suppress = true
-    }
 }
 
 dependencies {
@@ -80,6 +67,7 @@ dependencies {
 task dokkaMarkdown(type: org.jetbrains.dokka.gradle.DokkaTask) {
     outputFormat = 'markdown'
     outputDirectory = "$buildDir/docs/markdown"
+
 }
 
 task dokkaHtml(type: org.jetbrains.dokka.gradle.DokkaTask) {

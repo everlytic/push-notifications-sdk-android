@@ -12,7 +12,7 @@ import org.json.JSONObject
 internal object SubscriptionEventAdapter : JSONAdapterInterface<SubscriptionEvent> {
     override fun fromJson(json: JSONObject): SubscriptionEvent {
         return SubscriptionEvent(
-            json.getString("list_id"),
+            json.getString("push_project_uuid"),
             ContactDataAdapter.fromJson(json.getJSONObject("contact")),
             decodeJsonMap(json.getJSONObject("metadata")),
             PlatformDataAdapter.fromJson(json.getJSONObject("platform")),
