@@ -23,7 +23,7 @@ import java.security.SecureRandom
 /**
  * @suppress
  * */
-class EvNotificationHandler(val context: Context) {
+internal class EvNotificationHandler(val context: Context) {
     fun displayNotification(evNotification: EvNotification) {
         registerChannel()
 
