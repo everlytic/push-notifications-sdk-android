@@ -6,7 +6,7 @@ import com.everlytic.android.pushnotificationsdk.models.jsonadapters.JSONAdapter
 import org.json.JSONObject
 import java.security.SecureRandom
 
-object Testing_ApiResponses {
+internal object Testing_ApiResponses {
 
     private fun randId() = SecureRandom().nextInt(10000).toString()
 

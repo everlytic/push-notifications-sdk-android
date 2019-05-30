@@ -20,7 +20,9 @@ import com.everlytic.android.pushnotificationsdk.models.LaunchAppNotificationAct
 import com.everlytic.android.pushnotificationsdk.models.NotificationAction
 import java.security.SecureRandom
 
-
+/**
+ * @suppress
+ * */
 class EvNotificationHandler(val context: Context) {
     fun displayNotification(evNotification: EvNotification) {
         registerChannel()

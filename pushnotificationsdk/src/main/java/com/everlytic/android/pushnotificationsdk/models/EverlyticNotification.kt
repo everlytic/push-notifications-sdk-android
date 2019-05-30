@@ -1,7 +1,9 @@
 package com.everlytic.android.pushnotificationsdk.models
 
 import java.util.*
-
+/**
+ * Represents a notification object
+ * */
 data class EverlyticNotification(
     val messageId: Long,
     val title: String,

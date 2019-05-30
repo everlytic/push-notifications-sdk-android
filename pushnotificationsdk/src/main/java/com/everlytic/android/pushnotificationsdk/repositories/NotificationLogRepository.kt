@@ -26,7 +26,7 @@ import com.everlytic.android.pushnotificationsdk.models.jsonadapters.Notificatio
 import org.json.JSONArray
 import java.util.*
 
-class NotificationLogRepository(private val database: EvDbHelper) {
+internal class NotificationLogRepository(private val database: EvDbHelper) {
     private val tableName = EvDbContract.NotificationLogTable.TBL_NAME
 
     fun storeNotification(notification: EvNotification, subscriptionId: Long, contactId: Long) {

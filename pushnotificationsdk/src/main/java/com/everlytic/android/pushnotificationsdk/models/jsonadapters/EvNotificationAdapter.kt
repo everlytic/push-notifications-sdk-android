@@ -6,7 +6,7 @@ import com.everlytic.android.pushnotificationsdk.encodeJsonMap
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import org.json.JSONObject
 
-object EvNotificationAdapter : JSONAdapterInterface<EvNotification> {
+internal object EvNotificationAdapter : JSONAdapterInterface<EvNotification> {
     override fun fromJson(json: JSONObject): EvNotification {
 
         val receivedAt = json.getString("received_at")

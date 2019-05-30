@@ -16,7 +16,9 @@ import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationEventRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import org.json.JSONObject
-
+/**
+ * @suppress
+ * */
 class UploadMessageEventsService : JobIntentService() {
     private lateinit var repository: NotificationEventRepository
     private lateinit var api: EverlyticApi

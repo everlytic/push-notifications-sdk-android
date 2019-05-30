@@ -5,7 +5,7 @@ package com.everlytic.android.pushnotificationsdk.database
  * for any changes made.
  *
  * Migration key numbers in [getMigrations] should reference the old version of the db being upgraded from
- *
+ * @suppress
  * */
 object EvDbContract {
 

@@ -5,7 +5,9 @@ import android.content.pm.PackageManager
 import android.util.Base64
 import java.lang.IllegalArgumentException
 import java.nio.charset.Charset
-
+/**
+ * @suppress
+ * */
 internal object SdkSettings {
 
     private const val KEY_VALUE_SEPARATOR = "="

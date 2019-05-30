@@ -2,7 +2,7 @@ package com.everlytic.android.pushnotificationsdk.models.jsonadapters
 
 import org.json.JSONObject
 
-object MapAdapter {
+internal object MapAdapter {
     fun fromJson(json: JSONObject): Map<String, String> {
 
         val map = mutableMapOf<String, String>()

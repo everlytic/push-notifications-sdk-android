@@ -7,7 +7,9 @@ import com.everlytic.android.pushnotificationsdk.EverlyticPush
 import com.everlytic.android.pushnotificationsdk.isDeviceOnline
 import com.everlytic.android.pushnotificationsdk.logd
 import com.everlytic.android.pushnotificationsdk.workers.UploadMessageEventsService
-
+/**
+ * @suppress
+ * */
 class ResubscribeContactOnNetworkChangeReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         logd("::onReceive() activeNetwork.isConnected=${isDeviceOnline(context)}")

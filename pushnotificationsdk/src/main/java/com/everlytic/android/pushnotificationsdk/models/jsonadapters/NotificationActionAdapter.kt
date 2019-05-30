@@ -6,7 +6,7 @@ import com.everlytic.android.pushnotificationsdk.models.LaunchAppNotificationAct
 import com.everlytic.android.pushnotificationsdk.models.NotificationAction
 import org.json.JSONObject
 
-object NotificationActionAdapter : JSONAdapterInterface<NotificationAction> {
+internal object NotificationActionAdapter : JSONAdapterInterface<NotificationAction> {
     override fun fromJson(json: JSONObject): NotificationAction {
         val type = json.getString("_type")
         val data = json.getJSONObject("data")

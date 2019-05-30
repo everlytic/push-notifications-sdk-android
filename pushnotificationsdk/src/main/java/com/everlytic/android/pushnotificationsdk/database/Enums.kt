@@ -1,5 +1,7 @@
 package com.everlytic.android.pushnotificationsdk.database
-
+/**
+ * @suppress
+ * */
 enum class NotificationEventType {
     DELIVERY,
     CLICK,

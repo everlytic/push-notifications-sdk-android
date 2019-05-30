@@ -24,13 +24,20 @@ jobs:
           name: Run Tests
           command: ./gradlew :pushnotificationsdk:lint :pushnotificationsdk:test
       - run:
-          name: Run Build
+          name: Build AAR
           command: ./gradlew :pushnotificationsdk:build
+      - run:
+          name: Build Documentation - Markdown
+          command: ./gradlew :pushnotificationsdk:dokkaMarkdown
       - store_artifacts:
           path: pushnotificationsdk/build/reports
           destination: reports
+      - store_artifacts:
+          path: pushnotificationsdk/build/docs/markdown
+          destination: docs_markdown
       - store_test_results:
           path: pushnotificationsdk/build/test-results
+          destination: test_results
       - store_artifacts:
           path: pushnotificationsdk/build/outputs/aar
           destination: aar_artifacts

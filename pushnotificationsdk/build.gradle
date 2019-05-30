@@ -44,6 +44,20 @@ androidExtensions {
     experimental = true
 }
 
+dokka {
+    reportUndocumented = true // Emit warnings about not documented members
+    includeNonPublic = false
+
+    packageOptions {
+        prefix = "com.everlytic.android.pushnotifications.workers"
+        suppress = true
+    }
+    packageOptions {
+        prefix = "com.everlytic.android.pushnotifications.database"
+        suppress = true
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -66,14 +80,9 @@ dependencies {
 task dokkaMarkdown(type: org.jetbrains.dokka.gradle.DokkaTask) {
     outputFormat = 'markdown'
     outputDirectory = "$buildDir/docs/markdown"
-    reportUndocumented = true // Emit warnings about not documented members
-    includeNonPublic = false
 }
 
 task dokkaHtml(type: org.jetbrains.dokka.gradle.DokkaTask) {
     outputFormat = 'html'
     outputDirectory = "$buildDir/docs/html"
-
-    reportUndocumented = true // Emit warnings about not documented members
-    includeNonPublic = false
 }

@@ -15,7 +15,9 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import java.security.SecureRandom
 import java.util.*
-
+/**
+ * @suppress
+ * */
 internal class EvNotificationReceiverService : FirebaseMessagingService() {
 
     private val notificationRepository by lazy {

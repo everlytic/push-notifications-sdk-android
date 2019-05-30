@@ -8,7 +8,7 @@ import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 @Parcelize
-data class EvNotification(
+internal data class EvNotification(
     val messageId: Long,
     val androidNotificationId: Int,
     val title: String,
@@ -30,7 +30,7 @@ data class EvNotification(
     }
 }
 
-sealed class NotificationAction(val action: Action, val actionTitle: String) : Parcelable {
+internal sealed class NotificationAction(val action: Action, val actionTitle: String) : Parcelable {
     enum class Action(val jsonKeyName: String) {
         DEFAULT("default"),
         PRIMARY("primary"),
@@ -49,7 +49,7 @@ sealed class NotificationAction(val action: Action, val actionTitle: String) : P
 }
 
 @Parcelize
-data class LaunchAppNotificationAction(
+internal data class LaunchAppNotificationAction(
     private val _action: NotificationAction.Action,
     private val title: String
 ) : NotificationAction(_action, title) {
@@ -59,7 +59,7 @@ data class LaunchAppNotificationAction(
 }
 
 @Parcelize
-data class GoToUrlNotificationAction(
+internal data class GoToUrlNotificationAction(
     private val _action: Action,
     private val title: String,
     val uri: Uri

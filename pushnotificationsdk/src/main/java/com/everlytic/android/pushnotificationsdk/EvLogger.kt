@@ -1,7 +1,9 @@
 package com.everlytic.android.pushnotificationsdk
 
 import android.util.Log
-
+/**
+ * @suppress
+ * */
 internal object EvLogger {
 
     fun d(tag: String, message: String? = null, throwable: Throwable? = null) {

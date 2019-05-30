@@ -9,7 +9,9 @@ import com.everlytic.android.pushnotificationsdk.handlers.NotificationOpenedHand
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationEventRepository
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
-
+/**
+ * @suppress
+ * */
 internal class EvNotificationClickReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val sdkRepository = SdkRepository(context)

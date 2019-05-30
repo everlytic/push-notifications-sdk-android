@@ -3,7 +3,7 @@ package com.everlytic.android.pushnotificationsdk.workers
 import android.content.ComponentName
 import android.content.Context
 
-object EvWorkManager {
+internal object EvWorkManager {
 
     inline fun <reified T : JobIntentService> scheduleOneTimeWorker(context: Context) {
 
