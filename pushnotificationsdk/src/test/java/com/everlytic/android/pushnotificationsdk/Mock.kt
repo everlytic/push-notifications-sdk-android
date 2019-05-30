@@ -44,9 +44,7 @@ internal object Mock {
         mockkObject(SdkSettings)
         val sdkSettings = SdkSettings.SdkSettingsBag(
             "install_id",
-            "api_username",
-            "api_key",
-            0
+            "push_project_uuid"
         )
         every { SdkSettings.getSettings(ofType<Context>()) } returns sdkSettings
         every { SdkSettings.getSettings(ofType<String>()) } returns sdkSettings

@@ -23,3 +23,7 @@
 -keep class com.everlytic.android.pushnotificationsdk.EverlyticPush {
    public *;
 }
+
+-keep class com.everlytic.android.pushnotificationsdk.exceptions.* {
+    *;
+}

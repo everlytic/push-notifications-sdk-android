@@ -23,6 +23,7 @@ public object EverlyticPush {
 
     /**
      * Initialises the Everlytic Push EvNotification SDK
+     * @since 0.0.1-alpha
      * @param context [Application] instance
      * */
     @JvmStatic
@@ -33,6 +34,7 @@ public object EverlyticPush {
 
     /**
      * Initialises the Everlytic Push EvNotification SDK
+     * @since 0.0.6-alpha
      * @param context [Application] instance
      * */
     @JvmStatic
@@ -49,6 +51,7 @@ public object EverlyticPush {
 
     /**
      * Subscribes a contact email to Everlytic Push Notifications for the current device
+     * @since 0.0.1-alpha
      * @param email
      * @return [Unit]
      * */
@@ -60,7 +63,7 @@ public object EverlyticPush {
 
     /**
      * Subscribes a contact email to Everlytic Push Notifications for the current device
-     *
+     * @since 0.0.1-alpha
      * @param email
      * @param onComplete Callback with result of attempted subscription
      * @return [Unit]
@@ -76,12 +79,19 @@ public object EverlyticPush {
         } ?: throw newNotInitialisedException()
     }
 
+    /**
+     * Unsubscribes the current contact device from Everlytic Push Notifications
+     * @throws [EverlyticPushNotInitialisedException]
+     * */
+    @JvmStatic
+    @Throws(EverlyticPushNotInitialisedException::class)
     fun unsubscribe() {
         EverlyticPush.unsubscribe(null)
     }
 
     /**
      * Unsubscribes the current contact device from Everlytic Push Notifications
+     * @throws [EverlyticPushNotInitialisedException]
      * */
     @JvmStatic
 //    @JvmOverloads
@@ -99,7 +109,7 @@ public object EverlyticPush {
     /**
      * Returns true if a contact has already been subscribed on the device
      *
-     * @return Boolean
+     * @return [Boolean]
      * */
     @JvmStatic
     fun isContactSubscribed(): Boolean {
@@ -110,7 +120,7 @@ public object EverlyticPush {
     /**
      * Returns true if the Everlytic Push SDK has been initialised
      *
-     * @return Boolean
+     * @return [Boolean]
      * */
     @JvmStatic
     fun isInitialised(): Boolean = instance != null
@@ -134,6 +144,11 @@ public object EverlyticPush {
         } ?: throw newNotInitialisedException()
     }
 
+    /**
+     * Set the SDK to test mode
+     * @param mode
+     * @return [EverlyticPush]
+     * */
     @JvmStatic
     fun setInTestMode(mode: Boolean): EverlyticPush {
         isInTestMode = mode

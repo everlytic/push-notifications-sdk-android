@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'org.jetbrains.dokka-android'
 
 android {
     compileSdkVersion 27
@@ -19,7 +20,7 @@ android {
         }
 
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -62,3 +63,17 @@ dependencies {
     testImplementation 'androidx.test:runner:1.1.1'
 }
 
+task dokkaMarkdown(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = 'markdown'
+    outputDirectory = "$buildDir/docs/markdown"
+    reportUndocumented = true // Emit warnings about not documented members
+    includeNonPublic = false
+}
+
+task dokkaHtml(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/docs/html"
+
+    reportUndocumented = true // Emit warnings about not documented members
+    includeNonPublic = false
+}

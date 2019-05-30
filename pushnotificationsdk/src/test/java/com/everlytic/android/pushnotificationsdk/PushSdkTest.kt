@@ -293,17 +293,13 @@ class PushSdkTest {
     private fun getSettingsBag(): SdkSettings.SdkSettingsBag {
         return SdkSettings.SdkSettingsBag(
             API_INSTALL,
-            API_USERNAME,
-            API_KEY,
-            LIST_ID
+            PUSH_PROJECT_UUID
         )
     }
 
     companion object {
         const val API_INSTALL = "install"
-        const val API_USERNAME = "username"
-        const val API_KEY = "api_key"
-        const val LIST_ID = 123
+        const val PUSH_PROJECT_UUID = "UUID-123456-123132-456465654654556as";
         const val USER_EMAIL = "test@test.com"
     }
 }

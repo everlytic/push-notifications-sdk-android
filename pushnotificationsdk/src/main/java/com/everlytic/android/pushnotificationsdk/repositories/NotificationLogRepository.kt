@@ -3,7 +3,7 @@ package com.everlytic.android.pushnotificationsdk.repositories
 import android.content.ContentValues
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_ACTIONS
-import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_ANDROID_NOTIFICAITON_ID
+import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_ANDROID_NOTIFICATION_ID
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_BODY
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_CONTACT_ID
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_CUSTOM_PARAMS
@@ -22,7 +22,6 @@ import com.everlytic.android.pushnotificationsdk.encodeJsonMap
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import com.everlytic.android.pushnotificationsdk.models.EverlyticNotification
 import com.everlytic.android.pushnotificationsdk.models.jsonadapters.ListAdapter
-import com.everlytic.android.pushnotificationsdk.models.jsonadapters.MapAdapter
 import com.everlytic.android.pushnotificationsdk.models.jsonadapters.NotificationActionAdapter
 import org.json.JSONArray
 import java.util.*
@@ -33,7 +32,7 @@ class NotificationLogRepository(private val database: EvDbHelper) {
     fun storeNotification(notification: EvNotification, subscriptionId: Long, contactId: Long) {
         val insert = ContentValues().apply {
             put(COL_MESSAGE_ID, notification.messageId)
-            put(COL_ANDROID_NOTIFICAITON_ID, notification.androidNotificationId)
+            put(COL_ANDROID_NOTIFICATION_ID, notification.androidNotificationId)
             put(COL_SUBSCRIPTION_ID, subscriptionId)
             put(COL_CONTACT_ID, contactId)
             put(COL_TITLE, notification.title)
@@ -62,7 +61,7 @@ class NotificationLogRepository(private val database: EvDbHelper) {
             db.update(
                 tableName,
                 update,
-                "${COL_ANDROID_NOTIFICAITON_ID} = ?",
+                "${COL_ANDROID_NOTIFICATION_ID} = ?",
                 arrayOf(androidNotificationId.toString())
             )
         }
@@ -77,7 +76,7 @@ class NotificationLogRepository(private val database: EvDbHelper) {
             db.update(
                 tableName,
                 update,
-                "${COL_ANDROID_NOTIFICAITON_ID} = ?",
+                "${COL_ANDROID_NOTIFICATION_ID} = ?",
                 arrayOf(androidNotificationId.toString())
             )
         }
@@ -134,7 +133,7 @@ class NotificationLogRepository(private val database: EvDbHelper) {
 
                     list += EvNotification(
                         cursor.getLong(cursor.getColumnIndex(COL_MESSAGE_ID)),
-                        cursor.getInt(cursor.getColumnIndex(COL_ANDROID_NOTIFICAITON_ID)),
+                        cursor.getInt(cursor.getColumnIndex(COL_ANDROID_NOTIFICATION_ID)),
                         cursor.getString(cursor.getColumnIndex(COL_TITLE)),
                         cursor.getString(cursor.getColumnIndex(COL_BODY)),
                         true,

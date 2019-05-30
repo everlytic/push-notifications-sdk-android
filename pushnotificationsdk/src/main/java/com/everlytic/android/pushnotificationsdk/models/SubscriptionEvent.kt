@@ -21,7 +21,7 @@ internal data class DeviceData(
 )
 
 internal data class SubscriptionEvent (
-    val list_id: String,
+    val push_project_uuid: String,
     val contact: ContactData,
     val metadata: Map<String, String> = emptyMap(),
     val platform: PlatformData = PlatformData(),

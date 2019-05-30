@@ -35,7 +35,7 @@ internal inline fun HttpURLConnection.use(block: HttpURLConnection.() -> Unit) {
     }
 }
 
-fun JSONObject.getJSONObjectOrNull(name: String): JSONObject? {
+internal fun JSONObject.getJSONObjectOrNull(name: String): JSONObject? {
     return try {
         this.getJSONObject(name)
     } catch (e: JSONException) {

@@ -28,7 +28,7 @@ object EvDbContract {
 
         const val COL_ID = "_id"
         const val COL_MESSAGE_ID = "message_id"
-        const val COL_ANDROID_NOTIFICAITON_ID = "android_notification_id"
+        const val COL_ANDROID_NOTIFICATION_ID = "android_notification_id"
         const val COL_SUBSCRIPTION_ID = "subscription_id"
         const val COL_CONTACT_ID = "contact_id"
         const val COL_TITLE = "title"
@@ -47,7 +47,7 @@ object EvDbContract {
             CREATE TABLE $TBL_NAME (
                 $COL_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $COL_MESSAGE_ID INTEGER,
-                $COL_ANDROID_NOTIFICAITON_ID INTEGER,
+                $COL_ANDROID_NOTIFICATION_ID INTEGER,
                 $COL_SUBSCRIPTION_ID INTEGER,
                 $COL_CONTACT_ID INTEGER,
                 $COL_TITLE TEXT,

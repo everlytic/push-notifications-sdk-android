@@ -34,7 +34,7 @@ class UploadMessageEventsService : JobIntentService() {
             SdkRepository(applicationContext)
         )
 
-        api = EverlyticApi(EverlyticHttp(sdkSettings.apiInstall!!, sdkSettings.apiUsername!!, sdkSettings.apiKey!!))
+        api = EverlyticApi(EverlyticHttp(sdkSettings.apiInstall, sdkSettings.pushProjectUuid))
 
         NotificationEventType
             .values()

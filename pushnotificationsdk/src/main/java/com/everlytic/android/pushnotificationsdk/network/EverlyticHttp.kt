@@ -12,10 +12,10 @@ import java.net.URL
 import java.net.UnknownHostException
 import java.util.*
 
-internal class EverlyticHttp(installUrl: String, apiUsername: String, apiKey: String) {
+internal class EverlyticHttp(installUrl: String, pushProjectUuid: String) {
 
-    private val baseUrl = "$installUrl/api/3.0/"
-    private var authenticator = EverlyticApiAuthenticator(apiUsername, apiKey)
+    private val baseUrl = "$installUrl/servlet/"
+    private var authenticator = EverlyticApiAuthenticator(pushProjectUuid)
 
     fun get(url: String, responseHandler: ResponseHandler) {
         performHttpConnection(

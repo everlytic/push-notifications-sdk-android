@@ -21,9 +21,8 @@ internal class PushSdk @JvmOverloads constructor(
     private val settingsBag: SdkSettings.SdkSettingsBag,
     private val api: EverlyticApi = EverlyticApi(
         EverlyticHttp(
-            settingsBag.apiInstall!!,
-            settingsBag.apiUsername!!,
-            settingsBag.apiKey!!
+            settingsBag.apiInstall,
+            settingsBag.pushProjectUuid
         )
     ),
     private val firebaseInstanceId: FirebaseInstanceIdFacade = FirebaseInstanceIdFacade.getDefaultInstance(),
@@ -210,6 +209,6 @@ internal class PushSdk @JvmOverloads constructor(
         val deviceType = if (context.resources.getBoolean(R.bool.isTablet)) "tablet" else "handset"
         val device = DeviceData(sdkRepository.getDeviceId()!!, type = deviceType)
         val contactData = ContactData(email, token)
-        return SubscriptionEvent(settingsBag.listId.toString(), contactData, device = device)
+        return SubscriptionEvent(settingsBag.pushProjectUuid, contactData, device = device)
     }
 }

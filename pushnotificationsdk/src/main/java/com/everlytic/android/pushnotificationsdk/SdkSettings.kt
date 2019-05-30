@@ -8,20 +8,16 @@ import java.nio.charset.Charset
 
 internal object SdkSettings {
 
-    const val KEY_VALUE_SEPARATOR = "="
-    const val VALUES_SEPARATOR = ";"
-    const val KEY_API_USER = "u"
-    const val KEY_API_KEY = "k"
-    const val KEY_INSTALL_URL = "i"
-    const val KEY_LIST_ID = "l"
+    private const val KEY_VALUE_SEPARATOR = "="
+    private const val VALUES_SEPARATOR = ";"
+    private const val KEY_INSTALL_URL = "i"
+    private const val KEY_PROJECT_UUID = "p"
 
     const val META_SDK_CONFIGURATION_STRING = "com.everlytic.api.SDK_CONFIGURATION"
 
     data class SdkSettingsBag(
-        val apiInstall: String?,
-        val apiUsername: String?,
-        val apiKey: String?,
-        val listId: Int
+        val apiInstall: String,
+        val pushProjectUuid: String
     )
 
     private fun getConfigurationString(context: Context): String {
@@ -47,10 +43,8 @@ internal object SdkSettings {
         }.toMap()
 
         return SdkSettingsBag(
-            map[KEY_INSTALL_URL],
-            map[KEY_API_USER],
-            map[KEY_API_KEY],
-            map[KEY_LIST_ID]!!.toInt()
+            map[KEY_INSTALL_URL] ?: error("Install Url cannot be null"),
+            map[KEY_PROJECT_UUID] ?: error("Project Uuid cannot be null")
         )
     }
 

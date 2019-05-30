@@ -23,7 +23,7 @@ internal object SubscriptionEventAdapter : JSONAdapterInterface<SubscriptionEven
 
     override fun toJson(obj: SubscriptionEvent): JSONObject {
         return JSONObject()
-            .put("list_id", obj.list_id)
+            .put("push_project_uuid", obj.push_project_uuid)
             .put("contact", ContactDataAdapter.toJson(obj.contact))
             .put("platform", PlatformDataAdapter.toJson(obj.platform))
             .put("device", DeviceDataAdapter.toJson(obj.device))

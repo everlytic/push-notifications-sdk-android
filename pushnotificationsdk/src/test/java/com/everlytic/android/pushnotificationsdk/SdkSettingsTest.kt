@@ -19,14 +19,12 @@ class SdkSettingsTest {
     fun testSdkSettings_ValidBase64ConfigString_DecodesSettings() {
         mockkObject(SdkSettings)
 
-        val configString = "dT1hZG1pbmlzdHJhdG9yO2s9VTNhVHFmY1E2djFIOWlSZG5jVFhjMzZQYTJEOEZ3bmFfOTk5O2k9aHR0cDovL2xvY2FsLmV2ZXJseXRpYy5jb207bD0x"
+        val configString = "cD1hNjc1Zjk0MC1iN2Y1LTQ5MTctOGU4Mi00NTU5Y2Q0MTM0MWI7aT1odHRwOi8vbG9jYWwuZXZlcmx5dGljLmNvbQ=="
 
         val settings = SdkSettings.getSettings(configString)
 
-        assertEquals("administrator", settings.apiUsername)
-        assertEquals("U3aTqfcQ6v1H9iRdncTXc36Pa2D8Fwna_999", settings.apiKey)
+        assertEquals("a675f940-b7f5-4917-8e82-4559cd41341b", settings.pushProjectUuid)
         assertEquals("http://local.everlytic.com", settings.apiInstall)
-        assertEquals(1, settings.listId)
     }
 
     @Test
