@@ -13,7 +13,7 @@ class App : Application() {
         FirebaseApp.initializeApp(this)
         EverlyticPush
 //            .setInTestMode(true)
-             .init(this, "dT1hZG1pbmlzdHJhdG9yO2s9MlVvZXdYaXJSMEJPZVFHOGh1M1pFRHpLNnVXd0l5NHJfMDtpPWh0dHA6Ly9xYS5ldmVybHl0aWMubmV0O2w9NA==")
+             .init(this, "cD0zNjhhOGJmZS0yZjA1LTRmNjMtYjY3OS0yOWJhOTAyY2FmOWM7aT1odHRwOi8vcWEuZXZlcmx5dGljLm5ldA==")
     }
 
 }

@@ -9,7 +9,7 @@ internal class EverlyticApi(val http: EverlyticHttp) {
 
     fun subscribe(subscription: SubscriptionEvent, responseHandler: EverlyticHttp.ResponseHandler) {
         http.post(
-            "push-notifications/subscriptions/subscribe",
+            "push-notifications/subscribe",
             JSONAdapter.encodeAsString(subscription),
             responseHandler
         )
@@ -17,21 +17,21 @@ internal class EverlyticApi(val http: EverlyticHttp) {
 
     fun unsubscribe(unsubscribeEvent: UnsubscribeEvent, responseHandler: EverlyticHttp.ResponseHandler) {
         http.post(
-            "push-notifications/subscriptions/unsubscribe",
+            "push-notifications/unsubscribe",
             JSONAdapter.encodeAsString(unsubscribeEvent),
             responseHandler
         )
     }
 
     fun recordClickEvent(event: NotificationEvent, responseHandler: EverlyticHttp.ResponseHandler) {
-        http.post("push-notifications/events/clicks", JSONAdapter.encodeAsString(event), responseHandler)
+        http.post("push-notifications/clicks", JSONAdapter.encodeAsString(event), responseHandler)
     }
 
     fun recordDeliveryEvent(event: NotificationEvent, responseHandler: EverlyticHttp.ResponseHandler) {
-        http.post("push-notifications/events/deliveries", JSONAdapter.encodeAsString(event), responseHandler)
+        http.post("push-notifications/deliveries", JSONAdapter.encodeAsString(event), responseHandler)
     }
 
     fun recordDismissEvent(event: NotificationEvent, responseHandler: EverlyticHttp.ResponseHandler) {
-        http.post("push-notifications/events/dismissals", JSONAdapter.encodeAsString(event), responseHandler)
+        http.post("push-notifications/dismissals", JSONAdapter.encodeAsString(event), responseHandler)
     }
 }

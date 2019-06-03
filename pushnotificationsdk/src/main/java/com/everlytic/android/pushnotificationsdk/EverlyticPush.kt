@@ -65,7 +65,7 @@ public object EverlyticPush {
      * Subscribes a contact email to Everlytic Push Notifications for the current device
      * @since 0.0.1-alpha
      * @param email
-     * @param onComplete Callback with result of attempted subscription
+     * @param onComplete Callback with status of attempted subscription
      * @return [Unit]
      * */
     @JvmStatic

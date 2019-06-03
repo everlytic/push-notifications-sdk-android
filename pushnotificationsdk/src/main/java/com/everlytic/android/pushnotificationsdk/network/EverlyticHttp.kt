@@ -90,7 +90,7 @@ internal class EverlyticHttp(installUrl: String, pushProjectUuid: String) {
 
                 val bytes = jsonBodyData.toByteArray()
                 setFixedLengthStreamingMode(bytes.size)
-                logd("Writing data...")
+                logd("Writing data=${jsonBodyData}")
                 outputStream.write(bytes)
             }
 
@@ -139,7 +139,7 @@ internal class EverlyticHttp(installUrl: String, pushProjectUuid: String) {
             } else {
                 val response = ApiResponseAdapter.fromJson(JSONObject(jsonResult))
 
-                if (response.result == "error") {
+                if (response.status == "error") {
                     responseHandler.onFailure(400, jsonResult, null)
                 } else {
                     responseHandler.onSuccess(response)
