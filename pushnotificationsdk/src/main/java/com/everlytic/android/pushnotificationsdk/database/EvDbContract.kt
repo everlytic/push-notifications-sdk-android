@@ -1,4 +1,5 @@
 package com.everlytic.android.pushnotificationsdk.database
+
 /**
  *
  * When updating the schema, update the create statements with the new changes as well as adding migration commands

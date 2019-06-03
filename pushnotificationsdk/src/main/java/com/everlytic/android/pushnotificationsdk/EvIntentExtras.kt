@@ -1,4 +1,5 @@
 package com.everlytic.android.pushnotificationsdk
+
 /**
  * @suppress
  * */

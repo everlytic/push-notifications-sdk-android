@@ -3,10 +3,12 @@ package com.everlytic.android.pushnotificationsdk.facades
 import com.google.firebase.iid.FirebaseInstanceId
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+
 /**
  * @suppress
  * */
 data class TokenResult(val success: Boolean, val value: String?, val throwable: Throwable? = null)
+
 /**
  * @suppress
  * */

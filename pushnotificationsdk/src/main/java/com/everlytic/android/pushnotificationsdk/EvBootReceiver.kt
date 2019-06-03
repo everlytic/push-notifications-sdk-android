@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.everlytic.android.pushnotificationsdk.database.EvDbHelper
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
+
 /**
  * @suppress
  * */

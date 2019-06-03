@@ -8,7 +8,6 @@ internal object EvWorkManager {
     inline fun <reified T : JobIntentService> scheduleOneTimeWorker(context: Context) {
 
 
-
 //        val constraints = Constraints.Builder().apply {
 //            if (requireNetwork) setRequiredNetworkType(NetworkType.CONNECTED)
 //        }.build()

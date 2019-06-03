@@ -10,7 +10,7 @@ import org.json.JSONObject
 
 internal object NotificationEventAdapter : JSONAdapterInterface<NotificationEvent> {
     override fun fromJson(json: JSONObject): NotificationEvent {
-        return with(json.getJSONObjectOrNull("event") ?: json){
+        return with(json.getJSONObjectOrNull("event") ?: json) {
             NotificationEvent(
                 getInt("android_notification_id"),
                 getLong("subscription_id"),

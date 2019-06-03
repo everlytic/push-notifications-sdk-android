@@ -20,7 +20,7 @@ internal data class DeviceData(
     val type: String
 )
 
-internal data class SubscriptionEvent (
+internal data class SubscriptionEvent(
     val push_project_uuid: String,
     val contact: ContactData,
     val metadata: Map<String, String> = emptyMap(),

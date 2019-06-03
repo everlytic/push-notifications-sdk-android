@@ -15,6 +15,7 @@ package com.everlytic.android.pushnotificationsdk.database.vendor;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -24,23 +25,29 @@ import java.util.TimeZone;
 /**
  * Jackson’s date formatter, pruned to Moshi's needs. Forked from this file:
  * https://github.com/FasterXML/jackson-databind/blob/67ebf7305f492285a8f9f4de31545f5f16fc7c3a/src/main/java/com/fasterxml/jackson/databind/util/ISO8601Utils.java
- *
+ * <p>
  * Utilities methods for manipulating dates in iso8601 format. This is much much faster and GC
  * friendly than using SimpleDateFormat so highly suitable if you (un)serialize lots of date
  * objects.
- *
+ * <p>
  * Supported parse format: [yyyy-MM-dd|yyyyMMdd][T(hh:mm[:ss[.sss]]|hhmm[ss[.sss]])]?[Z|[+-]hh[:]mm]]
  *
  * @see <a href="http://www.w3.org/TR/NOTE-datetime">this specification</a>
  */
 final public class Iso8601Utils {
-    /** ID to represent the 'GMT' string */
+    /**
+     * ID to represent the 'GMT' string
+     */
     static final String GMT_ID = "GMT";
 
-    /** The GMT timezone, prefetched to avoid more lookups. */
+    /**
+     * The GMT timezone, prefetched to avoid more lookups.
+     */
     static final TimeZone TIMEZONE_Z = TimeZone.getTimeZone(GMT_ID);
 
-    /** Returns {@code date} formatted as yyyy-MM-ddThh:mm:ss.sssZ */
+    /**
+     * Returns {@code date} formatted as yyyy-MM-ddThh:mm:ss.sssZ
+     */
     public static String format(Date date) {
         Calendar calendar = new GregorianCalendar(TIMEZONE_Z, Locale.US);
         calendar.setTime(date);
@@ -197,8 +204,8 @@ final public class Iso8601Utils {
     /**
      * Check if the expected character exist at the given offset in the value.
      *
-     * @param value the string to check at the specified offset
-     * @param offset the offset to look for the expected character
+     * @param value    the string to check at the specified offset
+     * @param offset   the offset to look for the expected character
      * @param expected the expected character
      * @return true if the expected character exist at the given offset
      */
@@ -209,9 +216,9 @@ final public class Iso8601Utils {
     /**
      * Parse an integer located between 2 given offsets in a string
      *
-     * @param value the string to parse
+     * @param value      the string to parse
      * @param beginIndex the start index for the integer in the string
-     * @param endIndex the end index for the integer in the string
+     * @param endIndex   the end index for the integer in the string
      * @return the int
      * @throws NumberFormatException if the value is not a number
      */
@@ -246,7 +253,7 @@ final public class Iso8601Utils {
      * Zero pad a number to a specified length
      *
      * @param buffer buffer to use for padding
-     * @param value the integer value to pad if necessary.
+     * @param value  the integer value to pad if necessary.
      * @param length the length of the string we should zero pad
      */
     private static void padInt(StringBuilder buffer, int value, int length) {

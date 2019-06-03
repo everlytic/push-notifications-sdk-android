@@ -31,6 +31,7 @@ internal class EvNotificationHandler(val context: Context) {
 
         getNotificationManager().notify(evNotification.androidNotificationId, notification)
     }
+
     private fun registerChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = DEFAULT_CHANNEL_NAME

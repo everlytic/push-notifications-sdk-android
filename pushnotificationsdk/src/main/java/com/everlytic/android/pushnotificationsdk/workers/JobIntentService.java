@@ -64,28 +64,28 @@ import java.util.HashMap;
  * {@link android.os.Build.VERSION_CODES#O Android O} or later as a Job vs. pre-O:</p>
  *
  * <ul>
- *     <li><p>When running as a pre-O service, the act of enqueueing work will generally start
- *     the service immediately, regardless of whether the device is dozing or in other
- *     conditions.  When running as a Job, it will be subject to standard JobScheduler
- *     policies for a Job with a {@link android.app.job.JobInfo.Builder#setOverrideDeadline(long)}
- *     of 0: the job will not run while the device is dozing, it may get delayed more than
- *     a service if the device is under strong memory pressure with lots of demand to run
- *     jobs.</p></li>
- *     <li><p>When running as a pre-O service, the normal service execution semantics apply:
- *     the service can run indefinitely, though the longer it runs the more likely the system
- *     will be to outright kill its process, and under memory pressure one should expect
- *     the process to be killed even of recently started services.  When running as a Job,
- *     the typical {@link android.app.job.JobService} execution time limit will apply, after
- *     which the job will be stopped (cleanly, not by killing the process) and rescheduled
- *     to continue its execution later.  Job are generally not killed when the system is
- *     under memory pressure, since the number of concurrent jobs is adjusted based on the
- *     memory state of the device.</p></li>
+ * <li><p>When running as a pre-O service, the act of enqueueing work will generally start
+ * the service immediately, regardless of whether the device is dozing or in other
+ * conditions.  When running as a Job, it will be subject to standard JobScheduler
+ * policies for a Job with a {@link android.app.job.JobInfo.Builder#setOverrideDeadline(long)}
+ * of 0: the job will not run while the device is dozing, it may get delayed more than
+ * a service if the device is under strong memory pressure with lots of demand to run
+ * jobs.</p></li>
+ * <li><p>When running as a pre-O service, the normal service execution semantics apply:
+ * the service can run indefinitely, though the longer it runs the more likely the system
+ * will be to outright kill its process, and under memory pressure one should expect
+ * the process to be killed even of recently started services.  When running as a Job,
+ * the typical {@link android.app.job.JobService} execution time limit will apply, after
+ * which the job will be stopped (cleanly, not by killing the process) and rescheduled
+ * to continue its execution later.  Job are generally not killed when the system is
+ * under memory pressure, since the number of concurrent jobs is adjusted based on the
+ * memory state of the device.</p></li>
  * </ul>
  *
  * <p>Here is an example implementation of this class:</p>
- *
+ * <p>
  * {@sample frameworks/support/samples/Support4Demos/src/main/java/com/example/android/supportv4/app/SimpleJobIntentService.java
- *      complete}
+ * complete}
  */
 public abstract class JobIntentService extends Service {
     static final String TAG = "JobIntentService";
@@ -145,6 +145,7 @@ public abstract class JobIntentService extends Service {
      */
     interface CompatJobEngine {
         IBinder compatGetBinder();
+
         GenericWorkItem dequeueWork();
     }
 
@@ -348,6 +349,7 @@ public abstract class JobIntentService extends Service {
      */
     interface GenericWorkItem {
         Intent getIntent();
+
         void complete();
     }
 
@@ -489,11 +491,11 @@ public abstract class JobIntentService extends Service {
      * appear at {@link #onHandleWork(Intent)}.
      *
      * @param context Context this is being called from.
-     * @param cls The concrete class the work should be dispatched to (this is the class that
-     * is published in your manifest).
-     * @param jobId A unique job ID for scheduling; must be the same value for all work
-     * enqueued for the same class.
-     * @param work The Intent of work to enqueue.
+     * @param cls     The concrete class the work should be dispatched to (this is the class that
+     *                is published in your manifest).
+     * @param jobId   A unique job ID for scheduling; must be the same value for all work
+     *                enqueued for the same class.
+     * @param work    The Intent of work to enqueue.
      */
     public static void enqueueWork(@NonNull Context context, @NonNull Class cls, int jobId,
                                    @NonNull Intent work) {
@@ -504,12 +506,12 @@ public abstract class JobIntentService extends Service {
      * Like {@link #enqueueWork(Context, Class, int, Intent)}, but supplies a ComponentName
      * for the service to interact with instead of its class.
      *
-     * @param context Context this is being called from.
+     * @param context   Context this is being called from.
      * @param component The published ComponentName of the class this work should be
-     * dispatched to.
-     * @param jobId A unique job ID for scheduling; must be the same value for all work
-     * enqueued for the same class.
-     * @param work The Intent of work to enqueue.
+     *                  dispatched to.
+     * @param jobId     A unique job ID for scheduling; must be the same value for all work
+     *                  enqueued for the same class.
+     * @param work      The Intent of work to enqueue.
      */
     public static void enqueueWork(@NonNull Context context, @NonNull ComponentName component,
                                    int jobId, @NonNull Intent work) {
@@ -565,7 +567,7 @@ public abstract class JobIntentService extends Service {
      * task.
      *
      * @param interruptIfStopped Set to true to allow the system to interrupt actively
-     * running work.
+     *                           running work.
      */
     public void setInterruptIfStopped(boolean interruptIfStopped) {
         mInterruptIfStopped = interruptIfStopped;

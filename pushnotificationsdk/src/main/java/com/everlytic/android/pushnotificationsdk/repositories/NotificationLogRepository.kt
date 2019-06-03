@@ -153,7 +153,7 @@ internal class NotificationLogRepository(private val database: EvDbHelper) {
         return list
     }
 
-    fun clearNotificationLogHistory() : Int {
+    fun clearNotificationLogHistory(): Int {
         return database.writableDatabase.delete(TBL_NAME, null, null)
     }
 }

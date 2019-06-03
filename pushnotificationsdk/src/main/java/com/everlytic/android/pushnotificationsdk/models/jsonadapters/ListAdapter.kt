@@ -8,7 +8,7 @@ internal object ListAdapter {
 
         val list = mutableListOf<T>()
 
-        for (index in 0 until json.length()){
+        for (index in 0 until json.length()) {
             adapter?.let {
                 val o = json.getJSONObject(index)
                 list.add(adapter.fromJson(o))

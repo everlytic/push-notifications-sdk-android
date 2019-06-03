@@ -10,7 +10,7 @@ internal object Testing_ApiResponses {
 
     private fun randId() = SecureRandom().nextInt(10000).toString()
 
-    fun subscribeSuccess(deviceId: String) : ApiResponse {
+    fun subscribeSuccess(deviceId: String): ApiResponse {
         val sub = ApiSubscription(
             randId(),
             randId(),
@@ -21,7 +21,7 @@ internal object Testing_ApiResponses {
         return ApiResponse("success", JSONAdapter.encode(sub))
     }
 
-    fun unsubscribeSuccess() : ApiResponse {
+    fun unsubscribeSuccess(): ApiResponse {
         return ApiResponse("success", JSONObject())
     }
 

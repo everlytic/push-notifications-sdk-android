@@ -2,6 +2,7 @@ package com.everlytic.android.pushnotificationsdk.database
 
 import android.content.Context
 import android.content.SharedPreferences
+
 /**
  * @suppress
  * */
@@ -10,7 +11,7 @@ object SharedPreferenceStore {
 
     private var instance: SharedPreferences? = null
 
-    fun getInstance(context: Context) : SharedPreferences {
+    fun getInstance(context: Context): SharedPreferences {
         instance?.let { return it }
 
         return context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE).also {

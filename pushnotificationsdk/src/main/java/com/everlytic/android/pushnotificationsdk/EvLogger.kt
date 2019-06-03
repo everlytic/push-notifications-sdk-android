@@ -1,6 +1,7 @@
 package com.everlytic.android.pushnotificationsdk
 
 import android.util.Log
+
 /**
  * @suppress
  * */

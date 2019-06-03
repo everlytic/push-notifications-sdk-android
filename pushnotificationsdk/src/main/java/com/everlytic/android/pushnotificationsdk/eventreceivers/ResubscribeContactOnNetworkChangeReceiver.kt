@@ -7,6 +7,7 @@ import com.everlytic.android.pushnotificationsdk.EverlyticPush
 import com.everlytic.android.pushnotificationsdk.isDeviceOnline
 import com.everlytic.android.pushnotificationsdk.logd
 import com.everlytic.android.pushnotificationsdk.workers.UploadMessageEventsService
+
 /**
  * @suppress
  * */

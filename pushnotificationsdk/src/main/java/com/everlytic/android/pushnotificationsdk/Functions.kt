@@ -44,12 +44,13 @@ internal fun JSONObject.getJSONObjectOrNull(name: String): JSONObject? {
 }
 
 /**
-* @suppress
-* */
+ * @suppress
+ * */
 @JvmOverloads
 fun Any.logd(message: String? = null, throwable: Throwable? = null) {
     EvLogger.d(this::class.java.simpleName, message, throwable)
 }
+
 /**
  * @suppress
  * */
@@ -57,6 +58,7 @@ fun Any.logd(message: String? = null, throwable: Throwable? = null) {
 fun Any.logi(message: String? = null, throwable: Throwable? = null) {
     EvLogger.i(this::class.java.simpleName, message, throwable)
 }
+
 /**
  * @suppress
  * */
@@ -64,6 +66,7 @@ fun Any.logi(message: String? = null, throwable: Throwable? = null) {
 fun Any.logw(message: String? = null, throwable: Throwable? = null) {
     EvLogger.w(this::class.java.simpleName, message, throwable)
 }
+
 /**
  * @suppress
  * */
@@ -71,6 +74,7 @@ fun Any.logw(message: String? = null, throwable: Throwable? = null) {
 fun Any.loge(message: String? = null, throwable: Throwable? = null) {
     EvLogger.e(this::class.java.simpleName, message, throwable)
 }
+
 /**
  * @suppress
  * */

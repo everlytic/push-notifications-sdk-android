@@ -8,6 +8,7 @@ import com.everlytic.android.pushnotificationsdk.handlers.NotificationDismissedH
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationEventRepository
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
+
 /**
  * @suppress
  * */

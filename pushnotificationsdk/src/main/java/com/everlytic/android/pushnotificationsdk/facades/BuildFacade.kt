@@ -2,6 +2,7 @@ package com.everlytic.android.pushnotificationsdk.facades
 
 import android.os.Build
 import com.everlytic.android.pushnotificationsdk.BuildConfig
+
 /**
  * @suppress
  * */
