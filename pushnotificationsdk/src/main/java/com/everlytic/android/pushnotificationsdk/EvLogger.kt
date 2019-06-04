@@ -8,9 +8,9 @@ import android.util.Log
 internal object EvLogger {
 
     fun d(tag: String, message: String? = null, throwable: Throwable? = null) {
-        if (BuildConfig.DEBUG) {
+//        if (BuildConfig.DEBUG) {
             Log.d(tag, message, throwable)
-        }
+//        }
     }
 
     fun i(tag: String, message: String? = null, throwable: Throwable? = null) {

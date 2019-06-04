@@ -27,3 +27,19 @@
 -keep class com.everlytic.android.pushnotificationsdk.exceptions.* {
     *;
 }
+
+-keep class com.everlytic.android.pushnotificationsdk.EvResult {
+    *;
+}
+
+-keep class com.everlytic.android.pushnotificationsdk.models.EverlyticNotification {
+    *;
+}
+
+-keep interface com.everlytic.android.pushnotificationsdk.OnResultReceiver {
+    *;
+}
+
+-keep interface com.everlytic.android.pushnotificationsdk.OnNotificationHistoryResultListener {
+    *;
+}

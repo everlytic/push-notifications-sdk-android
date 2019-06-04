@@ -14,6 +14,9 @@ import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRep
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import com.everlytic.android.pushnotificationsdk.eventreceivers.ResubscribeContactOnNetworkChangeReceiver
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticSubscriptionDelayedException
+import com.google.firebase.FirebaseApiNotAvailableException
+import com.google.firebase.FirebaseApp
+import java.lang.IllegalStateException
 import java.util.*
 
 /**
@@ -28,7 +31,7 @@ internal class PushSdk @JvmOverloads constructor(
             settingsBag.pushProjectUuid
         )
     ),
-    private val firebaseInstanceId: FirebaseInstanceIdFacade = FirebaseInstanceIdFacade.getDefaultInstance(),
+    private val firebaseInstanceId: FirebaseInstanceIdFacade = FirebaseInstanceIdFacade.getDefaultInstance(context),
     private val sdkRepository: SdkRepository = SdkRepository(context),
     private val testMode: Boolean = false
 ) {

@@ -30,7 +30,7 @@ internal object Mock {
                 )
             )
         }
-        every { FirebaseInstanceIdFacade.getDefaultInstance() } returns mockFirebaseFacade
+        every { FirebaseInstanceIdFacade.getDefaultInstance(ofType()) } returns mockFirebaseFacade
     }
 
     fun EvLogger() {

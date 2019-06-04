@@ -8,6 +8,8 @@ import android.os.Looper
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushInvalidSDKConfigurationException
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushNotInitialisedException
 import com.everlytic.android.pushnotificationsdk.models.EverlyticNotification
+import java.lang.IllegalArgumentException
+import java.lang.IllegalStateException
 
 /**
  * Everlytic Push Notifications SDK
@@ -42,10 +44,22 @@ public object EverlyticPush {
     fun init(context: Context, config: String?) {
         logd("::init(); Initializing SDK")
         try {
-            sdkSettingsBag = config?.let { SdkSettings.getSettings(it) } ?: SdkSettings.getSettings(context)
+            logd("config string=$config")
+            sdkSettingsBag = if (config != null) {
+                logd("Using provided config string")
+                SdkSettings.getSettings(config)
+            } else {
+                logd("Using config from manifest")
+                SdkSettings.getSettings(context)
+            }
+            logd("Creating SDK Instance...")
             instance = PushSdk(context.applicationContext, sdkSettingsBag, testMode = isInTestMode)
-        } catch (e: Exception) {
+        } catch (e: IllegalArgumentException) {
+            loge("Encountered an init error", e)
             throw newInvalidSdkConfigurationException(SdkSettings.META_SDK_CONFIGURATION_STRING)
+        } catch (e: Exception) {
+            loge("Encountered an init error", e)
+            throw e
         }
     }
 

@@ -1,6 +1,10 @@
 package com.everlytic.android.pushnotificationsdk.facades
 
+import android.content.Context
+import com.everlytic.android.pushnotificationsdk.logd
+import com.google.firebase.FirebaseApp
 import com.google.firebase.iid.FirebaseInstanceId
+import java.lang.IllegalStateException
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
@@ -26,7 +30,16 @@ internal class FirebaseInstanceIdFacade(private val firebaseInstanceId: Firebase
     }
 
     companion object {
-        fun getDefaultInstance(): FirebaseInstanceIdFacade {
+        fun getDefaultInstance(context: Context): FirebaseInstanceIdFacade {
+
+            try {
+                logd("Checking if Firebase is initialized...")
+                FirebaseApp.getInstance()
+            } catch (exception: IllegalStateException) {
+                logd("Firebase not initialized, initializing now...")
+                FirebaseApp.initializeApp(context)
+            }
+
             return FirebaseInstanceIdFacade(FirebaseInstanceId.getInstance())
         }
     }
