@@ -30,26 +30,26 @@
 1. Add the following to your `Application` class
     - Kotlin 
     ```kotlin
-    class App : Application() {
-        override fun onCreate() {
-            super.onCreate()
-    
-            EverlyticPush.init(this)
-        }
-    }
+        class App : Application() {
+           override fun onCreate() {
+               super.onCreate()
+               
+               EverlyticPush.init(this)
+           }
+       }
     ```
     - Java
     ```java
-    import com.everlytic.android.pushnotificationsdk.EverlyticPush;
-   
-    public class App extends Application {
-        @Override
-        public void onCreate() {
-            super.onCreate();
+        import com.everlytic.android.pushnotificationsdk.EverlyticPush;
     
-            EverlyticPush.init(this);
-        }
-    }
+        public class App extends Application {
+           @Override
+           public void onCreate() {
+               super.onCreate();
+       
+               EverlyticPush.init(this);
+           }
+       }
     ```
 1. If you don't wish to add your SDK configuration string to your `AndroidManifest.xml` file, you can pass it as a second parameter to the init function. 
     ```kotlin
