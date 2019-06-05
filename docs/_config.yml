@@ -1,0 +1,14 @@
+title: Everlytic Push Notifications Android SDK
+show_downloads: false
+github:
+  is_project_page: false
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: true
+include:
+  - readme.md
+  - quick_reference.md
+  - test_script.md
+theme: jekyll-theme-cayman
