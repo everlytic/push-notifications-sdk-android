@@ -1,21 +1,18 @@
-version: 2.1
-executors:
-  android-27-executor:
+version: 2
+jobs:
+  build:
+    working_directory: ~/code
     docker:
       - image: circleci/android:api-27-alpha
-    working_directory: ~/code
     environment:
       JVM_OPTS: -Xmx3200m
-jobs:
-  clone:
-    executor: android-27-executor
     steps:
       - checkout
       - restore_cache:
-        key: jars-{{ checksum "build.gradle" }}-{{ checksum  "pushnotificationsdk/build.gradle" }}
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "pushnotificationsdk/build.gradle" }}
       - run:
-          name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
-          command: sudo chmod +x ./gradlew
+         name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
+         command: sudo chmod +x ./gradlew
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
@@ -23,55 +20,24 @@ jobs:
           paths:
             - ~/.gradle
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "pushnotificationsdk/build.gradle" }}
-      - persist_to_workspace:
-          root: ~
-          paths:
-            - code
-  tests:
-    executor: android-27-executor
-    steps:
-      - attach_workspace:
-          at: ~
       - run:
           name: Run Tests
           command: ./gradlew :pushnotificationsdk:lint :pushnotificationsdk:test
-      - store_artifacts:
-          path: pushnotificationsdk/build/reports
-          destination: reports
-      - store_test_results:
-          path: pushnotificationsdk/build/test-results
-          destination: test_results
-  build:
-    executor: android-27-executor
-    steps:
-      - attach_workspace:
-        at: ~
       - run:
           name: Build AAR
           command: ./gradlew :pushnotificationsdk:build
       - run:
-          name: Build Sandbox App
-          command: ./gradlew :sandboxapp:build
-      - run:
           name: Build Documentation - Markdown
           command: ./gradlew :pushnotificationsdk:dokkaMarkdown
-      - run:
-          name: ZIP SDK Documentation
-          command: find ~/code/pushnotificationsdk/build/docs/markdown -path '*/.*' -prune -o -type f -print | zip ~/code/docs/docs_md.zip -@
+      - store_artifacts:
+          path: pushnotificationsdk/build/reports
+          destination: reports
+      - store_artifacts:
+          path: pushnotificationsdk/build/docs/markdown
+          destination: docs_markdown
+      - store_test_results:
+          path: pushnotificationsdk/build/test-results
+          destination: test_results
       - store_artifacts:
           path: pushnotificationsdk/build/outputs/aar
           destination: aar_artifacts
-      - store_test_results:
-          path: docs
-          destination: documentation
-workflows:
-  version: 2
-  epn-android:
-    jobs:
-      - checkout
-      - tests:
-          requires:
-            - checkout
-      - build:
-          requires:
-            - tests
