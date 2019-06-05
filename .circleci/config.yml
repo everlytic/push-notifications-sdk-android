@@ -7,7 +7,7 @@ executors:
     environment:
       JVM_OPTS: -Xmx3200m
 jobs:
-  checkout:
+  clone:
     - checkout
     - restore_cache:
       key: jars-{{ checksum "build.gradle" }}-{{ checksum  "pushnotificationsdk/build.gradle" }}
