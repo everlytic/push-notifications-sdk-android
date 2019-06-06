@@ -1,3 +1,4 @@
+apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -47,7 +48,7 @@ androidExtensions {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     api 'com.android.support:appcompat-v7:27.+'
 
     implementation 'com.google.firebase:firebase-messaging:17.3.3'
@@ -67,10 +68,23 @@ dependencies {
 task dokkaMarkdown(type: org.jetbrains.dokka.gradle.DokkaTask) {
     outputFormat = 'markdown'
     outputDirectory = "$buildDir/docs/markdown"
-
 }
 
 task dokkaHtml(type: org.jetbrains.dokka.gradle.DokkaTask) {
     outputFormat = 'html'
     outputDirectory = "$buildDir/docs/html"
+}
+
+Properties localProperties = new Properties()
+localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+publish {
+    userOrg = localProperties.getProperty("orgId")
+    repoName = localProperties.getProperty("bintrayRepo")
+    groupId = localProperties.getProperty("publishedGroupId")
+    artifactId = localProperties.getProperty("artifact")
+    publishVersion = localProperties.getProperty("libraryVersion")
+    desc = localProperties.getProperty("libraryDescription")
+    website = localProperties.getProperty("siteUrl")
+    repository = localProperties.getProperty("gitUrl")
 }
