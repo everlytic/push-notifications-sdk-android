@@ -3,17 +3,21 @@
 ## Getting Started
 
 ### Add the Everlytic Push Notification SDK 
-1. In your module-level `build.gradle` file, make sure you have the _**TODO**_ repository added
+1. In your module-level `build.gradle` file, add the following repository
     ```groovy
     repositories {
-        // TODO
+        // other repositories here
+    
+        maven {
+            url  "https://dl.bintray.com/everlytic/maven"
+        }
     }
     ```
 1. Add the Everlytic Push Notification SDK dependency to your `build.gradle` file, replacing the `<version>` tag with the current SDK version.
     
     ```groovy
     dependencies {
-        implementation 'com.everlytic:push-notifications:<version>'
+        implementation 'com.everlytic.android:push-notifications:<version>'
     }
     ```
 1. [Add your Firebase `google-services.json` to your project](https://firebase.google.com/docs/android/setup?authuser=0#add-config-file)
