@@ -5,8 +5,20 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka-android'
 
-Properties localProperties = new Properties()
-localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+def getGitTagOrHash = { ->
+    def hash = new ByteArrayOutputStream()
+    def tag = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+        standardOutput = hash
+    }
+
+    exec {
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+        standardOutput = tag
+    }
+    return hash.toString().trim()
+}
 
 android {
     compileSdkVersion 27
@@ -14,7 +26,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 27
         versionCode 1
-        versionName localProperties.getProperty("libraryVersion")
+        versionName getGitTagOrHash()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -78,12 +90,12 @@ task dokkaHtml(type: org.jetbrains.dokka.gradle.DokkaTask) {
 }
 
 publish {
-    userOrg = localProperties.getProperty("orgId")
-    repoName = localProperties.getProperty("bintrayRepo")
-    groupId = localProperties.getProperty("publishedGroupId")
-    artifactId = localProperties.getProperty("artifact")
-    publishVersion = localProperties.getProperty("libraryVersion")
-    desc = localProperties.getProperty("libraryDescription")
-    website = localProperties.getProperty("siteUrl")
-    repository = localProperties.getProperty("gitUrl")
+    userOrg         = System.getenv("BINTRAY_ORG_ID")
+    repoName        = System.getenv("BINTRAY_BINTRAY_REPO")
+    groupId         = System.getenv("BINTRAY_PUBLISHED_GROUP_ID")
+    artifactId      = System.getenv("BINTRAY_ARTIFACT_ID")
+    publishVersion  = getGitTagOrHash()
+    desc            = "Everlytic Push Notifications for Android"
+    website         = "https://everlytic.github.io/push-notifications-sdk-android"
+    repository      = "https://github.com/everlytic/push-notifications-sdk-android.git"
 }

@@ -1,3 +1,6 @@
+---
+---
+
 {:toc}
 
 ## Getting Started
@@ -24,7 +27,7 @@
 
 ### Set Up the SDK
 
-1. Copy your Everlytic Push Project SDK configuration string. See [Setting Up Your Everlytic Push Project](./list_setup.html).
+1. Copy your Everlytic Push Project SDK configuration string. See [Setting Up Your Everlytic Push Project](list_setup.md).
 1. Add your configuration string to your `AndroidManifest.xml` 
     ```xml
     <application>
