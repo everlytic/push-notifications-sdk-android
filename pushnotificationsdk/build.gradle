@@ -5,17 +5,13 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka-android'
 
-def getGitTagOrHash = { ->
+def circleCiTag = System.getenv("CIRCLE_TAG")
+
+def getGitHash = { ->
     def hash = new ByteArrayOutputStream()
-    def tag = new ByteArrayOutputStream()
     exec {
         commandLine 'git', 'rev-parse', '--short', 'HEAD'
         standardOutput = hash
-    }
-
-    exec {
-        commandLine 'git', 'rev-parse', '--short', 'HEAD'
-        standardOutput = tag
     }
     return hash.toString().trim()
 }
@@ -26,8 +22,9 @@ android {
         minSdkVersion 14
         targetSdkVersion 27
         versionCode 1
-        versionName getGitTagOrHash()
+        versionName circleCiTag ?: getGitHash()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        archivesBaseName = "$archivesBaseName-$versionName"
     }
     buildTypes {
 
@@ -90,11 +87,11 @@ task dokkaHtml(type: org.jetbrains.dokka.gradle.DokkaTask) {
 }
 
 publish {
-    userOrg         = System.getenv("BINTRAY_ORG_ID")
-    repoName        = System.getenv("BINTRAY_BINTRAY_REPO")
-    groupId         = System.getenv("BINTRAY_PUBLISHED_GROUP_ID")
-    artifactId      = System.getenv("BINTRAY_ARTIFACT_ID")
-    publishVersion  = getGitTagOrHash()
+    userOrg         = System.getenv("BINTRAY_ORG_ID") ?: ""
+    repoName        = System.getenv("BINTRAY_BINTRAY_REPO") ?: ""
+    groupId         = System.getenv("BINTRAY_PUBLISHED_GROUP_ID") ?: ""
+    artifactId      = System.getenv("BINTRAY_ARTIFACT_ID") ?: ""
+    publishVersion  = circleCiTag ?: getGitHash()
     desc            = "Everlytic Push Notifications for Android"
     website         = "https://everlytic.github.io/push-notifications-sdk-android"
     repository      = "https://github.com/everlytic/push-notifications-sdk-android.git"
