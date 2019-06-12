@@ -86,3 +86,11 @@ fun isDeviceOnline(context: Context): Boolean {
     return (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
         .activeNetworkInfo?.isConnected ?: false
 }
+
+@Throws(Throwable::class)
+internal inline fun Throwable.handle(handler: ((Throwable) -> Unit) = { logi(null, this) }) {
+    if (EverlyticPush.throwExceptions)
+        throw this
+    else
+        handler(this)
+}

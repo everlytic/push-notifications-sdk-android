@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import com.everlytic.android.pushnotificationsdk.EverlyticPush
-import com.everlytic.android.pushnotificationsdk.SdkSettings
 import com.everlytic.android.pushnotificationsdk.database.EvDbHelper
 import com.everlytic.android.pushnotificationsdk.database.NotificationEventType
 import com.everlytic.android.pushnotificationsdk.isDeviceOnline

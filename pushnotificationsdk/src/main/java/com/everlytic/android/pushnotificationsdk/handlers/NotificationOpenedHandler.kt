@@ -84,7 +84,7 @@ internal class NotificationOpenedHandler(
                 context.startActivity(it)
             }
         } catch (e: Exception) {
-            logw(throwable = e)
+            e.handle()
         }
     }
 

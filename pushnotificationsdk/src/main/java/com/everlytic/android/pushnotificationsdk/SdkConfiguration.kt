@@ -9,7 +9,7 @@ import java.nio.charset.Charset
 /**
  * @suppress
  * */
-internal object SdkSettings {
+internal object SdkConfiguration {
 
     private const val KEY_VALUE_SEPARATOR = "="
     private const val VALUES_SEPARATOR = ";"
@@ -18,7 +18,7 @@ internal object SdkSettings {
 
     const val META_SDK_CONFIGURATION_STRING = "com.everlytic.api.SDK_CONFIGURATION"
 
-    data class SdkSettingsBag(
+    data class SdkConfigBag(
         val apiInstall: String,
         val pushProjectUuid: String
     )
@@ -31,12 +31,12 @@ internal object SdkSettings {
             .getString(META_SDK_CONFIGURATION_STRING)
     }
 
-    fun getSettings(context: Context): SdkSettingsBag {
-        return getSettings(getConfigurationString(context))
+    fun getConfigurationBag(context: Context): SdkConfigBag {
+        return getConfigurationBag(getConfigurationString(context))
     }
 
     @Throws(IllegalArgumentException::class)
-    fun getSettings(configString: String): SdkSettingsBag {
+    fun getConfigurationBag(configString: String): SdkConfigBag {
         logd("Decoding config string $configString")
         val decoded = Base64.decode(configString, Base64.DEFAULT).toString(Charset.defaultCharset())
 
@@ -49,10 +49,10 @@ internal object SdkSettings {
 
         logd("Mapped string $map")
 
-        return SdkSettingsBag(
+        return SdkConfigBag(
             map[KEY_INSTALL_URL] ?: error("Install Url cannot be null"),
             map[KEY_PROJECT_UUID] ?: error("Project Uuid cannot be null")
-        ).also { logd("Created SdkSettingsBag=$it") }
+        ).also { logd("Created SdkConfigBag=$it") }
     }
 
 }

@@ -14,9 +14,6 @@ import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRep
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import com.everlytic.android.pushnotificationsdk.eventreceivers.ResubscribeContactOnNetworkChangeReceiver
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticSubscriptionDelayedException
-import com.google.firebase.FirebaseApiNotAvailableException
-import com.google.firebase.FirebaseApp
-import java.lang.IllegalStateException
 import java.util.*
 
 /**
@@ -24,7 +21,7 @@ import java.util.*
  * */
 internal class PushSdk @JvmOverloads constructor(
     private val context: Context,
-    private val settingsBag: SdkSettings.SdkSettingsBag,
+    private val settingsBag: SdkConfiguration.SdkConfigBag,
     private val api: EverlyticApi = EverlyticApi(
         EverlyticHttp(
             settingsBag.apiInstall,
@@ -200,7 +197,7 @@ internal class PushSdk @JvmOverloads constructor(
             Log.d("PushSdk", "API Response: $responseBody")
             sdkRepository.setContactSubscription(contactEmail, responseBody)
         } catch (otherException: Exception) {
-            throw otherException
+            otherException.handle()
         }
     }
 

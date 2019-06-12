@@ -22,7 +22,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.*
-import kotlin.test.assertFails
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
@@ -290,8 +289,8 @@ class PushSdkTest {
         return Mock.getSdkRepositoryMock()
     }
 
-    private fun getSettingsBag(): SdkSettings.SdkSettingsBag {
-        return SdkSettings.SdkSettingsBag(
+    private fun getSettingsBag(): SdkConfiguration.SdkConfigBag {
+        return SdkConfiguration.SdkConfigBag(
             API_INSTALL,
             PUSH_PROJECT_UUID
         )

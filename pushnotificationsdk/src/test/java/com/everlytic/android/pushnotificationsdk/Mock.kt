@@ -41,13 +41,13 @@ internal object Mock {
     }
 
     fun SdkSettings() {
-        mockkObject(SdkSettings)
-        val sdkSettings = SdkSettings.SdkSettingsBag(
+        mockkObject(SdkConfiguration)
+        val sdkSettings = SdkConfiguration.SdkConfigBag(
             "install_id",
             "push_project_uuid"
         )
-        every { SdkSettings.getSettings(ofType<Context>()) } returns sdkSettings
-        every { SdkSettings.getSettings(ofType<String>()) } returns sdkSettings
+        every { SdkConfiguration.getConfigurationBag(ofType<Context>()) } returns sdkSettings
+        every { SdkConfiguration.getConfigurationBag(ofType<String>()) } returns sdkSettings
     }
 
     fun getSdkRepositoryMock(): SdkRepository {

@@ -5,11 +5,12 @@ import android.app.Application
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.support.annotation.IntRange
+import android.util.Log
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushInvalidSDKConfigurationException
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushNotInitialisedException
 import com.everlytic.android.pushnotificationsdk.models.EverlyticNotification
 import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
 
 /**
  * Everlytic Push Notifications SDK
@@ -18,10 +19,14 @@ import java.lang.IllegalStateException
 public object EverlyticPush {
     @SuppressLint("StaticFieldLeak")
     internal var instance: PushSdk? = null
-    internal lateinit var sdkSettingsBag: SdkSettings.SdkSettingsBag
+    internal lateinit var sdkSettingsBag: SdkConfiguration.SdkConfigBag
 
     var isInTestMode: Boolean = false
         private set
+
+    internal var throwExceptions: Boolean = false
+
+    internal var logLevel = Log.WARN
 
     /**
      * Initialises the Everlytic Push EvNotification SDK
@@ -47,19 +52,20 @@ public object EverlyticPush {
             logd("config string=$config")
             sdkSettingsBag = if (config != null) {
                 logd("Using provided config string")
-                SdkSettings.getSettings(config)
+                SdkConfiguration.getConfigurationBag(config)
             } else {
                 logd("Using config from manifest")
-                SdkSettings.getSettings(context)
+                SdkConfiguration.getConfigurationBag(context)
             }
             logd("Creating SDK Instance...")
             instance = PushSdk(context.applicationContext, sdkSettingsBag, testMode = isInTestMode)
         } catch (e: IllegalArgumentException) {
             loge("Encountered an init error", e)
-            throw newInvalidSdkConfigurationException(SdkSettings.META_SDK_CONFIGURATION_STRING)
+            throw newInvalidSdkConfigurationException(SdkConfiguration.META_SDK_CONFIGURATION_STRING)
         } catch (e: Exception) {
-            loge("Encountered an init error", e)
-            throw e
+            e.handle {
+                loge("Encountered an init error", it)
+            }
         }
     }
 
@@ -166,6 +172,29 @@ public object EverlyticPush {
     @JvmStatic
     fun setInTestMode(mode: Boolean): EverlyticPush {
         isInTestMode = mode
+        return this
+    }
+
+    /**
+     * Set if the SDK should prefer to throw exceptions or handle them by logging.
+     *
+     * This does not affect the throwing of exceptions in the case of SDK misconfiguration
+     * @param throws
+     * @return [EverlyticPush]
+     * */
+    fun setThrowExceptions(throws: Boolean): EverlyticPush {
+        throwExceptions = throws
+        return this
+    }
+
+    /**
+     * Set the logging level of the SDK. Defaults to [Log.WARN]
+     *
+     * @param level The log level, as specified by the [Log] class
+     * @return [EverlyticPush]
+     * */
+    fun setLogLevel(@IntRange(from = 2, to = 7) level: Int): EverlyticPush {
+        EvLogger.logLevel = level
         return this
     }
 

@@ -1,12 +1,14 @@
 package com.everlytic.android.pushnotificationsdk.network
 
 import com.everlytic.android.pushnotificationsdk.facades.BuildFacade
+import com.everlytic.android.pushnotificationsdk.handle
 import com.everlytic.android.pushnotificationsdk.logd
 import com.everlytic.android.pushnotificationsdk.logw
 import com.everlytic.android.pushnotificationsdk.models.ApiResponse
 import com.everlytic.android.pushnotificationsdk.models.jsonadapters.ApiResponseAdapter
 import com.everlytic.android.pushnotificationsdk.use
 import org.json.JSONObject
+import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.UnknownHostException
@@ -137,12 +139,16 @@ internal class EverlyticHttp(installUrl: String, pushProjectUuid: String) {
             if (jsonResult.isNullOrBlank()) {
                 responseHandler.onFailure(500, null, null)
             } else {
-                val response = ApiResponseAdapter.fromJson(JSONObject(jsonResult))
+                try {
+                    val response = ApiResponseAdapter.fromJson(JSONObject(jsonResult))
 
-                if (response.status == "error") {
-                    responseHandler.onFailure(400, jsonResult, null)
-                } else {
-                    responseHandler.onSuccess(response)
+                    if (response.status == "error") {
+                        responseHandler.onFailure(400, jsonResult, null)
+                    } else {
+                        responseHandler.onSuccess(response)
+                    }
+                } catch (e: Exception) {
+                    e.handle()
                 }
             }
 
