@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.everlytic.android.pushnotificationsdk.database.SharedPreferenceStore
 import com.everlytic.android.pushnotificationsdk.database.adapters.toDate
 import com.everlytic.android.pushnotificationsdk.database.adapters.toIso8601String
+import com.everlytic.android.pushnotificationsdk.getHash
 import com.everlytic.android.pushnotificationsdk.logd
 import com.everlytic.android.pushnotificationsdk.models.ApiSubscription
 import java.util.*
@@ -74,8 +75,9 @@ internal class SdkRepository(private val context: Context) {
     fun removeContactSubscription() {
         logd("::removeContactSubscription()")
         edit {
-            remove(SUBSCRIPTION_DATETIME)
             remove(NEW_FCM_TOKEN_DATETIME)
+            remove(SUBSCRIPTION_DATETIME)
+            remove(FCM_TOKEN_HASH)
             remove(SUBSCRIPTION_ID)
             remove(CONTACT_EMAIL)
             remove(NEW_FCM_TOKEN)
@@ -87,6 +89,7 @@ internal class SdkRepository(private val context: Context) {
         logd("::setNewFcmToken() token=$token")
         edit {
             putString(NEW_FCM_TOKEN, token)
+            putString(FCM_TOKEN_HASH, token.getHash())
             putString(NEW_FCM_TOKEN_DATETIME, Date().toIso8601String())
         }
     }
@@ -117,12 +120,25 @@ internal class SdkRepository(private val context: Context) {
         }
     }
 
+    fun setFcmTokenHash(hash: String) {
+        logd("::setFcmTokenHash() hash=$hash")
+        edit {
+            putString(FCM_TOKEN_HASH, hash)
+        }
+    }
+
+    fun getFcmTokenHash(): String? {
+        return preferences
+            .getString(FCM_TOKEN_HASH, null)
+    }
+
     companion object {
         const val DEVICE_ID = "device_id"
         const val SUBSCRIPTION_ID = "subscription_id"
         const val CONTACT_EMAIL = "contact_email"
         const val CONTACT_ID = "contact_id"
         const val SUBSCRIPTION_DATETIME = "subscription_datetime"
+        const val FCM_TOKEN_HASH = "fcm_token_hash"
         const val NEW_FCM_TOKEN = "new_fcm_token"
         const val NEW_FCM_TOKEN_DATETIME = "new_fcm_token_datetime"
     }
