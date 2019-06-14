@@ -58,6 +58,13 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        logd("FBMessage type=${remoteMessage.messageType}, from=${remoteMessage.from}")
+
+        if (! remoteMessage.isEverlyticPushMessage()) {
+            super.onMessageReceived(remoteMessage)
+            return
+        }
+
         val subscriptionId = sdkRepository.getSubscriptionId() ?: -1L
         val contactId = sdkRepository.getContactId() ?: -1L
 
@@ -159,4 +166,7 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
     private fun getContext() = applicationContext
     private fun getDatabase() = EvDbHelper.getInstance(getContext())
 
+    private fun RemoteMessage.isEverlyticPushMessage() : Boolean {
+        return this.data.keys.containsAll(listOf("message_id", "body"))
+    }
 }
