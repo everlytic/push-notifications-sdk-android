@@ -31,6 +31,7 @@ class PushSdkTest {
     @Before
     fun setUp() {
         Mock.BuildFacade()
+        Mock.FirebaseInstanceIdFacade()
         Mock.EvLogger()
 
         mockkStatic("com.everlytic.android.pushnotificationsdk.Functions")

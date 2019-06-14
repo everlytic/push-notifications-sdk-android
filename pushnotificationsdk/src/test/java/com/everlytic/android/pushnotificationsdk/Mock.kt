@@ -59,6 +59,7 @@ internal object Mock {
             every { removeContactSubscription() } just Runs
             every { getHasSubscription() } returns true
             every { getNewFcmToken() } returns null
+            every { getFcmTokenHash() } answers { "test token".getHash() }
         }
     }
 
