@@ -8,6 +8,7 @@ import android.net.ConnectivityManager
 import android.os.Handler
 import android.os.Looper
 import com.everlytic.android.pushnotificationsdk.models.jsonadapters.MapAdapter
+import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import org.json.JSONException
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -93,4 +94,14 @@ internal inline fun Throwable.handle(handler: ((Throwable) -> Unit) = { logi(nul
         throw this
     else
         handler(this)
+}
+
+internal fun updateFcmToken(sdkRepository: SdkRepository, token: String?) {
+    val email = sdkRepository.getContactEmail()
+    if (sdkRepository.getHasSubscription() && !email.isNullOrBlank()) {
+        token?.let { newToken ->
+            sdkRepository.setNewFcmToken(newToken)
+            EverlyticPush.instance?.resubscribeIfRequired()
+        }
+    }
 }
