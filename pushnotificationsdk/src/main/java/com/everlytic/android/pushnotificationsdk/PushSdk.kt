@@ -51,6 +51,8 @@ internal class PushSdk @JvmOverloads constructor(
         if (testMode) {
             logi("Everlytic Push SDK initialized with testMode=$testMode")
         }
+
+        checkFcmTokenChanged()
     }
 
     fun subscribeContact(email: String, onComplete: (EvResult) -> Unit) {
@@ -60,6 +62,7 @@ internal class PushSdk @JvmOverloads constructor(
 
             if (tokenResult.success && !tokenResult.value.isNullOrBlank()) {
                 val subscription = createSubscriptionEvent(email, tokenResult.value)
+                sdkRepository.setFcmTokenHash(tokenResult.value.getHash())
 
                 logd("::subscribeContact() subscription=$subscription")
 
@@ -213,5 +216,13 @@ internal class PushSdk @JvmOverloads constructor(
         val device = DeviceData(sdkRepository.getDeviceId()!!, type = deviceType)
         val contactData = ContactData(email, token)
         return SubscriptionEvent(settingsBag.pushProjectUuid, contactData, device = device)
+    }
+
+    private fun checkFcmTokenChanged() {
+        FirebaseInstanceIdFacade.getDefaultInstance(context).getInstanceId { result ->
+            if (result.success && result.value!!.getHash() != sdkRepository.getFcmTokenHash()) {
+                updateFcmToken(sdkRepository, result.value)
+            }
+        }
     }
 }

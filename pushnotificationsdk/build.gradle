@@ -62,7 +62,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     api 'com.android.support:appcompat-v7:27.+'
-    api 'com.google.firebase:firebase-messaging:17.3.3'
+    api 'com.google.firebase:firebase-messaging:10.2.1'
 
     /* TEST DEPENDENCIES */
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

@@ -20,13 +20,9 @@ internal class FirebaseInstanceIdFacade(private val firebaseInstanceId: Firebase
 
     @Throws(Exception::class)
     fun getInstanceId(onComplete: (TokenResult) -> Unit) {
-        firebaseInstanceId.instanceId
-            .addOnSuccessListener {
-                onComplete(TokenResult(true, it.token))
-            }
-            .addOnFailureListener {
-                onComplete(TokenResult(false, null, it))
-            }
+        firebaseInstanceId.token?.let {
+            onComplete(TokenResult(true, it))
+        } ?: onComplete(TokenResult(false, null, Exception("FCM Token is null")))
     }
 
     companion object {

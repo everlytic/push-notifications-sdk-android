@@ -46,11 +46,6 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
         )
     }
 
-    override fun onNewToken(token: String?) {
-        logd("::onNewToken() token=$token")
-        updateFcmToken(sdkRepository, token)
-    }
-
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         logd("FBMessage type=${remoteMessage.messageType}, from=${remoteMessage.from}")
 
