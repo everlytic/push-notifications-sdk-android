@@ -12,5 +12,6 @@ data class EverlyticNotification(
     val icon: Int,
     val received_at: Date,
     val read_at: Date? = null,
-    val dismissed_at: Date? = null
+    val dismissed_at: Date? = null,
+    val custom_attributes: Map<String, String>
 )

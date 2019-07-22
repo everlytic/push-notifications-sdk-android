@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.text.InputType
+import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import com.everlytic.android.pushnotificationsdk.EverlyticPush
@@ -15,6 +16,7 @@ import com.everlytic.android.pushnotificationsdk.OnResultReceiver
 import com.everlytic.android.pushnotificationsdk.logd
 import com.everlytic.android.pushnotificationsdk.logw
 import kotlinx.android.synthetic.main.activity_sandbox.*
+import kotlin.system.measureTimeMillis
 
 class Sandbox : AppCompatActivity() {
 
@@ -111,6 +113,13 @@ class Sandbox : AppCompatActivity() {
     }
 
     private fun prepareViewHistory() {
+        measureTimeMillis {
+            val count = EverlyticPush.getNotificationHistoryCount()
+            btn_view_history.text = "View History ($count)"
+        }.let {
+            Log.d("TIMING", "Took ${it}ms to load history count")
+        }
+
         btn_view_history.setOnClickListener {
             startActivity(Intent(this, NotificationHistoryViewer::class.java))
         }

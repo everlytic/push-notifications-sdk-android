@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.support.annotation.DrawableRes
 import android.support.annotation.IntRange
 import android.util.Log
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticPushInvalidSDKConfigurationException
@@ -114,7 +115,6 @@ public object EverlyticPush {
      * @throws [EverlyticPushNotInitialisedException]
      * */
     @JvmStatic
-//    @JvmOverloads
     @Throws(EverlyticPushNotInitialisedException::class)
     fun unsubscribe(onComplete: OnResultReceiver?) {
         logd("::unsubscribe()")
@@ -165,6 +165,17 @@ public object EverlyticPush {
     }
 
     /**
+     * Retrieve the number of notifications in the device history
+     * @since 0.0.8-alpha
+     * @return [Int]
+     * */
+    @JvmStatic
+    fun getNotificationHistoryCount() : Int {
+        logd("::getNotificationHistoryCount()")
+        return instance?.getNotificationHistoryCount() ?: throw newNotInitialisedException()
+    }
+
+    /**
      * Set the SDK to test mode
      * @param mode
      * @return [EverlyticPush]
@@ -182,6 +193,7 @@ public object EverlyticPush {
      * @param throws
      * @return [EverlyticPush]
      * */
+    @JvmStatic
     fun setThrowExceptions(throws: Boolean): EverlyticPush {
         throwExceptions = throws
         return this
@@ -193,6 +205,7 @@ public object EverlyticPush {
      * @param level The log level, as specified by the [Log] class
      * @return [EverlyticPush]
      * */
+    @JvmStatic
     fun setLogLevel(@IntRange(from = 2, to = 7) level: Int): EverlyticPush {
         EvLogger.logLevel = level
         return this

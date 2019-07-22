@@ -12,6 +12,7 @@ import com.everlytic.android.pushnotificationsdk.OnNotificationHistoryResultList
 import com.everlytic.android.pushnotificationsdk.models.EverlyticNotification
 import kotlinx.android.synthetic.main.activity_notification_history_viewer.*
 import kotlinx.android.synthetic.main.content_notification_history_viewer.*
+import kotlin.system.measureTimeMillis
 
 class NotificationHistoryViewer : AppCompatActivity() {
 
@@ -37,11 +38,14 @@ class NotificationHistoryViewer : AppCompatActivity() {
 
     private fun refreshNotifications() {
         recycler_history_refresh_layout.isRefreshing = true
-
+        val sTime = System.currentTimeMillis()
         EverlyticPush.getNotificationHistory(OnNotificationHistoryResultListener { notifications ->
-            Log.d("NotificationHistoryViewer","$notifications")
+            val eTime = System.currentTimeMillis()
+            Log.d("NotificationHistoryView","$notifications")
             recycler_history_refresh_layout.isRefreshing = false
             adapter.submitList(notifications.reversed())
+
+            Log.d("TIMING", "Loaded history in ${eTime - sTime}ms")
         })
     }
 
@@ -54,6 +58,9 @@ class NotificationHistoryViewer : AppCompatActivity() {
     private fun displayNotificationDetail(notification: EverlyticNotification) {
         alert {
             val tv = TextView(this@NotificationHistoryViewer)
+
+            val attrs = notification.custom_attributes.map { "${it.key}=${it.value}" }.joinToString("\n\t")
+
             tv.typeface = Typeface.MONOSPACE
             tv.text = """
                 Title:        ${notification.title}
@@ -61,6 +68,7 @@ class NotificationHistoryViewer : AppCompatActivity() {
                 Received at:  ${notification.received_at}
                 Read at:      ${notification.read_at}
                 Dismissed at: ${notification.dismissed_at}
+                C Attributes: ${attrs}
             """.trimIndent()
             setTitle("Notification ID ${notification.messageId}")
             setView(tv)

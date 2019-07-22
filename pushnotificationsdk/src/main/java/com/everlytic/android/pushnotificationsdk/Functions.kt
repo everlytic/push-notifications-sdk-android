@@ -122,3 +122,9 @@ internal fun String.getHash(): String {
     }
     return buf.toString()
 }
+
+fun Context.getResource(resource: String, type: String): Int {
+    return this
+        .resources
+        .getIdentifier(resource, type, this.packageName)
+}

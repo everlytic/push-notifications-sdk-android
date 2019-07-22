@@ -8,7 +8,7 @@ import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 @Parcelize
-internal data class EvNotification(
+internal data class EvNotification constructor(
     val messageId: Long,
     val androidNotificationId: Int,
     val title: String,
