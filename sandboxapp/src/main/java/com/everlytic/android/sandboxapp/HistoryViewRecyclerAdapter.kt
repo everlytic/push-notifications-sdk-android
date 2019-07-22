@@ -25,7 +25,7 @@ class HistoryViewRecyclerAdapter(private val onClick: (EverlyticNotification) ->
         }
 
         fun setItem(item: EverlyticNotification) {
-            Log.d("HistoryViewRecyclerAdapter", "$item")
+            Log.d("HistoryViewRecyclerAdap", "$item")
             itemBacking = item
             itemView.findViewById<TextView>(R.id.history_item_title).text = item.title
             itemView.findViewById<TextView>(R.id.history_item_subtitle).text = item.body

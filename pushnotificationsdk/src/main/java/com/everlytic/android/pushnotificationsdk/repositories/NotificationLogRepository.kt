@@ -8,6 +8,7 @@ import com.everlytic.android.pushnotificationsdk.database.EvDbContract.Notificat
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_CONTACT_ID
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_CUSTOM_PARAMS
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_DISMISSED_AT
+import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_ID
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_MESSAGE_ID
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_READ_AT
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_RECEIVED_AT
@@ -97,19 +98,33 @@ internal class NotificationLogRepository(private val database: EvDbHelper) {
                 null
             ).use { cursor ->
                 while (cursor.moveToNext()) {
+                    val customParams = decodeJsonMap(cursor.getString(cursor.getColumnIndex(COL_CUSTOM_PARAMS)))
+
                     list += EverlyticNotification(
                         cursor.getLong(cursor.getColumnIndex(COL_MESSAGE_ID)),
                         cursor.getString(cursor.getColumnIndex(COL_TITLE)),
                         cursor.getString(cursor.getColumnIndex(COL_BODY)),
                         0 /*cursor.getInt(cursor.getColumnIndex(COL_))*/,
                         cursor.getString(cursor.getColumnIndex(COL_RECEIVED_AT)).toDate(),
-                        cursor.getString(cursor.getColumnIndex(COL_READ_AT))?.toDate()
+                        cursor.getString(cursor.getColumnIndex(COL_READ_AT))?.toDate(),
+                        custom_attributes = customParams
                     )
                 }
             }
         }
 
         return list
+    }
+
+    fun getNotificationHistoryCount(): Int {
+        return database.readableDatabase.let { db ->
+            db.rawQuery("SELECT count(`$COL_ID`) FROM $TBL_NAME", null)
+                .use {
+                    if (it.moveToNext()) {
+                        it.getInt(0)
+                    } else 0
+                }
+        }
     }
 
     fun getUnactionedNotificationLogHistory(): List<EvNotification> {

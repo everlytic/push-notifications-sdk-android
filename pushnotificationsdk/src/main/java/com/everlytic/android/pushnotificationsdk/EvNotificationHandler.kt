@@ -86,16 +86,9 @@ internal class EvNotificationHandler(val context: Context) {
     }
 
     private fun getSmallIconReference(): Int {
+        var ic = context.getResource("ic_ev_notification_small", "drawable")
 
-        fun getReference(resource: String): Int {
-            return context
-                .resources
-                .getIdentifier(resource, "drawable", context.packageName)
-        }
-
-        var ic = getReference("ic_ev_notification_small")
-
-        if (ic == 0) ic = getReference("ic_ev_fallback_small")
+        if (ic == 0) ic = context.getResource("ic_ev_fallback_small", "drawable")
 
         return ic
     }
