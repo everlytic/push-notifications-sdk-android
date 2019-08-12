@@ -45,6 +45,10 @@ internal class SdkRepository(private val context: Context) {
         return preferences.getString(CONTACT_EMAIL, null)
     }
 
+    fun getContactUniqueId(): String? {
+        return preferences.getString(CONTACT_UNIQUE_ID, null)
+    }
+
     fun getDeviceId(): String? {
         return preferences.getString(DEVICE_ID, null)
     }
@@ -62,9 +66,10 @@ internal class SdkRepository(private val context: Context) {
         return id
     }
 
-    fun setContactSubscription(email: String, apiSubscription: ApiSubscription) {
+    fun setContactSubscription(uniqueId: String?, email: String?, apiSubscription: ApiSubscription) {
         logd("::setContactSubscription($apiSubscription)")
         edit {
+            putString(CONTACT_UNIQUE_ID, uniqueId)
             putString(CONTACT_EMAIL, email)
             putLong(SUBSCRIPTION_ID, apiSubscription.pns_id.toLong())
             putLong(CONTACT_ID, apiSubscription.pns_contact_id.toLong())
@@ -77,8 +82,9 @@ internal class SdkRepository(private val context: Context) {
         edit {
             remove(NEW_FCM_TOKEN_DATETIME)
             remove(SUBSCRIPTION_DATETIME)
-            remove(FCM_TOKEN_HASH)
+            remove(CONTACT_UNIQUE_ID)
             remove(SUBSCRIPTION_ID)
+            remove(FCM_TOKEN_HASH)
             remove(CONTACT_EMAIL)
             remove(NEW_FCM_TOKEN)
             remove(CONTACT_ID)
@@ -94,9 +100,10 @@ internal class SdkRepository(private val context: Context) {
         }
     }
 
-    fun setContactEmail(email: String) {
-        logd("::setContactEmail() email=$email")
+    fun setContactDetails(uniqueId: String?, email: String?) {
+        logd("::setContactDetails() email=$email")
         edit {
+            putString(CONTACT_UNIQUE_ID, uniqueId)
             putString(CONTACT_EMAIL, email)
         }
     }
@@ -135,6 +142,7 @@ internal class SdkRepository(private val context: Context) {
     companion object {
         const val DEVICE_ID = "device_id"
         const val SUBSCRIPTION_ID = "subscription_id"
+        const val CONTACT_UNIQUE_ID = "contact_unique_id"
         const val CONTACT_EMAIL = "contact_email"
         const val CONTACT_ID = "contact_id"
         const val SUBSCRIPTION_DATETIME = "subscription_datetime"

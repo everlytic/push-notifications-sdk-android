@@ -128,3 +128,11 @@ fun Context.getResource(resource: String, type: String): Int {
         .resources
         .getIdentifier(resource, type, this.packageName)
 }
+
+fun JSONObject.getStringOrNull(field: String): String? {
+    return try {
+        this.getString(field)
+    } catch (e: JSONException) {
+        null
+    }
+}

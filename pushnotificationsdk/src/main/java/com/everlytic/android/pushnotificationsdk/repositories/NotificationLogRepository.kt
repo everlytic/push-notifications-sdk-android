@@ -12,6 +12,7 @@ import com.everlytic.android.pushnotificationsdk.database.EvDbContract.Notificat
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_MESSAGE_ID
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_READ_AT
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_RECEIVED_AT
+import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_RETURN_DATA
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_SUBSCRIPTION_ID
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.COL_TITLE
 import com.everlytic.android.pushnotificationsdk.database.EvDbContract.NotificationLogTable.TBL_NAME
@@ -39,6 +40,7 @@ internal class NotificationLogRepository(private val database: EvDbHelper) {
             put(COL_TITLE, notification.title)
             put(COL_BODY, notification.body)
             put(COL_RECEIVED_AT, notification.received_at.toIso8601String())
+            put(COL_RETURN_DATA, notification.return_data)
 
             val actionListing = ListAdapter.toJson(notification.actions, NotificationActionAdapter)
             val customParametersListing = encodeJsonMap(notification.customParameters)
@@ -157,6 +159,7 @@ internal class NotificationLogRepository(private val database: EvDbHelper) {
                         0,
                         actions,
                         customParams,
+                        cursor.getString(cursor.getColumnIndex(COL_RETURN_DATA)),
                         cursor.getString(cursor.getColumnIndex(COL_RECEIVED_AT)).toDate(),
                         cursor.getString(cursor.getColumnIndex(COL_READ_AT))?.toDate(),
                         cursor.getString(cursor.getColumnIndex(COL_DISMISSED_AT))?.toDate()

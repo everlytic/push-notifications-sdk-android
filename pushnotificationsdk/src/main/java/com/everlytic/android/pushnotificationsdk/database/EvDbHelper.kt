@@ -29,7 +29,7 @@ class EvDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB
 
     companion object {
         const val DB_NAME = "evpush.db"
-        const val DB_VERSION = 3
+        const val DB_VERSION = 4
 
         var instance: EvDbHelper? = null
 

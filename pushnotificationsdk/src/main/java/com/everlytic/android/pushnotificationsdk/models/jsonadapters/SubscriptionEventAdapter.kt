@@ -34,15 +34,24 @@ internal object SubscriptionEventAdapter : JSONAdapterInterface<SubscriptionEven
     object ContactDataAdapter : JSONAdapterInterface<ContactData> {
         override fun fromJson(json: JSONObject): ContactData {
             return ContactData(
+                json.getString("unique_id"),
                 json.getString("email"),
                 json.getString("push_token")
             )
         }
 
         override fun toJson(obj: ContactData): JSONObject {
-            return JSONObject()
-                .put("email", obj.email)
-                .put("push_token", obj.push_token)
+            return JSONObject().apply {
+                if (! obj.unique_id.isNullOrBlank()) {
+                    put("unique_id", obj.unique_id)
+                }
+
+                if (!obj.email.isNullOrBlank()) {
+                    put("email", obj.email)
+                }
+
+                put("push_token", obj.push_token)
+            }
         }
 
     }

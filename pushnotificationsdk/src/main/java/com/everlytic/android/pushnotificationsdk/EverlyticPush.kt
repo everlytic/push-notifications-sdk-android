@@ -94,7 +94,27 @@ public object EverlyticPush {
     fun subscribe(email: String, onComplete: OnResultReceiver?) {
         logd("::subscribe(); email=$email; onComplete=$onComplete")
         instance?.let { sdk ->
-            sdk.subscribeContact(email) {
+            sdk.subscribeContact(null, email) {
+                onComplete?.onResult(it)
+            }
+        } ?: throw newNotInitialisedException()
+    }
+
+    @JvmStatic
+    fun subscribeWithUniqueId(uniqueId: String) {
+        EverlyticPush.subscribeWithUniqueId(uniqueId, null, null)
+    }
+
+    @JvmStatic
+    fun subscribeWithUniqueId(uniqueId: String, onComplete: OnResultReceiver?) {
+        EverlyticPush.subscribeWithUniqueId(uniqueId, null, onComplete)
+    }
+
+    @JvmStatic
+    fun subscribeWithUniqueId(uniqueId: String, email: String?, onComplete: OnResultReceiver?) {
+        logd("::subscribeWithUniqueId(); uniqueId=$uniqueId email=$email; onComplete=$onComplete")
+        instance?.let { sdk ->
+            sdk.subscribeContact(uniqueId, email) {
                 onComplete?.onResult(it)
             }
         } ?: throw newNotInitialisedException()
@@ -170,7 +190,7 @@ public object EverlyticPush {
      * @return [Int]
      * */
     @JvmStatic
-    fun getNotificationHistoryCount() : Int {
+    fun getNotificationHistoryCount(): Int {
         logd("::getNotificationHistoryCount()")
         return instance?.getNotificationHistoryCount() ?: throw newNotInitialisedException()
     }

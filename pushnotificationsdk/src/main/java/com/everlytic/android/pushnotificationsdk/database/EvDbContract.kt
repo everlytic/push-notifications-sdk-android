@@ -8,6 +8,7 @@ package com.everlytic.android.pushnotificationsdk.database
  * Migration key numbers in [getMigrations] should reference the old version of the db being upgraded from
  * @suppress
  * */
+@Suppress("MemberVisibilityCanBePrivate")
 object EvDbContract {
 
     fun getCreateStatements() = sortedSetOf(
@@ -21,6 +22,9 @@ object EvDbContract {
         ),
         2 to sortedSetOf(
             "ALTER TABLE ${NotificationLogTable.TBL_NAME} ADD COLUMN ${NotificationLogTable.COL_CUSTOM_PARAMS} TEXT"
+        ),
+        3 to sortedSetOf(
+            "ALTER TABLE ${NotificationLogTable.TBL_NAME} ADD COLUMN ${NotificationLogTable.COL_RETURN_DATA} TEXT"
         )
     )
 
@@ -43,6 +47,7 @@ object EvDbContract {
         const val COL_RECEIVED_AT = "received_at"
         const val COL_READ_AT = "read_at"
         const val COL_DISMISSED_AT = "dismissed_at"
+        const val COL_RETURN_DATA = "returns_data"
 
         val CREATE_STATEMENT = """
             CREATE TABLE $TBL_NAME (
@@ -61,7 +66,8 @@ object EvDbContract {
                 $COL_RAW_NOTIFICATION TEXT,
                 $COL_RECEIVED_AT TEXT NOT NULL,
                 $COL_READ_AT TEXT DEFAULT NULL,
-                $COL_DISMISSED_AT TEXT DEFAULT NULL
+                $COL_DISMISSED_AT TEXT DEFAULT NULL,
+                $COL_RETURN_DATA TEXT DEFAULT NULL
             );
         """.trimIndent()
     }

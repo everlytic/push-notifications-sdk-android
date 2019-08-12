@@ -3,8 +3,10 @@ package com.everlytic.android.pushnotificationsdk.models.jsonadapters
 import com.everlytic.android.pushnotificationsdk.database.vendor.Iso8601Utils
 import com.everlytic.android.pushnotificationsdk.decodeJsonMap
 import com.everlytic.android.pushnotificationsdk.encodeJsonMap
+import com.everlytic.android.pushnotificationsdk.getStringOrNull
 import com.everlytic.android.pushnotificationsdk.models.EvNotification
 import org.json.JSONObject
+import java.lang.Exception
 
 internal object EvNotificationAdapter : JSONAdapterInterface<EvNotification> {
     override fun fromJson(json: JSONObject): EvNotification {
@@ -24,6 +26,7 @@ internal object EvNotificationAdapter : JSONAdapterInterface<EvNotification> {
             json.getInt("priority"),
             ListAdapter.fromJson(json.getJSONArray("actions"), NotificationActionAdapter),
             decodeJsonMap(json.getJSONObject("customActions")),
+            json.getStringOrNull("ev_return_data"),
             Iso8601Utils.parse(receivedAt),
             Iso8601Utils.parse(readAt),
             Iso8601Utils.parse(dismissedAt)
