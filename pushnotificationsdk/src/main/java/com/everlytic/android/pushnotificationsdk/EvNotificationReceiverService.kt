@@ -87,6 +87,7 @@ internal class EvNotificationReceiverService : FirebaseMessagingService() {
             0,
             customActions,
             customParameters,
+            data["ev_return_data"],
             Date()
         )
     }

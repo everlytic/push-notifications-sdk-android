@@ -4,7 +4,8 @@ import com.everlytic.android.pushnotificationsdk.facades.BuildFacade
 import java.util.*
 
 internal data class ContactData(
-    val email: String,
+    val unique_id: String?,
+    val email: String?,
     val push_token: String
 )
 

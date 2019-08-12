@@ -56,6 +56,7 @@ class NotificationOpenedHandlerTest {
                 0,
                 emptyList(),
                 emptyMap(),
+                null,
                 Date()
             )
             putExtra(EvIntentExtras.EVERLYTIC_DATA, notificationParcelable)

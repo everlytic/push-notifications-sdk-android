@@ -60,7 +60,7 @@ class SdkRepositoryTest {
             "123-456789"
         )
 
-        repository.setContactSubscription(contactEmail, apiSubscription)
+        repository.setContactSubscription(null, contactEmail, apiSubscription)
 
         verify { mockEditor.putLong(SdkRepository.SUBSCRIPTION_ID, subscriptionId.toLong()) }
         verify { mockEditor.putLong(SdkRepository.CONTACT_ID, contactId.toLong()) }

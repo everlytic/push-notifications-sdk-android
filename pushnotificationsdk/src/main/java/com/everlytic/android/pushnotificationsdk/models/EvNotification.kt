@@ -20,6 +20,7 @@ internal data class EvNotification constructor(
     val priority: Int,
     val actions: List<NotificationAction>,
     val customParameters: Map<String, String>,
+    val return_data: String?,
     val received_at: Date,
     val read_at: Date? = null,
     val dismissed_at: Date? = null

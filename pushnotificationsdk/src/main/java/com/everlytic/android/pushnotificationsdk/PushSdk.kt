@@ -13,6 +13,7 @@ import com.everlytic.android.pushnotificationsdk.network.EverlyticHttp
 import com.everlytic.android.pushnotificationsdk.repositories.NotificationLogRepository
 import com.everlytic.android.pushnotificationsdk.repositories.SdkRepository
 import com.everlytic.android.pushnotificationsdk.eventreceivers.ResubscribeContactOnNetworkChangeReceiver
+import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticSdkException
 import com.everlytic.android.pushnotificationsdk.exceptions.EverlyticSubscriptionDelayedException
 import java.util.*
 
@@ -53,13 +54,18 @@ internal class PushSdk @JvmOverloads constructor(
         }
     }
 
-    fun subscribeContact(email: String, onComplete: (EvResult) -> Unit) {
+    fun subscribeContact(uniqueId: String?, email: String?, onComplete: (EvResult) -> Unit) {
         logd("::subscribeContact() email=$email onComplete=$onComplete")
+
+        if (uniqueId.isNullOrBlank() && email.isNullOrBlank()) {
+            throw EverlyticSdkException("Both uniqueId and email cannot be blank or null. Please provide a valid uniqueId, email, or both")
+        }
+
         firebaseInstanceId.getInstanceId { tokenResult ->
             logd("::subscribeContact() firebaseInstanceId->tokenResult=$tokenResult")
 
             if (tokenResult.success && !tokenResult.value.isNullOrBlank()) {
-                val subscription = createSubscriptionEvent(email, tokenResult.value)
+                val subscription = createSubscriptionEvent(uniqueId, email, tokenResult.value)
 
                 logd("::subscribeContact() subscription=$subscription")
 
@@ -69,7 +75,7 @@ internal class PushSdk @JvmOverloads constructor(
                             logd("::onSuccess() response=$response")
                             val responseObject = JSONAdapter.decodeAs(ApiSubscription::class.java, response!!.data)
 
-                            saveContactSubscriptionFromResponse(email, responseObject)
+                            saveContactSubscriptionFromResponse(uniqueId, email, responseObject)
                             onComplete(EvResult(true))
                         }
 
@@ -92,7 +98,7 @@ internal class PushSdk @JvmOverloads constructor(
                     }
 
                 } else {
-                    sdkRepository.setContactEmail(email)
+                    sdkRepository.setContactDetails(uniqueId, email)
                     sdkRepository.setNewFcmToken(tokenResult.value)
                     onComplete(
                         EvResult(false, EverlyticSubscriptionDelayedException())
@@ -103,9 +109,14 @@ internal class PushSdk @JvmOverloads constructor(
         }
     }
 
-    internal fun resubscribeUserWithToken(email: String, token: String, onComplete: (EvResult) -> Unit) {
+    internal fun resubscribeUserWithToken(uniqueId: String?, email: String?, token: String, onComplete: (EvResult) -> Unit) {
         logd("::resubscribeUserWithToken() email=$email token=$token onComplete=$onComplete")
-        val subscription = createSubscriptionEvent(email, token)
+
+        if (uniqueId.isNullOrBlank() && email.isNullOrBlank()) {
+            throw EverlyticSdkException("Both uniqueId and email cannot be blank or null. Please provide a valid uniqueId, email, or both")
+        }
+
+        val subscription = createSubscriptionEvent(uniqueId, email, token)
 
         logd("::resubscribeUserWithToken() subscription=$subscription")
 
@@ -113,7 +124,7 @@ internal class PushSdk @JvmOverloads constructor(
             override fun onSuccess(response: ApiResponse?) {
                 logd("::onSuccess() response=$response")
                 val responseObject = JSONAdapter.decodeAs(ApiSubscription::class.java, response!!.data)
-                saveContactSubscriptionFromResponse(email, responseObject)
+                saveContactSubscriptionFromResponse(uniqueId,  email, responseObject)
                 sdkRepository.removeNewFcmToken()
                 onComplete(EvResult(true))
             }
@@ -143,8 +154,9 @@ internal class PushSdk @JvmOverloads constructor(
             val newToken = sdkRepository.getNewFcmToken()
             newToken?.let { fcmToken ->
                 if (fcmToken.datetime.after(sdkRepository.getSubscriptionDatetime() ?: Date(0))) {
-                    val email = sdkRepository.getContactEmail()!!
-                    resubscribeUserWithToken(email, fcmToken.token) {
+                    val email = sdkRepository.getContactEmail()
+                    val uniqueId = sdkRepository.getContactUniqueId()
+                    resubscribeUserWithToken(uniqueId, email, fcmToken.token) {
                         logd(throwable = it.exception)
                     }
                 }
@@ -196,10 +208,10 @@ internal class PushSdk @JvmOverloads constructor(
         return NotificationLogRepository(dbHelper)
     }
 
-    internal fun saveContactSubscriptionFromResponse(contactEmail: String, responseBody: ApiSubscription) {
+    internal fun saveContactSubscriptionFromResponse(contactUniqueId: String?, contactEmail: String?, responseBody: ApiSubscription) {
         try {
             Log.d("PushSdk", "API Response: $responseBody")
-            sdkRepository.setContactSubscription(contactEmail, responseBody)
+            sdkRepository.setContactSubscription(contactUniqueId, contactEmail, responseBody)
         } catch (otherException: Exception) {
             otherException.handle()
         }
@@ -210,12 +222,13 @@ internal class PushSdk @JvmOverloads constructor(
     }
 
     private fun createSubscriptionEvent(
-        email: String,
+        uniqueId: String?,
+        email: String?,
         token: String
     ): SubscriptionEvent {
         val deviceType = if (context.resources.getBoolean(R.bool.isTablet)) "tablet" else "handset"
         val device = DeviceData(sdkRepository.getDeviceId()!!, type = deviceType)
-        val contactData = ContactData(email, token)
+        val contactData = ContactData(uniqueId, email, token)
         return SubscriptionEvent(settingsBag.pushProjectUuid, contactData, device = device)
     }
 }

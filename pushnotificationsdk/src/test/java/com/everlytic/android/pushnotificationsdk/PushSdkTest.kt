@@ -69,9 +69,9 @@ class PushSdkTest {
             )
         )
 
-        every { sdk.saveContactSubscriptionFromResponse(any(), any()) } just Runs
+        every { sdk.saveContactSubscriptionFromResponse(any(), any(), any()) } just Runs
 
-        sdk.subscribeContact(USER_EMAIL) {}
+        sdk.subscribeContact(null, USER_EMAIL) {}
 
         verify(exactly = 1) { mockEverlyticApi.subscribe(ofType(), ofType()) }
     }
@@ -96,7 +96,7 @@ class PushSdkTest {
             )
         )
 
-        sdk.subscribeContact(USER_EMAIL) {
+        sdk.subscribeContact(null, USER_EMAIL) {
             assertFalse { it.isSuccessful }
         }
     }
@@ -245,6 +245,7 @@ class PushSdkTest {
             every { getSubscriptionDatetime() } returns Date(0)
             every { getNewFcmToken() } returns FcmToken("abc", Date())
             every { getContactEmail() } returns "test@example.com"
+            every { getContactUniqueId() } returns "uniqueid0123"
         }
 
         val ctx = mockk<Context>(relaxed = true) {
@@ -267,7 +268,7 @@ class PushSdkTest {
 
         sdk.resubscribeIfRequired()
 
-        verify { sdk.resubscribeUserWithToken(any(), any(), any()) }
+        verify { sdk.resubscribeUserWithToken(any(), any(), any(), any()) }
         verify { api.subscribe(any(), any()) }
     }
 
