@@ -173,6 +173,7 @@ internal class EverlyticHttp(installUrl: String, pushProjectUuid: String) {
 
     private fun HttpURLConnection.applyConnectionHeaders() {
         authenticator.authenticate(this)
+        addRequestProperty("X-EV-SDK-Platform", "android")
         addRequestProperty("X-EV-SDK-Version-Name", BuildFacade.getBuildConfigVersionName())
         addRequestProperty("X-EV-SDK-Version-Code", BuildFacade.getBuildConfigVersionCode().toString())
     }

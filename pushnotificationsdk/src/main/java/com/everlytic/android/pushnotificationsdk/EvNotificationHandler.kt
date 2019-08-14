@@ -57,7 +57,7 @@ internal class EvNotificationHandler(val context: Context) {
         return NotificationCompat.Builder(context, DEFAULT_CHANNEL).apply {
 
             setSmallIcon(smallIcon)
-            setContentTitle(notification.title)
+            if (!notification.title.isBlank()) setContentTitle(notification.title)
             setContentText(notification.body)
             setPriority(notification.priority)
             setGroup(DEFAULT_GROUP)
