@@ -10,9 +10,11 @@ import com.everlytic.android.pushnotificationsdk.use
 import org.json.JSONObject
 import java.lang.Exception
 import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
 import java.net.URL
 import java.net.UnknownHostException
 import java.util.*
+import javax.net.ssl.SSLHandshakeException
 
 internal class EverlyticHttp(installUrl: String, pushProjectUuid: String) {
 
@@ -122,7 +124,16 @@ internal class EverlyticHttp(installUrl: String, pushProjectUuid: String) {
             }
 
         } catch (throwable: UnknownHostException) {
-            logw("::performHttpConnection() conn::catch ${throwable.message}", throwable)
+            logw("::performHttpConnection() conn::catch UnknownHost ${throwable.message}", throwable)
+            callbackThread = handleFailureResponse(responseHandler, httpResponseCode, jsonResult, throwable)
+        } catch (throwable: SocketTimeoutException) {
+            logw("::performHttpConnection() conn::catch SocketTimeout ${throwable.message}", throwable)
+            callbackThread = handleFailureResponse(responseHandler, httpResponseCode, jsonResult, throwable)
+        } catch (throwable: SSLHandshakeException) {
+            logw("::performHttpConnection() conn::catch SSLHandshake ${throwable.message}", throwable)
+            callbackThread = handleFailureResponse(responseHandler, httpResponseCode, jsonResult, throwable)
+        } catch (throwable: Exception) {
+            logw("::performHttpConnection() conn::catch Unknown Exception ${throwable.message}", throwable)
             callbackThread = handleFailureResponse(responseHandler, httpResponseCode, jsonResult, throwable)
         }
 

@@ -20,7 +20,7 @@ import java.lang.IllegalArgumentException
 public object EverlyticPush {
     @SuppressLint("StaticFieldLeak")
     internal var instance: PushSdk? = null
-    internal lateinit var sdkSettingsBag: SdkConfiguration.SdkConfigBag
+    internal var sdkSettingsBag: SdkConfiguration.SdkConfigBag? = null
 
     var isInTestMode: Boolean = false
         private set
@@ -59,7 +59,7 @@ public object EverlyticPush {
                 SdkConfiguration.getConfigurationBag(context)
             }
             logd("Creating SDK Instance...")
-            instance = PushSdk(context.applicationContext, sdkSettingsBag, testMode = isInTestMode)
+            instance = PushSdk(context.applicationContext, sdkSettingsBag!!, testMode = isInTestMode)
         } catch (e: IllegalArgumentException) {
             loge("Encountered an init error", e)
             throw newInvalidSdkConfigurationException(SdkConfiguration.META_SDK_CONFIGURATION_STRING)
