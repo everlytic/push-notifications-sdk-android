@@ -108,7 +108,14 @@ internal class NotificationEventRepository(
                     val meta = MapAdapter
                         .fromJson(JSONObject(cursor.getString(cursor.getColumnIndex(COL_METADATA))))
                         .toMutableMap()
-                    meta["ev_return_data"] = cursor.getString(cursor.getColumnIndex(logTable.COL_RETURN_DATA))
+                    cursor.getColumnIndex(logTable.COL_RETURN_DATA)
+                        .takeIf { it > -1 }
+                        ?.let {
+                            logd("::getColumnIndex() $it")
+                            if (!cursor.isNull(it)) {
+                                meta["ev_return_data"] = cursor.getString(it)
+                            }
+                        }
 
                     list += NotificationEvent(
                         cursor.getInt(cursor.getColumnIndexOrThrow(COL_ANDROID_NOTIFICATION_ID)),
